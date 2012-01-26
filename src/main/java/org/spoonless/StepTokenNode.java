@@ -10,4 +10,12 @@ public class StepTokenNode {
 	
 	private List<StepTokenNode> nextNodes;
 
+	public StepDescriptor getStepDescriptor() {
+		return stepDescriptor;
+	}
+
+	public void setStepDescriptor(StepDescriptor stepDescriptor) {
+		this.stepDescriptor = stepDescriptor;
+	}
+
 }
