@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scenarios xml:lang="en">
+	<scenario title="my first scenario as XML file">
+		<given><arg>I</arg> assume something</given>
+		<when><arg>I</arg> do <arg>something</arg></when>
+		<then><arg>I</arg> see <arg>it works</arg></then>
+	</scenario>
+</scenarios>
