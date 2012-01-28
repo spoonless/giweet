@@ -59,7 +59,7 @@ public class StepTokenNode {
 			result = this.stepDescriptor;
 		}
 		else if (finder != null && nextNodes == null) {
-			if (stepToken instanceof DynamicToken) {
+			if (stepToken.isDynamic()) {
 				result = this.stepDescriptor;
 			}
 		}
@@ -68,7 +68,7 @@ public class StepTokenNode {
 			if (stepTokenNode != null) {
 				result = stepTokenNode.search(finder);
 			}
-			else if (stepToken instanceof DynamicToken) {
+			else if (stepToken.isDynamic()) {
 				result = this.search(finder);
 			}
 		}

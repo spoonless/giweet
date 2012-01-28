@@ -20,7 +20,7 @@ public class Finder {
 			int index = Collections.binarySearch(stepTokenNodes, stepTokens[depth], comparator);
 			if (index < 0) {
 				StepTokenNode lastStepTokenNode = stepTokenNodes.get(stepTokenNodes.size() - 1);
-				if (lastStepTokenNode.getStepToken() instanceof DynamicToken) {
+				if (lastStepTokenNode.getStepToken().isDynamic()) {
 					result = lastStepTokenNode;
 				}
 			} else {
