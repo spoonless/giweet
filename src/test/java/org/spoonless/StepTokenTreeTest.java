@@ -53,7 +53,8 @@ public class StepTokenTreeTest {
 
 		StepTokenTree underTest = new StepTokenTree(stepDescriptors);
 		
-		StepDescriptor stepDescriptorFound = underTest.find(new StringToken("NotExisting"));
+		StepDescriptor stepDescriptorFound = null;
+		stepDescriptorFound = underTest.find(new StringToken("NotExisting"));
 		assertNull(stepDescriptorFound);
 
 		stepDescriptorFound = underTest.find(new StringToken("hello"));
@@ -72,6 +73,10 @@ public class StepTokenTreeTest {
 		assertNotNull(stepDescriptorFound);
 		assertEquals("$hello $the world", stepDescriptorFound.getValue());
 
+		stepDescriptorFound = underTest.find(new StringToken("hello"), new StringToken("le"), new StringToken("world"));
+		assertNotNull(stepDescriptorFound);
+		assertEquals("hello $the world", stepDescriptorFound.getValue());
+
 		stepDescriptorFound = underTest.find(new StringToken("Hello"), new StringToken("the"), new StringToken("monde"));
 		assertNotNull(stepDescriptorFound);
 		assertEquals("hello the $world", stepDescriptorFound.getValue());
@@ -79,5 +84,21 @@ public class StepTokenTreeTest {
 		stepDescriptorFound = underTest.find(new StringToken("this"), new StringToken("is"), new StringToken("correct"));
 		assertNotNull(stepDescriptorFound);
 		assertEquals("$hello $the $world", stepDescriptorFound.getValue());
+
+		stepDescriptorFound = underTest.find(new StringToken("this"), new StringToken("is"), new StringToken("also"), new StringToken("correct"));
+		assertNotNull(stepDescriptorFound);
+		assertEquals("$hello $the $world", stepDescriptorFound.getValue());
+
+		stepDescriptorFound = underTest.find(new StringToken("hello"), new StringToken("le"), new StringToken("petit"), new StringToken("world"));
+		assertNotNull(stepDescriptorFound);
+		assertEquals("hello $the world", stepDescriptorFound.getValue());
+
+		stepDescriptorFound = underTest.find(new StringToken("hello"), new StringToken("the"), new StringToken("petit"), new StringToken("world"));
+		assertNotNull(stepDescriptorFound);
+		assertEquals("hello the $world", stepDescriptorFound.getValue());
+
+		stepDescriptorFound = underTest.find(new StringToken("bonjour"), new StringToken("le"), new StringToken("world"));
+		assertNotNull(stepDescriptorFound);
+		assertEquals("$hello $the world", stepDescriptorFound.getValue());
 	}
 }

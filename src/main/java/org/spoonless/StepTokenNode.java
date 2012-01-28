@@ -58,14 +58,21 @@ public class StepTokenNode {
 		if (finder == null) {
 			result = this.stepDescriptor;
 		}
+		else if (finder != null && nextNodes == null) {
+			if (stepToken instanceof ArgumentToken) {
+				result = this.stepDescriptor;
+			}
+		}
 		else if (finder != null && nextNodes != null) {
 			StepTokenNode stepTokenNode = finder.findAmongst(nextNodes);
 			if (stepTokenNode != null) {
 				result = stepTokenNode.search(finder);
 			}
+			else if (stepToken instanceof ArgumentToken) {
+				result = this.search(finder);
+			}
 		}
 		// TODO one case is missing : when descendants are only argument tokens
-		// TODO one case is missing : when current is argument token (then maybe it could represent several string tokens
 		return result;
 	}
 
