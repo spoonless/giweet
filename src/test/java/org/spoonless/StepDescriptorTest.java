@@ -51,19 +51,19 @@ public class StepDescriptorTest {
 	@Test
 	public void canTokenizeWithArguments() {
 		StepDescriptor underTest = new StepDescriptor("hello the $world");
-		testTokenization(underTest, new StringToken("hello"), new StringToken("the"), new ArgumentToken("world"));
+		testTokenization(underTest, new StringToken("hello"), new StringToken("the"), new DynamicToken("world"));
 
 		underTest = new StepDescriptor("hello $the $world");
-		testTokenization(underTest, new StringToken("hello"), new ArgumentToken("the"), new ArgumentToken("world"));
+		testTokenization(underTest, new StringToken("hello"), new DynamicToken("the"), new DynamicToken("world"));
 
 		underTest = new StepDescriptor("hello$ $the$ $worl$d");
-		testTokenization(underTest, new StringToken("hello$"), new ArgumentToken("the$"), new ArgumentToken("worl$d"));
+		testTokenization(underTest, new StringToken("hello$"), new DynamicToken("the$"), new DynamicToken("worl$d"));
 
 		underTest = new StepDescriptor("$hello $the $world");
-		testTokenization(underTest, new ArgumentToken("hello"), new ArgumentToken("the"), new ArgumentToken("world"));
+		testTokenization(underTest, new DynamicToken("hello"), new DynamicToken("the"), new DynamicToken("world"));
 
 		underTest = new StepDescriptor("$hello the $world");
-		testTokenization(underTest, new ArgumentToken("hello"), new StringToken("the"), new ArgumentToken("world"));
+		testTokenization(underTest, new DynamicToken("hello"), new StringToken("the"), new DynamicToken("world"));
 	}
 
 	@Test

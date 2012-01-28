@@ -65,7 +65,7 @@ public class StepDescriptor implements Comparable<StepDescriptor> {
 			tokenValue = "$";
 		}
 		if (isArgumentNext) {
-			result = new ArgumentToken(tokenValue);
+			result = new DynamicToken(tokenValue);
 		}
 		else {
 			result = new StringToken(tokenValue);
@@ -82,7 +82,7 @@ public class StepDescriptor implements Comparable<StepDescriptor> {
 		}
 		if (result == 0) {
 			result = this.tokens.length - otherStepTokens.length;
-			if (nbTokens > 0 && tokens[nbTokens - 1] instanceof ArgumentToken) {
+			if (nbTokens > 0 && tokens[nbTokens - 1] instanceof DynamicToken) {
 				result = -result;				
 			}
 		}
