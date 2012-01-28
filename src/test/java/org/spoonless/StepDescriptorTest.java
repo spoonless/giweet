@@ -7,66 +7,6 @@ import org.junit.Test;
 public class StepDescriptorTest {
 
 	@Test
-	public void canTokenizeWithString() {
-		StepDescriptor underTest = new StepDescriptor("hello the world");
-		testTokenization(underTest, "hello", "the", "world");
-
-		underTest = new StepDescriptor("100 € 100$");
-		testTokenization(underTest, "100", "€", "100$");
-
-		underTest = new StepDescriptor("$");
-		testTokenization(underTest, "$");
-
-		underTest = new StepDescriptor("a b c d e");
-		testTokenization(underTest, "a", "b", "c", "d", "e");
-
-		underTest = new StepDescriptor("1 2 3 4 5 6 7 8 9 10");
-		testTokenization(underTest, "1", "2", "3", "4", "5", "6", "7", "8", "9", "10");
-	}
-
-	@Test
-	public void canTokenizeWithStringWithSpaces() {
-		StepDescriptor underTest = new StepDescriptor("           hello         the world      ");
-		testTokenization(underTest, "hello", "the", "world");
-	}
-
-	@Test
-	public void canTokenizeWithStringWithNonParsingCharacters() {
-		StepDescriptor underTest = new StepDescriptor("@hello/the#world* ");
-		testTokenization(underTest, "hello", "the", "world");
-
-		underTest = new StepDescriptor("&~\"{-)]':,\n\r\t\f-.!?");
-		testTokenization(underTest);
-	}
-	
-	@Test
-	public void canTokenizeByIngnoringPartsIntoParenthesis() {
-		StepDescriptor underTest = new StepDescriptor("(before ignorable block) hello(this must be ignored)the (and that also) world (after ignorable block)");
-		testTokenization(underTest, "hello", "the", "world");
-
-		underTest = new StepDescriptor("(((test) test) test) hello )))))))) the world (ignore even if no end parenthensis is specified");
-		testTokenization(underTest, "hello", "the", "world");
-	}
-
-	@Test
-	public void canTokenizeWithArguments() {
-		StepDescriptor underTest = new StepDescriptor("hello the $world");
-		testTokenization(underTest, new StringToken("hello"), new StringToken("the"), new DynamicToken("world"));
-
-		underTest = new StepDescriptor("hello $the $world");
-		testTokenization(underTest, new StringToken("hello"), new DynamicToken("the"), new DynamicToken("world"));
-
-		underTest = new StepDescriptor("hello$ $the$ $worl$d");
-		testTokenization(underTest, new StringToken("hello$"), new DynamicToken("the$"), new DynamicToken("worl$d"));
-
-		underTest = new StepDescriptor("$hello $the $world");
-		testTokenization(underTest, new DynamicToken("hello"), new DynamicToken("the"), new DynamicToken("world"));
-
-		underTest = new StepDescriptor("$hello the $world");
-		testTokenization(underTest, new DynamicToken("hello"), new StringToken("the"), new DynamicToken("world"));
-	}
-
-	@Test
 	public void canCompare() {
 		assertStepDescriptorComparison(0, "hello the world", "hello the world");
 		assertStepDescriptorComparison(0, "HELLO THE WORLD", "hello the world");
@@ -89,27 +29,5 @@ public class StepDescriptorTest {
 		StepDescriptor stepDescriptor2 = new StepDescriptor(step2);
 		assertEquals(comparisonResult, stepDescriptor1.compareTo(stepDescriptor2));
 		assertEquals(-comparisonResult, stepDescriptor2.compareTo(stepDescriptor1));
-	}
-
-	private void testTokenization(StepDescriptor underTest, String... expectedTokens) {
-		StepToken[] tokens = new StepToken[expectedTokens.length];
-		for (int i = 0 ; i < expectedTokens.length ; i++) {
-			tokens[i] = new StringToken(expectedTokens[i]);
-		}
-		testTokenization(underTest, tokens);
-	}
-
-	private void testTokenization(StepDescriptor underTest) {
-		StepToken[] tokens = underTest.getTokens();
-		assertEquals(0, tokens.length);
-	}
-
-	private void testTokenization(StepDescriptor underTest, StepToken... expectedTokens) {
-		StepToken[] tokens = underTest.getTokens();
-		assertEquals(expectedTokens.length, tokens.length);
-		for (int i = 0 ; i < expectedTokens.length ; i++) {
-			assertEquals(expectedTokens[i], tokens[i]);
-			assertEquals(expectedTokens[i].toString(), tokens[i].toString());
-		}
 	}
 }

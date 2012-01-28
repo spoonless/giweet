@@ -9,6 +9,8 @@ import org.junit.Test;
 
 public class StepTokenTreeTest {
 
+	private StepTokenizer stepTokenizer = new StepTokenizer(false);
+
 	@Test
 	public void canCreateStepTokenTreeFromOneStepDescriptor() {
 		List<StepDescriptor> stepDescriptors = new ArrayList<StepDescriptor>();
@@ -53,52 +55,29 @@ public class StepTokenTreeTest {
 
 		StepTokenTree underTest = new StepTokenTree(stepDescriptors);
 		
-		StepDescriptor stepDescriptorFound = null;
-		stepDescriptorFound = underTest.find(new StringToken("NotExisting"));
+		assertStepDescriptorNotFoundInStepTokenTree(underTest, "NotExisting");
+
+		assertStepDescriptorFoundInStepTokenTree(underTest, "hello", "hello");
+		assertStepDescriptorFoundInStepTokenTree(underTest, "hello the world", "hello the world");
+		assertStepDescriptorFoundInStepTokenTree(underTest, "$hello the world", "Bonjour the world");
+		assertStepDescriptorFoundInStepTokenTree(underTest, "$hello $the world", "Bonjour le world");
+		assertStepDescriptorFoundInStepTokenTree(underTest, "hello $the world", "hello le world");
+		assertStepDescriptorFoundInStepTokenTree(underTest, "hello the $world", "Hello the monde");
+		assertStepDescriptorFoundInStepTokenTree(underTest, "$hello $the $world", "this is correct");
+		assertStepDescriptorFoundInStepTokenTree(underTest, "$hello $the $world", "this is also correct");
+		assertStepDescriptorFoundInStepTokenTree(underTest, "hello $the world", "hello le petit world");
+		assertStepDescriptorFoundInStepTokenTree(underTest, "hello the $world", "hello the petit world");
+		assertStepDescriptorFoundInStepTokenTree(underTest, "$hello $the world", "bonjour le world");
+	}
+	
+	private void assertStepDescriptorFoundInStepTokenTree(StepTokenTree tree, String expectedStepDescriptorValue, String actualRawStep) {
+		StepDescriptor stepDescriptorFound = tree.find(stepTokenizer.tokenize(actualRawStep));
+		assertNotNull(stepDescriptorFound);
+		assertEquals(expectedStepDescriptorValue, stepDescriptorFound.getValue());
+	}
+
+	private void assertStepDescriptorNotFoundInStepTokenTree(StepTokenTree tree, String actualRawStep) {
+		StepDescriptor stepDescriptorFound = tree.find(stepTokenizer.tokenize(actualRawStep));
 		assertNull(stepDescriptorFound);
-
-		stepDescriptorFound = underTest.find(new StringToken("hello"));
-		assertNotNull(stepDescriptorFound);
-		assertEquals("hello", stepDescriptorFound.getValue());
-
-		stepDescriptorFound = underTest.find(new StringToken("hello"), new StringToken("the"), new StringToken("world"));
-		assertNotNull(stepDescriptorFound);
-		assertEquals("hello the world", stepDescriptorFound.getValue());
-
-		stepDescriptorFound = underTest.find(new StringToken("Bonjour"), new StringToken("the"), new StringToken("world"));
-		assertNotNull(stepDescriptorFound);
-		assertEquals("$hello the world", stepDescriptorFound.getValue());
-
-		stepDescriptorFound = underTest.find(new StringToken("Bonjour"), new StringToken("le"), new StringToken("world"));
-		assertNotNull(stepDescriptorFound);
-		assertEquals("$hello $the world", stepDescriptorFound.getValue());
-
-		stepDescriptorFound = underTest.find(new StringToken("hello"), new StringToken("le"), new StringToken("world"));
-		assertNotNull(stepDescriptorFound);
-		assertEquals("hello $the world", stepDescriptorFound.getValue());
-
-		stepDescriptorFound = underTest.find(new StringToken("Hello"), new StringToken("the"), new StringToken("monde"));
-		assertNotNull(stepDescriptorFound);
-		assertEquals("hello the $world", stepDescriptorFound.getValue());
-
-		stepDescriptorFound = underTest.find(new StringToken("this"), new StringToken("is"), new StringToken("correct"));
-		assertNotNull(stepDescriptorFound);
-		assertEquals("$hello $the $world", stepDescriptorFound.getValue());
-
-		stepDescriptorFound = underTest.find(new StringToken("this"), new StringToken("is"), new StringToken("also"), new StringToken("correct"));
-		assertNotNull(stepDescriptorFound);
-		assertEquals("$hello $the $world", stepDescriptorFound.getValue());
-
-		stepDescriptorFound = underTest.find(new StringToken("hello"), new StringToken("le"), new StringToken("petit"), new StringToken("world"));
-		assertNotNull(stepDescriptorFound);
-		assertEquals("hello $the world", stepDescriptorFound.getValue());
-
-		stepDescriptorFound = underTest.find(new StringToken("hello"), new StringToken("the"), new StringToken("petit"), new StringToken("world"));
-		assertNotNull(stepDescriptorFound);
-		assertEquals("hello the $world", stepDescriptorFound.getValue());
-
-		stepDescriptorFound = underTest.find(new StringToken("bonjour"), new StringToken("le"), new StringToken("world"));
-		assertNotNull(stepDescriptorFound);
-		assertEquals("$hello $the world", stepDescriptorFound.getValue());
 	}
 }
