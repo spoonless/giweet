@@ -25,9 +25,9 @@ public class StepTokenTree {
 		}
 	}
 	
-	public StepDescriptor find (StringToken... stringTokens) {
+	public StepDescriptor find (StepToken... stepTokens) {
 		StepDescriptor result = null;
-		Finder finder = new Finder(stringTokens);
+		Finder finder = new Finder(stepTokens);
 		StepTokenNode stepTokenNode = finder.findAmongst(stepTokenNodes);
 		if (stepTokenNode != null) {
 			result = stepTokenNode.search(finder);

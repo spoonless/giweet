@@ -7,17 +7,17 @@ import java.util.List;
 public class Finder {
 	
 	private int depth;
-	private final StringToken[] stringTokens;
-	private final StringTokenStepTokenNodeComparator comparator = new StringTokenStepTokenNodeComparator();
+	private final StepToken[] stepTokens;
+	private final StepTokenNodeStepTokenComparator comparator = new StepTokenNodeStepTokenComparator();
 	
-	public Finder(StringToken... stringTokens) {
-		this.stringTokens = stringTokens;
+	public Finder(StepToken... stepTokens) {
+		this.stepTokens = stepTokens;
 	}
 	
 	public StepTokenNode findAmongst(List<StepTokenNode> stepTokenNodes) {
 		StepTokenNode result = null;
 		if (!stepTokenNodes.isEmpty()) {
-			int index = Collections.binarySearch(stepTokenNodes, stringTokens[depth], comparator);
+			int index = Collections.binarySearch(stepTokenNodes, stepTokens[depth], comparator);
 			if (index < 0) {
 				StepTokenNode lastStepTokenNode = stepTokenNodes.get(stepTokenNodes.size() - 1);
 				if (lastStepTokenNode.getStepToken() instanceof ArgumentToken) {
@@ -32,14 +32,13 @@ public class Finder {
 	
 	public Finder goDeeper() {
 		depth++;
-		return depth < stringTokens.length ? this : null;
+		return depth < stepTokens.length ? this : null;
 	}
 	
-	private static class StringTokenStepTokenNodeComparator implements Comparator<Object> {
-		public int compare(Object o1, Object o2) {
-			StepTokenNode stepTokenNode = (StepTokenNode) o1;
-			StepToken stepToken = stepTokenNode.getStepToken();
-			return ((StepToken) o2).compareTo(stepToken);
+	private static class StepTokenNodeStepTokenComparator implements Comparator<Object> {
+		public int compare(Object node, Object token) {
+			StepToken stepToken = ((StepTokenNode)node).getStepToken();
+			return ((StepToken) token).compareTo(stepToken);
 		}
 	}
 }
