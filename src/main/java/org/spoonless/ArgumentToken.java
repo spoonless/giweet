@@ -8,10 +8,6 @@ public class ArgumentToken implements StepToken {
 		this.name = name;
 	}
 	
-	public String getName() {
-		return name;
-	}
-
 	public int compareTo(StepToken o) {
 		if (o instanceof ArgumentToken) {
 			return 0;

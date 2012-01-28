@@ -91,5 +91,10 @@ public class StepDescriptor implements Comparable<StepDescriptor> {
 		}
 		return result;
 	}
+	
+	@Override
+	public String toString() {
+		return value;
+	}
 
 }
