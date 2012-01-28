@@ -70,6 +70,31 @@ public class StepTokenTreeTest {
 		assertStepDescriptorFoundInStepTokenTree(underTest, "$hello $the world", "bonjour le world");
 	}
 	
+	@Test
+	public void canFindAllRawStepsWithOnlyOneDynamicToken() {
+		List<StepDescriptor> stepDescriptors = new ArrayList<StepDescriptor>();
+		StepDescriptor stepDescriptor = new StepDescriptor("$any");
+		stepDescriptors.add(stepDescriptor);
+		
+		StepTokenTree underTest = new StepTokenTree(stepDescriptors);
+
+		assertStepDescriptorNotFoundInStepTokenTree(underTest, "");
+		assertStepDescriptorFoundInStepTokenTree(underTest, "$any", "hello");
+		assertStepDescriptorFoundInStepTokenTree(underTest, "$any", "hello the");
+		assertStepDescriptorFoundInStepTokenTree(underTest, "$any", "hello the world");
+	}
+
+	@Test
+	public void testEmptyStepNotAllowed() {
+		List<StepDescriptor> stepDescriptors = new ArrayList<StepDescriptor>();
+		StepDescriptor stepDescriptor = new StepDescriptor("");
+		stepDescriptors.add(stepDescriptor);
+		
+		StepTokenTree underTest = new StepTokenTree(stepDescriptors);
+
+		assertStepDescriptorNotFoundInStepTokenTree(underTest, "");
+	}
+
 	private void assertStepDescriptorFoundInStepTokenTree(StepTokenTree tree, String expectedStepDescriptorValue, String actualRawStep) {
 		StepDescriptor stepDescriptorFound = tree.find(stepTokenizer.tokenize(actualRawStep));
 		assertNotNull(stepDescriptorFound);

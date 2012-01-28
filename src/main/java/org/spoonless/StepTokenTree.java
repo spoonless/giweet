@@ -27,10 +27,12 @@ public class StepTokenTree {
 	
 	public StepDescriptor find (StepToken... stepTokens) {
 		StepDescriptor result = null;
-		Finder finder = new Finder(stepTokens);
-		StepTokenNode stepTokenNode = finder.findAmongst(stepTokenNodes);
-		if (stepTokenNode != null) {
-			result = stepTokenNode.search(finder);
+		if (stepTokens.length > 0) {
+			Finder finder = new Finder(stepTokens);
+			StepTokenNode stepTokenNode = finder.findAmongst(stepTokenNodes);
+			if (stepTokenNode != null) {
+				result = stepTokenNode.search(finder);
+			}
 		}
 		return result;
 	}

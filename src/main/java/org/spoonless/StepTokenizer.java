@@ -36,7 +36,7 @@ public class StepTokenizer {
 					startPosition = i+1;
 				}
 			}
-			if (c == '$' && i == startPosition && allowDynamicToken) {
+			if (allowDynamicToken && c == '$' && i == startPosition) {
 				isArgumentNext = true;
 				startPosition = i+1;
 			}
