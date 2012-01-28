@@ -55,10 +55,10 @@ public class StepTokenizer {
 			tokenValue = "$";
 		}
 		if (isArgumentNext) {
-			result = new DynamicToken(tokenValue);
+			result = new DynamicStepToken(tokenValue);
 		}
 		else {
-			result = new StringToken(tokenValue);
+			result = new StaticStepToken(tokenValue);
 		}
 		return result;
 	}

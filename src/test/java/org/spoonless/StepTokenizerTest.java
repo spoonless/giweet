@@ -64,28 +64,28 @@ public class StepTokenizerTest {
 		StepTokenizer underTest = new StepTokenizer(true);
 		
 		StepToken[] stepTokens = underTest.tokenize("hello the $world");
-		testTokenization(stepTokens, new StringToken("hello"), new StringToken("the"), new DynamicToken("world"));
+		testTokenization(stepTokens, new StaticStepToken("hello"), new StaticStepToken("the"), new DynamicStepToken("world"));
 
 		stepTokens = underTest.tokenize("hello $the $world");
-		testTokenization(stepTokens, new StringToken("hello"), new DynamicToken("the"), new DynamicToken("world"));
+		testTokenization(stepTokens, new StaticStepToken("hello"), new DynamicStepToken("the"), new DynamicStepToken("world"));
 
 		stepTokens = underTest.tokenize("hello$ $the$ $worl$d");
-		testTokenization(stepTokens, new StringToken("hello$"), new DynamicToken("the$"), new DynamicToken("worl$d"));
+		testTokenization(stepTokens, new StaticStepToken("hello$"), new DynamicStepToken("the$"), new DynamicStepToken("worl$d"));
 
 		stepTokens = underTest.tokenize("$hello $the $world");
-		testTokenization(stepTokens, new DynamicToken("hello"), new DynamicToken("the"), new DynamicToken("world"));
+		testTokenization(stepTokens, new DynamicStepToken("hello"), new DynamicStepToken("the"), new DynamicStepToken("world"));
 
 		stepTokens = underTest.tokenize("$hello the $world");
-		testTokenization(stepTokens, new DynamicToken("hello"), new StringToken("the"), new DynamicToken("world"));
+		testTokenization(stepTokens, new DynamicStepToken("hello"), new StaticStepToken("the"), new DynamicStepToken("world"));
 
 		stepTokens = underTest.tokenize("$");
-		testTokenization(stepTokens, new StringToken("$"));
+		testTokenization(stepTokens, new StaticStepToken("$"));
 	}
 
 	private void testTokenization(StepToken[] stepTokens, String... expectedTokens) {
 		StepToken[] expectedStepTokens = new StepToken[expectedTokens.length];
 		for (int i = 0 ; i < expectedTokens.length ; i++) {
-			expectedStepTokens[i] = new StringToken(expectedTokens[i]);
+			expectedStepTokens[i] = new StaticStepToken(expectedTokens[i]);
 		}
 		testTokenization(stepTokens, expectedStepTokens);
 	}

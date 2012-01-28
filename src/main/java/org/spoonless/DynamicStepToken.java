@@ -1,8 +1,8 @@
 package org.spoonless;
 
-public class DynamicToken extends AbstractStepToken {
+public class DynamicStepToken extends AbstractStepToken {
 	
-	public DynamicToken(String name) {
+	public DynamicStepToken(String name) {
 		super(name);
 	}
 

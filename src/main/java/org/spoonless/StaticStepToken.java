@@ -1,8 +1,8 @@
 package org.spoonless;
 
-public class StringToken extends AbstractStepToken {
+public class StaticStepToken extends AbstractStepToken {
 	
-	public StringToken(String value) {
+	public StaticStepToken(String value) {
 		super(value);
 	}
 
