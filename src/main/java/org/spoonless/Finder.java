@@ -14,6 +14,14 @@ public class Finder {
 		this.stepTokens = stepTokens;
 	}
 	
+	public boolean match(StepToken stepToken) {
+		boolean equals = stepTokens[depth].equals(stepToken);
+		if (! equals && stepToken.isDynamic()) {
+			equals = true;
+		}
+		return equals;
+	}
+	
 	public StepTokenNode findAmongst(List<StepTokenNode> stepTokenNodes) {
 		StepTokenNode result = null;
 		if (!stepTokenNodes.isEmpty()) {
@@ -38,7 +46,7 @@ public class Finder {
 	private static class StepTokenNodeStepTokenComparator implements Comparator<Object> {
 		public int compare(Object node, Object token) {
 			StepToken stepToken = ((StepTokenNode)node).getStepToken();
-			return ((StepToken) token).compareTo(stepToken);
+			return stepToken.compareTo((StepToken) token);
 		}
 	}
 }

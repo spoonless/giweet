@@ -18,8 +18,8 @@ public class StepTokenTree {
 				// TODO maybe we should filter such descriptor before
 				continue;
 			}
-			if (currentNode == null || ! currentNode.add(stepDescriptor, 0)) {
-				currentNode = new StepTokenNode(stepDescriptor, 0);
+			if (currentNode == null || ! currentNode.add(stepDescriptor)) {
+				currentNode = new StepTokenNode(stepDescriptor);
 				getStepTokenNodes().add(currentNode);
 			}
 		}

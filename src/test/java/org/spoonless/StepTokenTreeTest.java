@@ -12,27 +12,19 @@ public class StepTokenTreeTest {
 	private StepTokenizer stepTokenizer = new StepTokenizer(false);
 
 	@Test
-	public void canCreateStepTokenTreeFromOneStepDescriptor() {
+	public void canFindRawStepsWithOneStepDescriptorAvailable() {
 		List<StepDescriptor> stepDescriptors = new ArrayList<StepDescriptor>();
-		StepDescriptor stepDescriptor = new StepDescriptor("hello the world");
+		StepDescriptor stepDescriptor = new StepDescriptor("hello $the world");
 		stepDescriptors.add(stepDescriptor);
-		
+
 		StepTokenTree underTest = new StepTokenTree(stepDescriptors);
 		
-		assertEquals(1, underTest.getStepTokenNodes().size());
-		assertNull(underTest.getStepTokenNodes().get(0).getStepDescriptor());
-
-		assertEquals(1, underTest.getStepTokenNodes().get(0).getNextNodes().size());
-		assertNull(underTest.getStepTokenNodes().get(0).getNextNodes().get(0).getStepDescriptor());
-
-		assertEquals(1, underTest.getStepTokenNodes().get(0).getNextNodes().get(0).getNextNodes().size());
-		assertSame(stepDescriptor, underTest.getStepTokenNodes().get(0).getNextNodes().get(0).getNextNodes().get(0).getStepDescriptor());
-
-		assertNull(underTest.getStepTokenNodes().get(0).getNextNodes().get(0).getNextNodes().get(0).getNextNodes());
+		assertStepDescriptorNotFoundInStepTokenTree(underTest, "hello");
+		assertStepDescriptorFoundInStepTokenTree(underTest, "hello $the world", "hello le petit world");
 	}
 
 	@Test
-	public void canFindRawSteps() {
+	public void canFindRawStepsWithMultipleStepDescriptorAvailable() {
 		List<StepDescriptor> stepDescriptors = new ArrayList<StepDescriptor>();
 		StepDescriptor stepDescriptor = new StepDescriptor("hello");
 		stepDescriptors.add(stepDescriptor);
@@ -50,7 +42,11 @@ public class StepTokenTreeTest {
 		stepDescriptors.add(stepDescriptor);
 		stepDescriptor = new StepDescriptor("hello $the world");
 		stepDescriptors.add(stepDescriptor);
+		stepDescriptor = new StepDescriptor("hello $the universe");
+		stepDescriptors.add(stepDescriptor);
 		stepDescriptor = new StepDescriptor("hello the $world");
+		stepDescriptors.add(stepDescriptor);
+		stepDescriptor = new StepDescriptor("foo $bar");
 		stepDescriptors.add(stepDescriptor);
 
 		StepTokenTree underTest = new StepTokenTree(stepDescriptors);
@@ -68,6 +64,7 @@ public class StepTokenTreeTest {
 		assertStepDescriptorFoundInStepTokenTree(underTest, "hello $the world", "hello le petit world");
 		assertStepDescriptorFoundInStepTokenTree(underTest, "hello the $world", "hello the petit world");
 		assertStepDescriptorFoundInStepTokenTree(underTest, "$hello $the world", "bonjour le world");
+		assertStepDescriptorFoundInStepTokenTree(underTest, "foo $bar", "foo foo and foo bar");
 	}
 	
 	@Test
