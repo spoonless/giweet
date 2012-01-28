@@ -1,4 +1,4 @@
-package org.spoonless;
+package org.spoonless.annotation;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.Inherited;

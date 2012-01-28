@@ -1,7 +1,10 @@
-package org.spoonless;
+package org.spoonless.step.tree;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import org.spoonless.step.StepDescriptor;
+import org.spoonless.step.StepToken;
 
 public class StepTokenNode {
 	

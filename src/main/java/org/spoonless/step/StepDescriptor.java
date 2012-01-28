@@ -1,4 +1,4 @@
-package org.spoonless;
+package org.spoonless.step;
 
 
 public class StepDescriptor implements Comparable<StepDescriptor> {

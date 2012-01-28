@@ -1,8 +1,12 @@
-package org.spoonless;
+package org.spoonless.step;
 
 import static org.junit.Assert.*;
 
 import org.junit.Test;
+import org.spoonless.step.DynamicStepToken;
+import org.spoonless.step.StaticStepToken;
+import org.spoonless.step.StepToken;
+import org.spoonless.step.StepTokenizer;
 
 public class StepTokenizerTest {
 

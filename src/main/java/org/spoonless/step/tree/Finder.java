@@ -1,8 +1,10 @@
-package org.spoonless;
+package org.spoonless.step.tree;
 
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+
+import org.spoonless.step.StepToken;
 
 public class Finder {
 	

@@ -1,8 +1,9 @@
-package org.spoonless;
+package org.spoonless.step;
 
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
+import org.spoonless.step.StepDescriptor;
 
 public class StepDescriptorTest {
 
