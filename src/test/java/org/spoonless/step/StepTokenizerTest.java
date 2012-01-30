@@ -1,12 +1,9 @@
 package org.spoonless.step;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
-import org.spoonless.step.DynamicStepToken;
-import org.spoonless.step.StaticStepToken;
-import org.spoonless.step.StepToken;
-import org.spoonless.step.StepTokenizer;
 
 public class StepTokenizerTest {
 
@@ -42,14 +39,40 @@ public class StepTokenizerTest {
 	}
 
 	@Test
+	public void canTokenizeWithStringWithQuotes() {
+		StepTokenizer underTest = new StepTokenizer(false);
+
+		StepToken[] stepTokens = underTest.tokenize("\"hello the world\"");
+		testTokenization(stepTokens, "hello the world");
+
+		stepTokens = underTest.tokenize("hello \" the world \"");
+		testTokenization(stepTokens, "hello", " the world ");
+
+		stepTokens = underTest.tokenize("\"hello the world\" \"   ");
+		testTokenization(stepTokens, "hello the world", "   ");
+
+		stepTokens = underTest.tokenize("\"hello the world\" \"   ");
+		testTokenization(stepTokens, "hello the world", "   ");
+	}
+
+	@Test
 	public void canTokenizeWithStringWithNonParsingCharacters() {
 		StepTokenizer underTest = new StepTokenizer(false);
 
-		StepToken[] stepTokens = underTest.tokenize("@hello/the#world* ");
-		testTokenization(stepTokens, "hello", "the", "world");
+		StepToken[] stepTokens = underTest.tokenize("@hello/the#world*");
+		testTokenization(stepTokens, "@hello/the#world*");
 
-		stepTokens = underTest.tokenize("&~\"{-)]':,\n\r\t\f-.!?");
-		assertEquals(0, stepTokens.length);
+		stepTokens = underTest.tokenize(" [hel{lo] ");
+		testTokenization(stepTokens, "hel{lo");
+
+		stepTokens = underTest.tokenize(" hello? ");
+		testTokenization(stepTokens, "hello");
+
+		stepTokens = underTest.tokenize("it's ok");
+		testTokenization(stepTokens, "it", "s", "ok");
+
+		stepTokens = underTest.tokenize("http://localhost:8080/mywebsite/");
+		testTokenization(stepTokens, "http://localhost:8080/mywebsite/");
 	}
 	
 	@Test
