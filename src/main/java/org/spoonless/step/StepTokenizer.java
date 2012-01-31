@@ -15,9 +15,15 @@ public class StepTokenizer {
 	private static final int TOKEN_LETTER = 0x80;
 
 	private final boolean allowDynamicToken;
+	private final boolean withMeaninglessTokens;
 	
 	public StepTokenizer(boolean allowDynamicToken) {
+		this (allowDynamicToken, false);
+	}
+	
+	public StepTokenizer(boolean allowDynamicToken, boolean withMeaninglessTokens) {
 		this.allowDynamicToken = allowDynamicToken;
+		this.withMeaninglessTokens = withMeaninglessTokens;
 	}
 
 	public StepToken[] tokenize(String value) {
@@ -28,6 +34,7 @@ public class StepTokenizer {
 		ArrayList<StepToken> tokensAsList = new ArrayList<StepToken>();
 		int lastIndex = offset + count;
 		int letterCount = 0;
+		int separatorCount = 0;
 		int trailingCount = 0;
 		int startPosition = 0;
 		int commentBlockCount = 0;
@@ -59,26 +66,39 @@ public class StepTokenizer {
 					commentBlockCount--;
 					break;
 				}
-				continue;
+				if (! withMeaninglessTokens) {
+					continue;
+				}
+				characterType = TOKEN_SEPARATOR;
 			}
 			
-			if ((characterType & TOKEN_SEPARATOR) != 0 && letterCount > 0) {
-				letterCount -= trailingCount;
-				boolean isArgumentToken = false;
-				if (characters[startPosition] == '$' && letterCount > 1 && allowDynamicToken) {
-					startPosition++;
-					letterCount--;
-					isArgumentToken = true;
+			if ((characterType & TOKEN_SEPARATOR) != 0) {
+				if (letterCount > 0) {
+					letterCount -= trailingCount;
+					boolean isArgumentToken = false;
+					if (characters[startPosition] == '$' && letterCount > 1 && allowDynamicToken) {
+						startPosition++;
+						letterCount--;
+						isArgumentToken = true;
+					}
+					String stringToken = new String (characters, startPosition, letterCount);
+					tokensAsList.add(createStepToken(isArgumentToken, stringToken));
+					letterCount = 0;
+					startPosition = i - trailingCount;
+					separatorCount = trailingCount;
+					trailingCount = 0;
 				}
-				String stringToken = new String (characters, startPosition, letterCount);
-				tokensAsList.add(createStepToken(isArgumentToken, stringToken));
-				letterCount = 0;
-				trailingCount = 0;
+				separatorCount++;
 			}
 
 			switch (characterType) {
 			case TOKEN_LETTER:
 				if (letterCount == 0) {
+					if (withMeaninglessTokens && separatorCount > 0) {
+						String stringToken = new String (characters, startPosition, separatorCount);
+						tokensAsList.add(createStepToken(false, stringToken));
+						separatorCount = 0;
+					}
 					startPosition = i;
 				}
 				letterCount++;
@@ -87,6 +107,9 @@ public class StepTokenizer {
 			case TOKEN_SEPARATOR_IF_LEADING:
 				if (letterCount != 0) {
 					letterCount++;
+				}
+				else {
+					separatorCount++;
 				}
 				break;
 			case TOKEN_SEPARATOR_IF_TRAILING:
@@ -104,6 +127,11 @@ public class StepTokenizer {
 				startPosition = i+1;
 				break;
 			}
+		}
+		
+		if (withMeaninglessTokens && separatorCount > 1) {
+			String stringToken = new String (characters, startPosition, separatorCount - 1);
+			tokensAsList.add(createStepToken(false, stringToken));
 		}
 
 		return tokensAsList.toArray(new StepToken[tokensAsList.size()]);

@@ -76,6 +76,20 @@ public class StepTokenizerTest {
 	}
 	
 	@Test
+	public void canTokenizeWithMeaninglessTokens() {
+		StepTokenizer underTest = new StepTokenizer(false, true);
+
+		StepToken[] stepTokens = underTest.tokenize("\thello, the world  ");
+		testTokenization(stepTokens, "\t", "hello", ", ", "the", " ", "world", "  ");
+		
+		stepTokens = underTest.tokenize("\thello, the world( ");
+		testTokenization(stepTokens, "\t", "hello", ", ", "the", " ", "world", "( ");
+
+		stepTokens = underTest.tokenize("hello (the) world");
+		testTokenization(stepTokens, "hello", " (the) ", "world");
+	}
+
+	@Test
 	public void canTokenizeByIngnoringPartsIntoParenthesis() {
 		StepTokenizer underTest = new StepTokenizer(false);
 
