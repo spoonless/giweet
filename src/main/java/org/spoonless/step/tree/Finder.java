@@ -41,7 +41,7 @@ public class Finder {
 	}
 	
 	public Finder goDeeper() {
-		depth++;
+		for (depth++; depth < stepTokens.length && !stepTokens[depth].isMeaningful() ; depth++);
 		return depth < stepTokens.length ? this : null;
 	}
 	

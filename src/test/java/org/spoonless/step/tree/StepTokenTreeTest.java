@@ -85,6 +85,18 @@ public class StepTokenTreeTest {
 	}
 
 	@Test
+	public void canFindEvenIfInputContainsMeaninglessStepTokens() {
+		this.stepTokenizer = new StepTokenizer(false, true);
+		List<StepDescriptor> stepDescriptors = new ArrayList<StepDescriptor>();
+		StepDescriptor stepDescriptor = new StepDescriptor("hello the world");
+		stepDescriptors.add(stepDescriptor);
+		
+		StepTokenTree underTest = new StepTokenTree(stepDescriptors);
+		
+		assertStepDescriptorFoundInStepTokenTree(underTest, "hello the world", "hello, the world!");
+	}
+
+	@Test
 	public void testEmptyStepNotAllowed() {
 		List<StepDescriptor> stepDescriptors = new ArrayList<StepDescriptor>();
 		StepDescriptor stepDescriptor = new StepDescriptor("");
