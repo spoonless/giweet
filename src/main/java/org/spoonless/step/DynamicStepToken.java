@@ -13,5 +13,9 @@ public class DynamicStepToken extends AbstractStepToken {
 	public String toString() {
 		return "$" + super.toString();
 	}
+	
+	public boolean isMeaningful() {
+		return true;
+	}
 
 }

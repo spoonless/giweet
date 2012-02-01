@@ -2,6 +2,7 @@ package org.spoonless.step;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
 
 import org.junit.Test;
 
@@ -81,6 +82,13 @@ public class StepTokenizerTest {
 
 		StepToken[] stepTokens = underTest.tokenize("\thello, the world  ");
 		testTokenization(stepTokens, "\t", "hello", ", ", "the", " ", "world", "  ");
+		assertFalse(stepTokens[0].isMeaningful());
+		assertTrue(stepTokens[1].isMeaningful());
+		assertFalse(stepTokens[2].isMeaningful());
+		assertTrue(stepTokens[3].isMeaningful());
+		assertFalse(stepTokens[4].isMeaningful());
+		assertTrue(stepTokens[5].isMeaningful());
+		assertFalse(stepTokens[6].isMeaningful());
 		
 		stepTokens = underTest.tokenize("\thello, the world( ");
 		testTokenization(stepTokens, "\t", "hello", ", ", "the", " ", "world", "( ");

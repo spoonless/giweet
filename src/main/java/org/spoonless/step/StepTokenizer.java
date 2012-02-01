@@ -96,7 +96,7 @@ public class StepTokenizer {
 				if (letterCount == 0) {
 					if (withMeaninglessTokens && separatorCount > 0) {
 						String stringToken = new String (characters, startPosition, separatorCount);
-						tokensAsList.add(createStepToken(false, stringToken));
+						tokensAsList.add(new StaticStepToken(stringToken, false));
 						separatorCount = 0;
 					}
 					startPosition = i;
@@ -131,7 +131,7 @@ public class StepTokenizer {
 		
 		if (withMeaninglessTokens && separatorCount > 1) {
 			String stringToken = new String (characters, startPosition, separatorCount - 1);
-			tokensAsList.add(createStepToken(false, stringToken));
+			tokensAsList.add(new StaticStepToken(stringToken, false));
 		}
 
 		return tokensAsList.toArray(new StepToken[tokensAsList.size()]);
