@@ -23,24 +23,26 @@ public class StepTokenTree {
 			}
 			if (currentNode == null || ! currentNode.add(stepDescriptor)) {
 				currentNode = new StepTokenNode(stepDescriptor);
-				getStepTokenNodes().add(currentNode);
+				stepTokenNodes.add(currentNode);
 			}
 		}
 	}
 	
 	public StepDescriptor find (StepToken... stepTokens) {
 		StepDescriptor result = null;
-		if (stepTokens.length > 0) {
-			Finder finder = new Finder(stepTokens);
-			StepTokenNode stepTokenNode = finder.findAmongst(stepTokenNodes);
+		StepTokenIterator stepTokenIterator = new StepTokenIterator(stepTokens);
+		
+		if (stepTokens.length > 0 && stepTokenIterator.hasNext()) {
+			StepToken nextStepToken = stepTokenIterator.next();
+			StepTokenNode stepTokenNode = StepTokenNode.find(nextStepToken, stepTokenNodes);
 			if (stepTokenNode != null) {
-				result = stepTokenNode.search(finder);
+				result = stepTokenNode.search(stepTokenIterator);
 			}
 		}
+		if (result != null) {
+			for (; stepTokenIterator.hasNext() ; stepTokenIterator.next());
+			stepTokenIterator.endParameter();
+		}
 		return result;
-	}
-
-	public List<StepTokenNode> getStepTokenNodes() {
-		return stepTokenNodes;
 	}
 }
