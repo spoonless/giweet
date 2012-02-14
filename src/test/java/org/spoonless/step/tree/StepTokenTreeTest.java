@@ -12,7 +12,7 @@ import org.spoonless.step.tree.StepTokenTree;
 
 public class StepTokenTreeTest {
 
-	private StepTokenizer stepTokenizer = new StepTokenizer(false);
+	private StepTokenizer stepTokenizer = new StepTokenizer(false, true);
 
 	@Test
 	public void canFindRawStepsWithOneStepDescriptorAvailable() {

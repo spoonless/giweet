@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.spoonless.step.ParameterValue;
 import org.spoonless.step.StepDescriptor;
 import org.spoonless.step.StepToken;
 
@@ -39,10 +40,13 @@ public class StepTokenTree {
 				result = stepTokenNode.search(stepTokenIterator);
 			}
 		}
+		
 		if (result != null) {
-			for (; stepTokenIterator.hasNext() ; stepTokenIterator.next());
-			stepTokenIterator.endParameter();
+			for (ParameterValue parameterValue : stepTokenIterator.getParameterValues()) {
+				System.out.println("* " + parameterValue.getDynamicTokenPosition() + " = \"" + parameterValue.toString() + "\"");
+			}
 		}
+		
 		return result;
 	}
 }

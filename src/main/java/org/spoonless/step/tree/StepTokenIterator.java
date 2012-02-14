@@ -1,9 +1,11 @@
 package org.spoonless.step.tree;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.NoSuchElementException;
 
+import org.spoonless.step.ParameterValue;
 import org.spoonless.step.StepToken;
 
 public class StepTokenIterator implements Iterator<StepToken> {
@@ -11,13 +13,13 @@ public class StepTokenIterator implements Iterator<StepToken> {
 	private final StepToken [] stepTokens;
 	private int cursor;
 	private int nextCursor;
-	private int startParameter;
+	private List<ParameterValue> parameterValues = new ArrayList<ParameterValue>();
+	private int lastTokenAsParameterValueCursor = -1;
 	
 	public StepTokenIterator(StepToken[] stepTokens) {
 		this.stepTokens = stepTokens;
 		this.cursor = -1;
 		this.nextCursor = cursor;
-		this.startParameter = Integer.MAX_VALUE;
 	}
 
 	public boolean hasNext() {
@@ -45,32 +47,36 @@ public class StepTokenIterator implements Iterator<StepToken> {
 		return stepTokens[cursor];
 	}
 	
-	public void startParameter() {
-		if (startParameter > cursor) {
-			startParameter = cursor;
+	public void markCurrentAsParameter (int dynamicTokenPosition) {
+		ParameterValue parameterValue = getParameterValue(dynamicTokenPosition);
+		if (parameterValue == null) {
+			parameterValue = new ParameterValue(dynamicTokenPosition);
+			parameterValues.add(parameterValue);
+			parameterValue.add(stepTokens[cursor]);
+			lastTokenAsParameterValueCursor = cursor;
+		}
+		else {
+			for (int i = lastTokenAsParameterValueCursor + 1 ; i <= cursor ; i++) {
+				parameterValue.add(stepTokens[i]);
+			}
+			lastTokenAsParameterValueCursor = cursor;
 		}
 	}
 	
-	public void endParameter() {
-		StepToken[] arrayFromMarkToCurrent = subArrayFromMarkToCurrent();
-		if (arrayFromMarkToCurrent.length > 0) {
-			System.out.println(Arrays.toString(arrayFromMarkToCurrent));
-		}
-		startParameter = Integer.MAX_VALUE;
-	}
-	
-	public StepToken[] subArrayFromMarkToCurrent() {
-		int size = Math.max(0, cursor - startParameter);
-		StepToken[] result = new StepToken[size];
-		
-		for (int i = 0 ; i < size ; i++) {
-			result[i] = stepTokens[i + startParameter];
-		}
-		return result;
+	public ParameterValue[] getParameterValues() {
+		return parameterValues.toArray(new ParameterValue[parameterValues.size()]);
 	}
 
 	public void remove() {
 		throw new UnsupportedOperationException();
+	}
+	
+	private ParameterValue getParameterValue(int dynamicTokenPosition) {
+		if (! parameterValues.isEmpty()) {
+			ParameterValue parameterValue = parameterValues.get(parameterValues.size() - 1);
+			return parameterValue.getDynamicTokenPosition() == dynamicTokenPosition ? parameterValue : null;
+		}
+		return null;
 	}
 
 }
