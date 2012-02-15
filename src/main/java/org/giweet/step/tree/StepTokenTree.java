@@ -31,13 +31,13 @@ public class StepTokenTree<T extends StepDescriptor> {
 		}
 	}
 	
-	public T find (StepToken... stepTokens) {
+	public T search (StepToken... stepTokens) {
 		T result = null;
 		MeaningfulStepTokenIterator meaningfulStepTokenIterator = new MeaningfulStepTokenIterator(stepTokens);
 		
 		if (stepTokens.length > 0 && meaningfulStepTokenIterator.hasNext()) {
 			StepToken nextStepToken = meaningfulStepTokenIterator.next();
-			StepTokenNode<T> stepTokenNode = StepTokenNode.find(nextStepToken, stepTokenNodes);
+			StepTokenNode<T> stepTokenNode = StepTokenNode.search(nextStepToken, stepTokenNodes);
 			if (stepTokenNode != null) {
 				result = stepTokenNode.search(meaningfulStepTokenIterator);
 			}

@@ -85,7 +85,7 @@ public class StepTokenNode<T extends StepDescriptor> {
 		}
 		else if (nextNodes != null) {
 			StepToken nextStepToken = meaningfulStepTokenIterator.next();
-			StepTokenNode<T> stepTokenNode = StepTokenNode.find(nextStepToken, nextNodes);
+			StepTokenNode<T> stepTokenNode = StepTokenNode.search(nextStepToken, nextNodes);
 			if (stepTokenNode != null) {
 				result = stepTokenNode.search(meaningfulStepTokenIterator);
 			}
@@ -154,7 +154,7 @@ public class StepTokenNode<T extends StepDescriptor> {
 		return result;
 	}
 
-	public static <T extends StepDescriptor> StepTokenNode<T> find(StepToken stepToken, List<StepTokenNode<T>> stepTokenNodes) {
+	public static <T extends StepDescriptor> StepTokenNode<T> search(StepToken stepToken, List<StepTokenNode<T>> stepTokenNodes) {
 		StepTokenNode<T> result = null;
 		if (!stepTokenNodes.isEmpty()) {
 			int index = Collections.binarySearch(stepTokenNodes, stepToken, comparator);

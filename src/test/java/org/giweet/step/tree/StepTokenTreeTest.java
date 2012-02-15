@@ -15,7 +15,7 @@ public class StepTokenTreeTest {
 	private StepTokenizer stepTokenizer = new StepTokenizer(false, true);
 
 	@Test
-	public void canFindRawStepsWithOneStepDescriptorAvailable() {
+	public void canSearchRawStepsWithOneStepDescriptorAvailable() {
 		List<StepDescriptor> stepDescriptors = new ArrayList<StepDescriptor>();
 		StepDescriptor stepDescriptor = new StepDescriptor("hello $the world");
 		stepDescriptors.add(stepDescriptor);
@@ -27,7 +27,7 @@ public class StepTokenTreeTest {
 	}
 
 	@Test
-	public void canFindRawStepsWithMultipleStepDescriptorAvailable() {
+	public void canSearchRawStepsWithMultipleStepDescriptorAvailable() {
 		List<StepDescriptor> stepDescriptors = new ArrayList<StepDescriptor>();
 		StepDescriptor stepDescriptor = new StepDescriptor("hello");
 		stepDescriptors.add(stepDescriptor);
@@ -71,7 +71,7 @@ public class StepTokenTreeTest {
 	}
 	
 	@Test
-	public void canFindStepsBySearchingThroughDifferentBranchesOfTheTree() {
+	public void canSearchStepsBySearchingThroughDifferentBranchesOfTheTree() {
 		List<StepDescriptor> stepDescriptors = new ArrayList<StepDescriptor>();
 		StepDescriptor stepDescriptor = new StepDescriptor("test searching through the wrong branch");
 		stepDescriptors.add(stepDescriptor);
@@ -88,7 +88,7 @@ public class StepTokenTreeTest {
 	}
 
 	@Test
-	public void canFindAllRawStepsWithOnlyOneDynamicToken() {
+	public void canSearchAllRawStepsWithOnlyOneDynamicToken() {
 		List<StepDescriptor> stepDescriptors = new ArrayList<StepDescriptor>();
 		StepDescriptor stepDescriptor = new StepDescriptor("$any");
 		stepDescriptors.add(stepDescriptor);
@@ -102,7 +102,7 @@ public class StepTokenTreeTest {
 	}
 
 	@Test
-	public void canFindEvenIfInputContainsMeaninglessStepTokens() {
+	public void canSearchEvenIfInputContainsMeaninglessStepTokens() {
 		this.stepTokenizer = new StepTokenizer(false, true);
 		List<StepDescriptor> stepDescriptors = new ArrayList<StepDescriptor>();
 		StepDescriptor stepDescriptor = new StepDescriptor("hello the world");
@@ -125,13 +125,13 @@ public class StepTokenTreeTest {
 	}
 
 	private <T extends StepDescriptor> void assertStepDescriptorFoundInStepTokenTree(StepTokenTree<T> tree, String expectedStepDescriptorValue, String actualRawStep) {
-		StepDescriptor stepDescriptorFound = tree.find(stepTokenizer.tokenize(actualRawStep));
+		StepDescriptor stepDescriptorFound = tree.search(stepTokenizer.tokenize(actualRawStep));
 		assertNotNull(stepDescriptorFound);
 		assertEquals(expectedStepDescriptorValue, stepDescriptorFound.getValue());
 	}
 
 	private <T extends StepDescriptor> void assertStepDescriptorNotFoundInStepTokenTree(StepTokenTree<T> tree, String actualRawStep) {
-		StepDescriptor stepDescriptorFound = tree.find(stepTokenizer.tokenize(actualRawStep));
+		StepDescriptor stepDescriptorFound = tree.search(stepTokenizer.tokenize(actualRawStep));
 		assertNull(stepDescriptorFound);
 	}
 }
