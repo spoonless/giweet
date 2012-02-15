@@ -8,39 +8,41 @@ import org.giweet.step.ParameterValue;
 import org.giweet.step.StepDescriptor;
 import org.giweet.step.StepToken;
 
-public class StepTokenTree {
+public class StepTokenTree<T extends StepDescriptor> {
 	
-	private final List<StepTokenNode> stepTokenNodes = new ArrayList<StepTokenNode>();
+	private final List<StepTokenNode<T>> stepTokenNodes = new ArrayList<StepTokenNode<T>>();
 	
-	public StepTokenTree(List<StepDescriptor> stepDescriptors) {
-		StepDescriptor[] array = stepDescriptors.toArray(new StepDescriptor[stepDescriptors.size()]);
+	public StepTokenTree(List<T> stepDescriptors) {
+		Object[] array = stepDescriptors.toArray();
 		Arrays.sort(array);
 		
-		StepTokenNode currentNode = null;
-		for (StepDescriptor stepDescriptor : array) {
+		StepTokenNode<T> currentNode = null;
+		for (Object currentElement : array) {
+			@SuppressWarnings("unchecked")
+			T stepDescriptor = (T) currentElement;
 			if (stepDescriptor.getTokens().length == 0) {
 				// TODO maybe we should filter such descriptor before
 				continue;
 			}
-			if (currentNode == null || ! currentNode.add(stepDescriptor)) {
-				currentNode = new StepTokenNode(stepDescriptor);
+			if (currentNode == null || ! currentNode.add((T)stepDescriptor)) {
+				currentNode = new StepTokenNode<T>((T)stepDescriptor);
 				stepTokenNodes.add(currentNode);
 			}
 		}
 	}
 	
-	public StepDescriptor find (StepToken... stepTokens) {
-		StepDescriptor result = null;
+	public T find (StepToken... stepTokens) {
+		T result = null;
 		MeaningfulStepTokenIterator meaningfulStepTokenIterator = new MeaningfulStepTokenIterator(stepTokens);
 		
 		if (stepTokens.length > 0 && meaningfulStepTokenIterator.hasNext()) {
 			StepToken nextStepToken = meaningfulStepTokenIterator.next();
-			StepTokenNode stepTokenNode = StepTokenNode.find(nextStepToken, stepTokenNodes);
+			StepTokenNode<T> stepTokenNode = StepTokenNode.find(nextStepToken, stepTokenNodes);
 			if (stepTokenNode != null) {
 				result = stepTokenNode.search(meaningfulStepTokenIterator);
 			}
 			if (result == null) {
-				StepTokenNode lastStepTokenNode = stepTokenNodes.get(stepTokenNodes.size() - 1);
+				StepTokenNode<T> lastStepTokenNode = stepTokenNodes.get(stepTokenNodes.size() - 1);
 				if (lastStepTokenNode.getStepToken().isDynamic()) {
 					result = lastStepTokenNode.search(meaningfulStepTokenIterator);
 				}

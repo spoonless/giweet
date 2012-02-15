@@ -20,7 +20,7 @@ public class StepTokenTreeTest {
 		StepDescriptor stepDescriptor = new StepDescriptor("hello $the world");
 		stepDescriptors.add(stepDescriptor);
 
-		StepTokenTree underTest = new StepTokenTree(stepDescriptors);
+		StepTokenTree<StepDescriptor> underTest = new StepTokenTree<StepDescriptor>(stepDescriptors);
 		
 		assertStepDescriptorNotFoundInStepTokenTree(underTest, "hello");
 		assertStepDescriptorFoundInStepTokenTree(underTest, "hello $the world", "hello le petit world");
@@ -52,7 +52,7 @@ public class StepTokenTreeTest {
 		stepDescriptor = new StepDescriptor("foo $bar");
 		stepDescriptors.add(stepDescriptor);
 
-		StepTokenTree underTest = new StepTokenTree(stepDescriptors);
+		StepTokenTree<StepDescriptor> underTest = new StepTokenTree<StepDescriptor>(stepDescriptors);
 		
 		assertStepDescriptorNotFoundInStepTokenTree(underTest, "NotExisting");
 
@@ -82,7 +82,7 @@ public class StepTokenTreeTest {
 		stepDescriptor = new StepDescriptor("$1 through $2 right branch");
 		stepDescriptors.add(stepDescriptor);
 
-		StepTokenTree underTest = new StepTokenTree(stepDescriptors);
+		StepTokenTree<StepDescriptor> underTest = new StepTokenTree<StepDescriptor>(stepDescriptors);
 		
 		assertStepDescriptorFoundInStepTokenTree(underTest, "$1 through $2 right branch", "test searching through the right branch");
 	}
@@ -93,7 +93,7 @@ public class StepTokenTreeTest {
 		StepDescriptor stepDescriptor = new StepDescriptor("$any");
 		stepDescriptors.add(stepDescriptor);
 		
-		StepTokenTree underTest = new StepTokenTree(stepDescriptors);
+		StepTokenTree<StepDescriptor> underTest = new StepTokenTree<StepDescriptor>(stepDescriptors);
 
 		assertStepDescriptorNotFoundInStepTokenTree(underTest, "");
 		assertStepDescriptorFoundInStepTokenTree(underTest, "$any", "hello");
@@ -108,7 +108,7 @@ public class StepTokenTreeTest {
 		StepDescriptor stepDescriptor = new StepDescriptor("hello the world");
 		stepDescriptors.add(stepDescriptor);
 		
-		StepTokenTree underTest = new StepTokenTree(stepDescriptors);
+		StepTokenTree<StepDescriptor> underTest = new StepTokenTree<StepDescriptor>(stepDescriptors);
 		
 		assertStepDescriptorFoundInStepTokenTree(underTest, "hello the world", "hello, the world!");
 	}
@@ -119,18 +119,18 @@ public class StepTokenTreeTest {
 		StepDescriptor stepDescriptor = new StepDescriptor("");
 		stepDescriptors.add(stepDescriptor);
 		
-		StepTokenTree underTest = new StepTokenTree(stepDescriptors);
+		StepTokenTree<StepDescriptor> underTest = new StepTokenTree<StepDescriptor>(stepDescriptors);
 
 		assertStepDescriptorNotFoundInStepTokenTree(underTest, "");
 	}
 
-	private void assertStepDescriptorFoundInStepTokenTree(StepTokenTree tree, String expectedStepDescriptorValue, String actualRawStep) {
+	private <T extends StepDescriptor> void assertStepDescriptorFoundInStepTokenTree(StepTokenTree<T> tree, String expectedStepDescriptorValue, String actualRawStep) {
 		StepDescriptor stepDescriptorFound = tree.find(stepTokenizer.tokenize(actualRawStep));
 		assertNotNull(stepDescriptorFound);
 		assertEquals(expectedStepDescriptorValue, stepDescriptorFound.getValue());
 	}
 
-	private void assertStepDescriptorNotFoundInStepTokenTree(StepTokenTree tree, String actualRawStep) {
+	private <T extends StepDescriptor> void assertStepDescriptorNotFoundInStepTokenTree(StepTokenTree<T> tree, String actualRawStep) {
 		StepDescriptor stepDescriptorFound = tree.find(stepTokenizer.tokenize(actualRawStep));
 		assertNull(stepDescriptorFound);
 	}

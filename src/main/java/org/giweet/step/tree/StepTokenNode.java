@@ -8,17 +8,17 @@ import java.util.List;
 import org.giweet.step.StepDescriptor;
 import org.giweet.step.StepToken;
 	
-public class StepTokenNode {
+public class StepTokenNode<T extends StepDescriptor> {
 	private final int depth;
 	private final StepToken stepToken;
-	private StepDescriptor stepDescriptor;
-	private List<StepTokenNode> nextNodes;
+	private T stepDescriptor;
+	private List<StepTokenNode<T>> nextNodes;
 	
-	public StepTokenNode(StepDescriptor stepDescriptor) {
+	public StepTokenNode(T stepDescriptor) {
 		this(stepDescriptor, 0);
 	}
 
-	public StepTokenNode(StepDescriptor stepDescriptor, int depth) {
+	public StepTokenNode(T stepDescriptor, int depth) {
 		this.depth = depth;
 		StepToken[] tokens = stepDescriptor.getTokens();
 		this.stepToken = tokens[depth];
@@ -29,12 +29,12 @@ public class StepTokenNode {
 		return stepToken;
 	}
 
-	public boolean matches(StepDescriptor stepDescriptor) {
+	public boolean matches(T stepDescriptor) {
 		StepToken[] tokens = stepDescriptor.getTokens();
 		return depth < tokens.length && tokens[depth].equals(stepToken);
 	}
 
-	public boolean add(StepDescriptor newStepDescriptor) {
+	public boolean add(T newStepDescriptor) {
 		if (matches(newStepDescriptor)) {
 			createNextNodeIfNecessary();
 			StepToken[] tokens = newStepDescriptor.getTokens();
@@ -46,13 +46,13 @@ public class StepTokenNode {
 			}
 			else {
 				if (nextNodes == null) {
-					nextNodes = new ArrayList<StepTokenNode>();
-					nextNodes.add(new StepTokenNode(newStepDescriptor, depth + 1));
+					nextNodes = new ArrayList<StepTokenNode<T>>();
+					nextNodes.add(new StepTokenNode<T>(newStepDescriptor, depth + 1));
 				}
 				else {
-					StepTokenNode lastNextNode = nextNodes.get(nextNodes.size() - 1);
+					StepTokenNode<T> lastNextNode = nextNodes.get(nextNodes.size() - 1);
 					if (! lastNextNode.add(newStepDescriptor)) {
-						nextNodes.add(new StepTokenNode(newStepDescriptor, depth + 1));
+						nextNodes.add(new StepTokenNode<T>(newStepDescriptor, depth + 1));
 					}
 				}
 			}
@@ -64,15 +64,15 @@ public class StepTokenNode {
 	private void createNextNodeIfNecessary() {
 		if (this.stepDescriptor != null) {
 			if (this.stepDescriptor.getTokens().length > depth + 1) {
-				this.nextNodes = new ArrayList<StepTokenNode>();
-				this.nextNodes.add(new StepTokenNode(this.stepDescriptor, depth+1));
+				this.nextNodes = new ArrayList<StepTokenNode<T>>();
+				this.nextNodes.add(new StepTokenNode<T>(this.stepDescriptor, depth+1));
 				this.stepDescriptor = null;
 			}
 		}
 	}
 	
-	public StepDescriptor search(MeaningfulStepTokenIterator meaningfulStepTokenIterator) {
-		StepDescriptor result = null;
+	public T search(MeaningfulStepTokenIterator meaningfulStepTokenIterator) {
+		T result = null;
 		
 		if (this.stepToken.isDynamic()) {
 			meaningfulStepTokenIterator.markCurrentAsParameter(depth);
@@ -85,12 +85,12 @@ public class StepTokenNode {
 		}
 		else if (nextNodes != null) {
 			StepToken nextStepToken = meaningfulStepTokenIterator.next();
-			StepTokenNode stepTokenNode = StepTokenNode.find(nextStepToken, nextNodes);
+			StepTokenNode<T> stepTokenNode = StepTokenNode.find(nextStepToken, nextNodes);
 			if (stepTokenNode != null) {
 				result = stepTokenNode.search(meaningfulStepTokenIterator);
 			}
 			if (result == null) {
-				StepTokenNode lastStepTokenNode = nextNodes.get(nextNodes.size() - 1);
+				StepTokenNode<T> lastStepTokenNode = nextNodes.get(nextNodes.size() - 1);
 				if (lastStepTokenNode.stepToken.isDynamic()) {
 					result = lastStepTokenNode.search(meaningfulStepTokenIterator);
 				}
@@ -108,7 +108,7 @@ public class StepTokenNode {
 		return result;
 	}
 
-	private StepDescriptor searchOnlyFromStepDescriptor(MeaningfulStepTokenIterator meaningfulStepTokenIterator) {
+	private T searchOnlyFromStepDescriptor(MeaningfulStepTokenIterator meaningfulStepTokenIterator) {
 		int currentDepth;
 		StepToken previousStepToken = stepToken;
 		StepToken[] stepDescriptorTokens = this.stepDescriptor.getTokens();
@@ -133,7 +133,7 @@ public class StepTokenNode {
 			previousStepToken = nextStepToken;
 		}
 		
-		StepDescriptor result = null;
+		T result = null;
 		if (! meaningfulStepTokenIterator.hasNext()) {
 			if (currentDepth == stepDescriptorTokens.length) {
 				result = this.stepDescriptor;
@@ -154,8 +154,8 @@ public class StepTokenNode {
 		return result;
 	}
 
-	public static StepTokenNode find(StepToken stepToken, List<StepTokenNode> stepTokenNodes) {
-		StepTokenNode result = null;
+	public static <T extends StepDescriptor> StepTokenNode<T> find(StepToken stepToken, List<StepTokenNode<T>> stepTokenNodes) {
+		StepTokenNode<T> result = null;
 		if (!stepTokenNodes.isEmpty()) {
 			int index = Collections.binarySearch(stepTokenNodes, stepToken, comparator);
 			if (index >= 0) {
@@ -169,7 +169,7 @@ public class StepTokenNode {
 
 	private static class StepTokenNodeStepTokenComparator implements Comparator<Object> {
 		public int compare(Object node, Object token) {
-			StepToken stepToken = ((StepTokenNode)node).getStepToken();
+			StepToken stepToken = ((StepTokenNode<?>)node).getStepToken();
 			return stepToken.compareTo((StepToken) token);
 		}
 	}
