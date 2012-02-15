@@ -5,25 +5,25 @@ import org.giweet.step.StepToken;
 
 public class ParameterValueImpl implements ParameterValue {
 	
-	private final int dynamicTokenPosition;
+	private final int parameterTokenPosition;
 	private final int valueTokenStartPosition;
 	private final int valueTokenEndPosition;
-	private final StepToken dynamicToken;
+	private final StepToken parameterToken;
 	private final StepToken[] valueTokens;
 
-	public ParameterValueImpl(ParameterValuePosition parameterValuePosition, StepToken dynamicToken, StepToken... allValueTokens) {
-		dynamicTokenPosition = parameterValuePosition.getDynamicTokenPosition();
+	public ParameterValueImpl(ParameterValuePosition parameterValuePosition, StepToken parameterToken, StepToken... allValueTokens) {
+		parameterTokenPosition = parameterValuePosition.getParameterTokenPosition();
 		valueTokenStartPosition = parameterValuePosition.getValueTokenStartPosition();
 		valueTokenEndPosition = parameterValuePosition.getValueTokenEndPosition();
-		this.dynamicToken = dynamicToken;
+		this.parameterToken = parameterToken;
 		this.valueTokens = new StepToken[valueTokenEndPosition - valueTokenStartPosition + 1];
 		for (int i = 0 ; i < this.valueTokens.length ; i++) {
 			this.valueTokens[i] = allValueTokens[i + this.valueTokenStartPosition];
 		}
 	}
 
-	public int getDynamicTokenPosition() {
-		return dynamicTokenPosition;
+	public int getParameterTokenPosition() {
+		return parameterTokenPosition;
 	}
 
 	public int getValueTokenStartPosition() {
@@ -34,8 +34,8 @@ public class ParameterValueImpl implements ParameterValue {
 		return valueTokenEndPosition;
 	}
 
-	public StepToken getDynamicToken() {
-		return dynamicToken;
+	public StepToken getParameterToken() {
+		return parameterToken;
 	}
 
 	public StepToken[] getValueTokens() {

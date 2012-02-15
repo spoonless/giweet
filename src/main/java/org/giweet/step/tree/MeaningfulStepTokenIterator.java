@@ -90,10 +90,10 @@ public class MeaningfulStepTokenIterator implements Iterator<StepToken> {
 		}
 	}
 
-	public void markCurrentAsParameter (int dynamicTokenPosition) {
-		ParameterValuePosition parameterValuePosition = getParameterValuePosition(dynamicTokenPosition);
+	public void markCurrentAsParameter (int parameterTokenPosition) {
+		ParameterValuePosition parameterValuePosition = getParameterValuePosition(parameterTokenPosition);
 		if (parameterValuePosition == null) {
-			parameterValuePosition = new ParameterValuePosition(dynamicTokenPosition, cursor);
+			parameterValuePosition = new ParameterValuePosition(parameterTokenPosition, cursor);
 			parameterValuePositions.add(parameterValuePosition);
 		}
 		else {
@@ -109,10 +109,10 @@ public class MeaningfulStepTokenIterator implements Iterator<StepToken> {
 		throw new UnsupportedOperationException();
 	}
 	
-	private ParameterValuePosition getParameterValuePosition(int dynamicTokenPosition) {
+	private ParameterValuePosition getParameterValuePosition(int parameterTokenPosition) {
 		if (! parameterValuePositions.isEmpty()) {
 			ParameterValuePosition parameterValue = parameterValuePositions.get(parameterValuePositions.size() - 1);
-			return parameterValue.getDynamicTokenPosition() == dynamicTokenPosition ? parameterValue : null;
+			return parameterValue.getParameterTokenPosition() == parameterTokenPosition ? parameterValue : null;
 		}
 		return null;
 	}

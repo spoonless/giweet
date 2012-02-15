@@ -54,7 +54,7 @@ public class StepTokenTree<T extends StepDescriptor> {
 			}
 			if (stepDescriptorFound == null) {
 				StepTokenNode<T> lastStepTokenNode = stepTokenNodes.get(stepTokenNodes.size() - 1);
-				if (lastStepTokenNode.getStepToken().isDynamic()) {
+				if (lastStepTokenNode.getStepToken().isParameter()) {
 					stepDescriptorFound = lastStepTokenNode.search(meaningfulStepTokenIterator);
 				}
 			}
@@ -66,7 +66,7 @@ public class StepTokenTree<T extends StepDescriptor> {
 		ParameterValue parameterValues[] = new ParameterValue[parameterValuePositions.size()];
 		for (int i = 0 ; i < parameterValues.length ; i++) {
 			ParameterValuePosition parameterValuePosition = parameterValuePositions.get(i);
-			ParameterValueImpl parameterValue = new ParameterValueImpl(parameterValuePosition, stepDescriptorFound.getTokens()[parameterValuePosition.getDynamicTokenPosition()], stepTokens);
+			ParameterValueImpl parameterValue = new ParameterValueImpl(parameterValuePosition, stepDescriptorFound.getTokens()[parameterValuePosition.getParameterTokenPosition()], stepTokens);
 			parameterValues[i] = parameterValue;
 		}
 		return parameterValues;

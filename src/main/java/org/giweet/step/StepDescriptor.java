@@ -28,7 +28,7 @@ public class StepDescriptor implements Comparable<StepDescriptor> {
 		}
 		if (result == 0) {
 			result = this.tokens.length - otherStepTokens.length;
-			if (nbTokens > 0 && tokens[nbTokens - 1].isDynamic()) {
+			if (nbTokens > 0 && tokens[nbTokens - 1].isParameter()) {
 				result = -result;				
 			}
 		}

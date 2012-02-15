@@ -1,9 +1,9 @@
 package org.giweet.step;
 
 public interface ParameterValue {
-	int getDynamicTokenPosition();
+	int getParameterTokenPosition();
 	
-	StepToken getDynamicToken();
+	StepToken getParameterToken();
 	
 	int getValueTokenStartPosition();
 

@@ -89,7 +89,7 @@ public class StepTokenTreeTest {
 	}
 
 	@Test
-	public void canSearchAllRawStepsWithOnlyOneDynamicToken() {
+	public void canSearchAllRawStepsWithOnlyOneParameterToken() {
 		List<StepDescriptor> stepDescriptors = new ArrayList<StepDescriptor>();
 		StepDescriptor stepDescriptor = new StepDescriptor("$any");
 		stepDescriptors.add(stepDescriptor);
@@ -136,8 +136,8 @@ public class StepTokenTreeTest {
 
 		parameterValues = searchResult.getParameterValues();
 		assertEquals(1, parameterValues.length);
-		assertEquals("$1", parameterValues[0].getDynamicToken().toString());
-		assertEquals(4, parameterValues[0].getDynamicTokenPosition());
+		assertEquals("$1", parameterValues[0].getParameterToken().toString());
+		assertEquals(4, parameterValues[0].getParameterTokenPosition());
 		assertEquals("giweet", parameterValues[0].getValue());
 		assertEquals(8, parameterValues[0].getValueTokenStartPosition());
 		assertEquals(8, parameterValues[0].getValueTokenEndPosition());
@@ -148,16 +148,16 @@ public class StepTokenTreeTest {
 
 		parameterValues = searchResult.getParameterValues();
 		assertEquals(2, parameterValues.length);
-		assertEquals("$1", parameterValues[0].getDynamicToken().toString());
-		assertEquals(0, parameterValues[0].getDynamicTokenPosition());
+		assertEquals("$1", parameterValues[0].getParameterToken().toString());
+		assertEquals(0, parameterValues[0].getParameterTokenPosition());
 		assertEquals("goodbye", parameterValues[0].getValue());
 		assertEquals(0, parameterValues[0].getValueTokenStartPosition());
 		assertEquals(0, parameterValues[0].getValueTokenEndPosition());
 		assertEquals(1, parameterValues[0].getValueTokens().length);
 		assertArrayEquals(stepTokenizer.tokenize("goodbye"), parameterValues[0].getValueTokens());
 
-		assertEquals("$2", parameterValues[1].getDynamicToken().toString());
-		assertEquals(1, parameterValues[1].getDynamicTokenPosition());
+		assertEquals("$2", parameterValues[1].getParameterToken().toString());
+		assertEquals(1, parameterValues[1].getParameterTokenPosition());
 		assertEquals("giweet and good luck", parameterValues[1].getValue());
 		assertEquals(2, parameterValues[1].getValueTokenStartPosition());
 		assertEquals(8, parameterValues[1].getValueTokenEndPosition());

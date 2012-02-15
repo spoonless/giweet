@@ -14,15 +14,15 @@ public class StepTokenizer {
 	private static final int END_COMMENT = 0x40 | TOKEN_SEPARATOR;
 	private static final int TOKEN_LETTER = 0x80;
 
-	private final boolean allowDynamicToken;
+	private final boolean allowParameterToken;
 	private final boolean withMeaninglessTokens;
 	
-	public StepTokenizer(boolean allowDynamicToken) {
-		this (allowDynamicToken, false);
+	public StepTokenizer(boolean allowParameterToken) {
+		this (allowParameterToken, false);
 	}
 	
-	public StepTokenizer(boolean allowDynamicToken, boolean withMeaninglessTokens) {
-		this.allowDynamicToken = allowDynamicToken;
+	public StepTokenizer(boolean allowParameterToken, boolean withMeaninglessTokens) {
+		this.allowParameterToken = allowParameterToken;
 		this.withMeaninglessTokens = withMeaninglessTokens;
 	}
 
@@ -76,7 +76,7 @@ public class StepTokenizer {
 				if (letterCount > 0) {
 					letterCount -= trailingCount;
 					boolean isArgumentToken = false;
-					if (characters[startPosition] == '$' && letterCount > 1 && allowDynamicToken) {
+					if (characters[startPosition] == '$' && letterCount > 1 && allowParameterToken) {
 						startPosition++;
 						letterCount--;
 						isArgumentToken = true;
@@ -256,7 +256,7 @@ public class StepTokenizer {
 	private static StepToken createStepToken(boolean isArgumentNext, String tokenValue) {
 		StepToken result = null;
 		if (isArgumentNext) {
-			result = new DynamicStepToken(tokenValue);
+			result = new ParameterStepToken(tokenValue);
 		}
 		else {
 			result = new StaticStepToken(tokenValue);

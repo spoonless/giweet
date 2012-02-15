@@ -9,13 +9,13 @@ public abstract class AbstractStepToken implements StepToken {
 	}
 
 	public int compareTo(StepToken stepToken) {
-		if (! this.isDynamic() && ! stepToken.isDynamic()) {
+		if (! this.isParameter() && ! stepToken.isParameter()) {
 			return this.toString().compareToIgnoreCase(stepToken.toString());
 		}
-		else if (this.isDynamic() && stepToken.isDynamic()) {
+		else if (this.isParameter() && stepToken.isParameter()) {
 			return 0;
 		}
-		else if (this.isDynamic()) {
+		else if (this.isParameter()) {
 			return 1;
 		}
 		else {

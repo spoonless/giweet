@@ -4,7 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import org.giweet.step.DynamicStepToken;
+import org.giweet.step.ParameterStepToken;
 import org.giweet.step.StaticStepToken;
 import org.giweet.step.StepToken;
 import org.giweet.step.StepTokenizer;
@@ -13,7 +13,7 @@ import org.junit.Test;
 public class StepTokenizerTest {
 
 	@Test
-	public void canTokenizeWithoutDynamicToken() {
+	public void canTokenizeWithoutParameterToken() {
 		StepTokenizer underTest = new StepTokenizer(false);
 
 		StepToken[] stepTokens = underTest.tokenize("hello the world");
@@ -105,7 +105,7 @@ public class StepTokenizerTest {
 	}
 
 	@Test
-	public void canTokenizeByIngnoringPartsIntoParenthesis() {
+	public void canTokenizeByIgnoringPartsIntoParenthesis() {
 		StepTokenizer underTest = new StepTokenizer(false);
 
 		StepToken[] stepTokens = underTest.tokenize("(before ignorable block) hello(this must be ignored)the (and that also) world (after ignorable block)");
@@ -116,23 +116,23 @@ public class StepTokenizerTest {
 	}
 
 	@Test
-	public void canTokenizeWithDynamicToken() {
+	public void canTokenizeWithParameterToken() {
 		StepTokenizer underTest = new StepTokenizer(true);
 		
 		StepToken[] stepTokens = underTest.tokenize("hello the $world");
-		testTokenization(stepTokens, new StaticStepToken("hello"), new StaticStepToken("the"), new DynamicStepToken("world"));
+		testTokenization(stepTokens, new StaticStepToken("hello"), new StaticStepToken("the"), new ParameterStepToken("world"));
 
 		stepTokens = underTest.tokenize("hello $the $world");
-		testTokenization(stepTokens, new StaticStepToken("hello"), new DynamicStepToken("the"), new DynamicStepToken("world"));
+		testTokenization(stepTokens, new StaticStepToken("hello"), new ParameterStepToken("the"), new ParameterStepToken("world"));
 
 		stepTokens = underTest.tokenize("hello$ $the$ $worl$d");
-		testTokenization(stepTokens, new StaticStepToken("hello$"), new DynamicStepToken("the$"), new DynamicStepToken("worl$d"));
+		testTokenization(stepTokens, new StaticStepToken("hello$"), new ParameterStepToken("the$"), new ParameterStepToken("worl$d"));
 
 		stepTokens = underTest.tokenize("$hello $the $world");
-		testTokenization(stepTokens, new DynamicStepToken("hello"), new DynamicStepToken("the"), new DynamicStepToken("world"));
+		testTokenization(stepTokens, new ParameterStepToken("hello"), new ParameterStepToken("the"), new ParameterStepToken("world"));
 
 		stepTokens = underTest.tokenize("$hello the $world");
-		testTokenization(stepTokens, new DynamicStepToken("hello"), new StaticStepToken("the"), new DynamicStepToken("world"));
+		testTokenization(stepTokens, new ParameterStepToken("hello"), new StaticStepToken("the"), new ParameterStepToken("world"));
 
 		stepTokens = underTest.tokenize("$");
 		testTokenization(stepTokens, new StaticStepToken("$"));
@@ -150,7 +150,7 @@ public class StepTokenizerTest {
 		assertEquals(expectedTokens.length, stepTokens.length);
 		for (int i = 0 ; i < expectedTokens.length ; i++) {
 			assertEquals(expectedTokens[i], stepTokens[i]);
-			assertTrue(expectedTokens[i].isDynamic() == stepTokens[i].isDynamic());
+			assertTrue(expectedTokens[i].isParameter() == stepTokens[i].isParameter());
 			assertEquals(expectedTokens[i].toString(), stepTokens[i].toString());
 		}
 	}
