@@ -1,8 +1,8 @@
-package org.giwit.step;
+package org.giweet.step;
 
 import static org.junit.Assert.assertEquals;
 
-import org.giwit.step.StepDescriptor;
+import org.giweet.step.StepDescriptor;
 import org.junit.Test;
 
 public class StepDescriptorTest {

@@ -1,4 +1,4 @@
-package org.giwit.step;
+package org.giweet.step;
 
 public class DynamicStepToken extends AbstractStepToken {
 	

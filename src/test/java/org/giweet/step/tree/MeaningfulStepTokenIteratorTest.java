@@ -1,4 +1,4 @@
-package org.giwit.step.tree;
+package org.giweet.step.tree;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -6,9 +6,9 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.NoSuchElementException;
 
-import org.giwit.step.StepToken;
-import org.giwit.step.StepTokenizer;
-import org.giwit.step.tree.MeaningfulStepTokenIterator;
+import org.giweet.step.StepToken;
+import org.giweet.step.StepTokenizer;
+import org.giweet.step.tree.MeaningfulStepTokenIterator;
 import org.junit.Before;
 import org.junit.Test;
 

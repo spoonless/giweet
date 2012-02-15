@@ -1,12 +1,12 @@
-package org.giwit.step.tree;
+package org.giweet.step.tree;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
 
-import org.giwit.step.ParameterValue;
-import org.giwit.step.StepToken;
+import org.giweet.step.ParameterValue;
+import org.giweet.step.StepToken;
 
 public class MeaningfulStepTokenIterator implements Iterator<StepToken> {
 	

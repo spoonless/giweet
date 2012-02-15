@@ -1,4 +1,4 @@
-package org.giwit.step;
+package org.giweet.step;
 
 public abstract class AbstractStepToken implements StepToken {
 	

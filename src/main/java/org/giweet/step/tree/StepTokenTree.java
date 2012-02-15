@@ -1,12 +1,12 @@
-package org.giwit.step.tree;
+package org.giweet.step.tree;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.giwit.step.ParameterValue;
-import org.giwit.step.StepDescriptor;
-import org.giwit.step.StepToken;
+import org.giweet.step.ParameterValue;
+import org.giweet.step.StepDescriptor;
+import org.giweet.step.StepToken;
 
 public class StepTokenTree {
 	

@@ -1,4 +1,4 @@
-package org.giwit.annotation;
+package org.giweet.annotation;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.Inherited;

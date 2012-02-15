@@ -1,13 +1,13 @@
-package org.giwit.step.tree;
+package org.giweet.step.tree;
 
 import static org.junit.Assert.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.giwit.step.StepDescriptor;
-import org.giwit.step.StepTokenizer;
-import org.giwit.step.tree.StepTokenTree;
+import org.giweet.step.StepDescriptor;
+import org.giweet.step.StepTokenizer;
+import org.giweet.step.tree.StepTokenTree;
 import org.junit.Test;
 
 public class StepTokenTreeTest {
