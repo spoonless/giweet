@@ -118,6 +118,9 @@ public class StepTokenizer {
 					letterCount++;
 					trailingCount++;
 				}
+				else {
+					separatorCount++;
+				}
 				break;
 			case START_COMMENT:
 				commentBlockCount++;

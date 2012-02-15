@@ -102,6 +102,9 @@ public class StepTokenizerTest {
 
 		stepTokens = underTest.tokenize("hello(the)world");
 		testTokenization(stepTokens, "hello", "(the)", "world");
+
+		stepTokens = underTest.tokenize("hello : world");
+		testTokenization(stepTokens, "hello", " : ", "world");
 	}
 
 	@Test
