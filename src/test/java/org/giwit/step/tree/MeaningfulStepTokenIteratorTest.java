@@ -8,20 +8,20 @@ import java.util.NoSuchElementException;
 
 import org.giwit.step.StepToken;
 import org.giwit.step.StepTokenizer;
-import org.giwit.step.tree.StepTokenIterator;
+import org.giwit.step.tree.MeaningfulStepTokenIterator;
 import org.junit.Before;
 import org.junit.Test;
 
-public class StepTokenIteratorTest {
+public class MeaningfulStepTokenIteratorTest {
 	
-	private StepTokenIterator underTest;
+	private MeaningfulStepTokenIterator underTest;
 
 	@Before
 	public void init() {
 		StepTokenizer stepTokenizer = new StepTokenizer(false, true);
 		StepToken[] stepTokens = stepTokenizer.tokenize("hello the world!");
 		assertEquals(6, stepTokens.length);
-		underTest = new StepTokenIterator(stepTokens);
+		underTest = new MeaningfulStepTokenIterator(stepTokens);
 	}
 
 	@Test(expected = NoSuchElementException.class)
@@ -31,7 +31,7 @@ public class StepTokenIteratorTest {
 
 	@Test(expected = NoSuchElementException.class)
 	public void cannotGoNext() {
-		underTest = new StepTokenIterator();
+		underTest = new MeaningfulStepTokenIterator();
 		underTest.next();
 	}
 

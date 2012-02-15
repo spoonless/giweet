@@ -71,63 +71,61 @@ public class StepTokenNode {
 		}
 	}
 	
-	public StepDescriptor search(StepTokenIterator stepTokenIterator) {
+	public StepDescriptor search(MeaningfulStepTokenIterator meaningfulStepTokenIterator) {
 		StepDescriptor result = null;
 		
 		if (this.stepToken.isDynamic()) {
-			stepTokenIterator.markCurrentAsParameter(depth);
+			meaningfulStepTokenIterator.markCurrentAsParameter(depth);
 		}
 		
-		if (! stepTokenIterator.hasNext()) {
+		if (! meaningfulStepTokenIterator.hasNext()) {
 			if (stepDescriptor != null) {
 				result = this.stepDescriptor.getTokens().length == depth + 1 ? this.stepDescriptor : null;
 			}
 		}
 		else if (nextNodes != null) {
-			StepToken nextStepToken = stepTokenIterator.next();
+			StepToken nextStepToken = meaningfulStepTokenIterator.next();
 			StepTokenNode stepTokenNode = StepTokenNode.find(nextStepToken, nextNodes);
 			if (stepTokenNode != null) {
-				result = stepTokenNode.search(stepTokenIterator);
+				result = stepTokenNode.search(meaningfulStepTokenIterator);
 			}
 			if (result == null) {
 				StepTokenNode lastStepTokenNode = nextNodes.get(nextNodes.size() - 1);
 				if (lastStepTokenNode.stepToken.isDynamic()) {
-					result = lastStepTokenNode.search(stepTokenIterator);
+					result = lastStepTokenNode.search(meaningfulStepTokenIterator);
 				}
 			}
 			if (result == null && stepToken.isDynamic()) {
-				result = this.search(stepTokenIterator);
+				result = this.search(meaningfulStepTokenIterator);
 			}
 			if (result == null) {
-				stepTokenIterator.previous();
+				meaningfulStepTokenIterator.previous();
 			}
 		}
 		else if (nextNodes == null) {
-			result = searchOnlyFromStepDescriptor(stepTokenIterator);
+			result = searchOnlyFromStepDescriptor(meaningfulStepTokenIterator);
 		}
-		
-		// TODO one case is missing : when descendants are only argument tokens
 		return result;
 	}
 
-	private StepDescriptor searchOnlyFromStepDescriptor(StepTokenIterator stepTokenIterator) {
+	private StepDescriptor searchOnlyFromStepDescriptor(MeaningfulStepTokenIterator meaningfulStepTokenIterator) {
 		int currentDepth;
 		StepToken previousStepToken = stepToken;
 		StepToken[] stepDescriptorTokens = this.stepDescriptor.getTokens();
 		int nbNextCall = 0 ;
-		for (currentDepth = depth + 1 ; stepTokenIterator.hasNext() && currentDepth < stepDescriptorTokens.length ; ) {
+		for (currentDepth = depth + 1 ; meaningfulStepTokenIterator.hasNext() && currentDepth < stepDescriptorTokens.length ; ) {
 			StepToken nextStepToken = stepDescriptorTokens[currentDepth];
-			StepToken nextStepToken2 = stepTokenIterator.next();
+			StepToken nextStepToken2 = meaningfulStepTokenIterator.next();
 			nbNextCall++;
 			if (! nextStepToken.equals(nextStepToken2)) {
 				if (nextStepToken.isDynamic()) {
-					stepTokenIterator.markCurrentAsParameter(currentDepth);
+					meaningfulStepTokenIterator.markCurrentAsParameter(currentDepth);
 				}
 				else if (previousStepToken.isDynamic()) {
-					stepTokenIterator.markCurrentAsParameter(currentDepth - 1);
+					meaningfulStepTokenIterator.markCurrentAsParameter(currentDepth - 1);
 					continue;
 				}
-				else if (! previousStepToken.isDynamic()) {
+				else {
 					break;
 				}
 			}
@@ -136,21 +134,21 @@ public class StepTokenNode {
 		}
 		
 		StepDescriptor result = null;
-		if (! stepTokenIterator.hasNext()) {
+		if (! meaningfulStepTokenIterator.hasNext()) {
 			if (currentDepth == stepDescriptorTokens.length) {
 				result = this.stepDescriptor;
 			}
 		}
 		else if (previousStepToken.isDynamic()) {
-			while (stepTokenIterator.hasNext()) {
-				stepTokenIterator.next();
-				stepTokenIterator.markCurrentAsParameter(currentDepth - 1);
+			while (meaningfulStepTokenIterator.hasNext()) {
+				meaningfulStepTokenIterator.next();
+				meaningfulStepTokenIterator.markCurrentAsParameter(currentDepth - 1);
 			}
 			result = this.stepDescriptor;
 		}
 		else {
 			for (int i = 0 ; i < nbNextCall ; i++) {
-				stepTokenIterator.previous();
+				meaningfulStepTokenIterator.previous();
 			}
 		}
 		return result;

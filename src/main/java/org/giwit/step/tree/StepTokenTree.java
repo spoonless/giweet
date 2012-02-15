@@ -31,24 +31,24 @@ public class StepTokenTree {
 	
 	public StepDescriptor find (StepToken... stepTokens) {
 		StepDescriptor result = null;
-		StepTokenIterator stepTokenIterator = new StepTokenIterator(stepTokens);
+		MeaningfulStepTokenIterator meaningfulStepTokenIterator = new MeaningfulStepTokenIterator(stepTokens);
 		
-		if (stepTokens.length > 0 && stepTokenIterator.hasNext()) {
-			StepToken nextStepToken = stepTokenIterator.next();
+		if (stepTokens.length > 0 && meaningfulStepTokenIterator.hasNext()) {
+			StepToken nextStepToken = meaningfulStepTokenIterator.next();
 			StepTokenNode stepTokenNode = StepTokenNode.find(nextStepToken, stepTokenNodes);
 			if (stepTokenNode != null) {
-				result = stepTokenNode.search(stepTokenIterator);
+				result = stepTokenNode.search(meaningfulStepTokenIterator);
 			}
 			if (result == null) {
 				StepTokenNode lastStepTokenNode = stepTokenNodes.get(stepTokenNodes.size() - 1);
 				if (lastStepTokenNode.getStepToken().isDynamic()) {
-					result = lastStepTokenNode.search(stepTokenIterator);
+					result = lastStepTokenNode.search(meaningfulStepTokenIterator);
 				}
 			}
 		}
 		
 		if (result != null) {
-			for (ParameterValue parameterValue : stepTokenIterator.getParameterValues()) {
+			for (ParameterValue parameterValue : meaningfulStepTokenIterator.getParameterValues()) {
 				System.out.println("* " + parameterValue.getDynamicTokenPosition() + " = \"" + parameterValue.toString() + "\"");
 			}
 		}

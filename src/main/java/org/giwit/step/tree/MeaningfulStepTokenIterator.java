@@ -8,7 +8,7 @@ import java.util.NoSuchElementException;
 import org.giwit.step.ParameterValue;
 import org.giwit.step.StepToken;
 
-public class StepTokenIterator implements Iterator<StepToken> {
+public class MeaningfulStepTokenIterator implements Iterator<StepToken> {
 	
 	private final StepToken [] stepTokens;
 	private int cursor;
@@ -16,7 +16,7 @@ public class StepTokenIterator implements Iterator<StepToken> {
 	private int previousCursor;
 	private List<ParameterValuePosition> parameterValuePositions = new ArrayList<ParameterValuePosition>();
 	
-	public StepTokenIterator(StepToken... stepTokens) {
+	public MeaningfulStepTokenIterator(StepToken... stepTokens) {
 		this.stepTokens = stepTokens;
 		this.cursor = -1;
 		this.nextCursor = cursor;
@@ -72,11 +72,11 @@ public class StepTokenIterator implements Iterator<StepToken> {
 		}
 		nextCursor = cursor;
 		cursor = previousCursor;
-		removeParameterIfNecessary();
+		updateParameterValuePosition();
 		return stepTokens[cursor];
 	}
 
-	private void removeParameterIfNecessary() {
+	private void updateParameterValuePosition() {
 		for (int i = parameterValuePositions.size() - 1 ; i >= 0 ; i--) {
 			ParameterValuePosition parameterValuePosition = parameterValuePositions.get(i);
 			if (parameterValuePosition.getStartPosition() > cursor) {
