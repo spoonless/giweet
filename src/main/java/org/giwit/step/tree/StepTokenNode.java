@@ -1,12 +1,12 @@
-package org.spoonless.step.tree;
+package org.giwit.step.tree;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import org.spoonless.step.StepDescriptor;
-import org.spoonless.step.StepToken;
+import org.giwit.step.StepDescriptor;
+import org.giwit.step.StepToken;
 	
 public class StepTokenNode {
 	private final int depth;

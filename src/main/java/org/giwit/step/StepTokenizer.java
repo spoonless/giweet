@@ -1,4 +1,4 @@
-package org.spoonless.step;
+package org.giwit.step;
 
 import java.util.ArrayList;
 

@@ -1,4 +1,4 @@
-package org.spoonless.step;
+package org.giwit.step;
 
 public class DynamicStepToken extends AbstractStepToken {
 	

@@ -1,9 +1,9 @@
-package org.spoonless.step;
+package org.giwit.step;
 
 import static org.junit.Assert.assertEquals;
 
+import org.giwit.step.StepDescriptor;
 import org.junit.Test;
-import org.spoonless.step.StepDescriptor;
 
 public class StepDescriptorTest {
 

@@ -1,9 +1,13 @@
-package org.spoonless.step;
+package org.giwit.step;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
+import org.giwit.step.DynamicStepToken;
+import org.giwit.step.StaticStepToken;
+import org.giwit.step.StepToken;
+import org.giwit.step.StepTokenizer;
 import org.junit.Test;
 
 public class StepTokenizerTest {

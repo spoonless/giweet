@@ -1,4 +1,4 @@
-package org.spoonless.step;
+package org.giwit.step;
 
 public abstract class AbstractStepToken implements StepToken {
 	

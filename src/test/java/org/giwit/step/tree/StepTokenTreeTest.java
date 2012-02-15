@@ -1,14 +1,14 @@
-package org.spoonless.step.tree;
+package org.giwit.step.tree;
 
 import static org.junit.Assert.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import org.giwit.step.StepDescriptor;
+import org.giwit.step.StepTokenizer;
+import org.giwit.step.tree.StepTokenTree;
 import org.junit.Test;
-import org.spoonless.step.StepDescriptor;
-import org.spoonless.step.StepTokenizer;
-import org.spoonless.step.tree.StepTokenTree;
 
 public class StepTokenTreeTest {
 

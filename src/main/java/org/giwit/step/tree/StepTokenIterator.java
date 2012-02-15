@@ -1,12 +1,12 @@
-package org.spoonless.step.tree;
+package org.giwit.step.tree;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
 
-import org.spoonless.step.ParameterValue;
-import org.spoonless.step.StepToken;
+import org.giwit.step.ParameterValue;
+import org.giwit.step.StepToken;
 
 public class StepTokenIterator implements Iterator<StepToken> {
 	
