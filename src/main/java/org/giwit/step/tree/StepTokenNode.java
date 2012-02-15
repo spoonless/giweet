@@ -119,16 +119,19 @@ public class StepTokenNode {
 			StepToken nextStepToken = stepDescriptorTokens[currentDepth];
 			StepToken nextStepToken2 = stepTokenIterator.next();
 			nbNextCall++;
-			if (nextStepToken.equals(nextStepToken2)) {
-				currentDepth++;
+			if (! nextStepToken.equals(nextStepToken2)) {
+				if (nextStepToken.isDynamic()) {
+					stepTokenIterator.markCurrentAsParameter(currentDepth);
+				}
+				else if (previousStepToken.isDynamic()) {
+					stepTokenIterator.markCurrentAsParameter(currentDepth - 1);
+					continue;
+				}
+				else if (! previousStepToken.isDynamic()) {
+					break;
+				}
 			}
-			else if (nextStepToken.isDynamic()) {
-				stepTokenIterator.markCurrentAsParameter(currentDepth);
-				currentDepth++;
-			}
-			else if (! previousStepToken.isDynamic()) {
-				break;
-			}
+			currentDepth++;
 			previousStepToken = nextStepToken;
 		}
 		
