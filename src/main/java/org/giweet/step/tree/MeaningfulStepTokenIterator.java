@@ -5,7 +5,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
 
-import org.giweet.step.ParameterValue;
 import org.giweet.step.StepToken;
 
 public class MeaningfulStepTokenIterator implements Iterator<StepToken> {
@@ -79,11 +78,11 @@ public class MeaningfulStepTokenIterator implements Iterator<StepToken> {
 	private void updateParameterValuePosition() {
 		for (int i = parameterValuePositions.size() - 1 ; i >= 0 ; i--) {
 			ParameterValuePosition parameterValuePosition = parameterValuePositions.get(i);
-			if (parameterValuePosition.getStartPosition() > cursor) {
+			if (parameterValuePosition.getValueTokenStartPosition() > cursor) {
 				parameterValuePositions.remove(i);
 			}
-			else if (parameterValuePosition.getEndPosition() > cursor) {
-				parameterValuePosition.setEndPosition(cursor);
+			else if (parameterValuePosition.getValueTokenEndPosition() > cursor) {
+				parameterValuePosition.setValueTokenEndPosition(cursor);
 			}
 			else {
 				break;
@@ -98,21 +97,12 @@ public class MeaningfulStepTokenIterator implements Iterator<StepToken> {
 			parameterValuePositions.add(parameterValuePosition);
 		}
 		else {
-			parameterValuePosition.setEndPosition(cursor);
+			parameterValuePosition.setValueTokenEndPosition(cursor);
 		}
 	}
 	
-	public ParameterValue[] getParameterValues() {
-		ParameterValue[] parameterValues = new ParameterValue[parameterValuePositions.size()];
-		for (int i = 0 ; i < parameterValues.length ; i++) {
-			ParameterValuePosition parameterValuePosition = parameterValuePositions.get(i);
-			ParameterValue parameterValue = new ParameterValue(parameterValuePosition.getDynamicTokenPosition(), parameterValuePosition.getStartPosition());
-			for (int j = parameterValuePosition.getStartPosition() ; j <= parameterValuePosition.getEndPosition() ; j++) {
-				parameterValue.add(stepTokens[j]);
-			}
-			parameterValues[i] = parameterValue;
-		}
-		return parameterValues;
+	public List<ParameterValuePosition> getParameterValuePositions() {
+		return parameterValuePositions;
 	}
 
 	public void remove() {

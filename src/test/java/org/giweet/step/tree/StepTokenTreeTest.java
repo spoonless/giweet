@@ -5,6 +5,7 @@ import static org.junit.Assert.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.giweet.step.ParameterValue;
 import org.giweet.step.StepDescriptor;
 import org.giweet.step.StepTokenizer;
 import org.giweet.step.tree.StepTokenTree;
@@ -114,6 +115,57 @@ public class StepTokenTreeTest {
 	}
 
 	@Test
+	public void canSearchAndReturnParameterValue() {
+		this.stepTokenizer = new StepTokenizer(false, true);
+		List<StepDescriptor> stepDescriptors = new ArrayList<StepDescriptor>();
+		StepDescriptor stepDescriptor = new StepDescriptor("hello the world");
+		stepDescriptors.add(stepDescriptor);
+		stepDescriptor = new StepDescriptor("hello the world from $1");
+		stepDescriptors.add(stepDescriptor);
+		stepDescriptor = new StepDescriptor("$1 $2");
+		stepDescriptors.add(stepDescriptor);
+		
+		StepTokenTree<StepDescriptor> underTest = new StepTokenTree<StepDescriptor>(stepDescriptors);
+		
+		SearchResult<StepDescriptor> searchResult = underTest.search(stepTokenizer.tokenize("hello the world"));
+
+		ParameterValue[] parameterValues = searchResult.getParameterValues();
+		assertEquals(0, searchResult.getParameterValues().length);
+
+		searchResult = underTest.search(stepTokenizer.tokenize("hello the world from giweet"));
+
+		parameterValues = searchResult.getParameterValues();
+		assertEquals(1, parameterValues.length);
+		assertEquals("$1", parameterValues[0].getDynamicToken().toString());
+		assertEquals(4, parameterValues[0].getDynamicTokenPosition());
+		assertEquals("giweet", parameterValues[0].getValue());
+		assertEquals(8, parameterValues[0].getValueTokenStartPosition());
+		assertEquals(8, parameterValues[0].getValueTokenEndPosition());
+		assertEquals(1, parameterValues[0].getValueTokens().length);
+		assertArrayEquals(stepTokenizer.tokenize("giweet"), parameterValues[0].getValueTokens());
+
+		searchResult = underTest.search(stepTokenizer.tokenize("goodbye giweet and good luck!"));
+
+		parameterValues = searchResult.getParameterValues();
+		assertEquals(2, parameterValues.length);
+		assertEquals("$1", parameterValues[0].getDynamicToken().toString());
+		assertEquals(0, parameterValues[0].getDynamicTokenPosition());
+		assertEquals("goodbye", parameterValues[0].getValue());
+		assertEquals(0, parameterValues[0].getValueTokenStartPosition());
+		assertEquals(0, parameterValues[0].getValueTokenEndPosition());
+		assertEquals(1, parameterValues[0].getValueTokens().length);
+		assertArrayEquals(stepTokenizer.tokenize("goodbye"), parameterValues[0].getValueTokens());
+
+		assertEquals("$2", parameterValues[1].getDynamicToken().toString());
+		assertEquals(1, parameterValues[1].getDynamicTokenPosition());
+		assertEquals("giweet and good luck", parameterValues[1].getValue());
+		assertEquals(2, parameterValues[1].getValueTokenStartPosition());
+		assertEquals(8, parameterValues[1].getValueTokenEndPosition());
+		assertEquals(7, parameterValues[1].getValueTokens().length);
+		assertArrayEquals(stepTokenizer.tokenize("giweet and good luck"), parameterValues[1].getValueTokens());
+	}
+
+	@Test
 	public void testEmptyStepNotAllowed() {
 		List<StepDescriptor> stepDescriptors = new ArrayList<StepDescriptor>();
 		StepDescriptor stepDescriptor = new StepDescriptor("");
@@ -125,13 +177,13 @@ public class StepTokenTreeTest {
 	}
 
 	private <T extends StepDescriptor> void assertStepDescriptorFoundInStepTokenTree(StepTokenTree<T> tree, String expectedStepDescriptorValue, String actualRawStep) {
-		StepDescriptor stepDescriptorFound = tree.search(stepTokenizer.tokenize(actualRawStep));
-		assertNotNull(stepDescriptorFound);
-		assertEquals(expectedStepDescriptorValue, stepDescriptorFound.getValue());
+		SearchResult<T> searchResult = tree.search(stepTokenizer.tokenize(actualRawStep));
+		assertNotNull(searchResult);
+		assertEquals(expectedStepDescriptorValue, searchResult.getStepDescriptor().getValue());
 	}
 
 	private <T extends StepDescriptor> void assertStepDescriptorNotFoundInStepTokenTree(StepTokenTree<T> tree, String actualRawStep) {
-		StepDescriptor stepDescriptorFound = tree.search(stepTokenizer.tokenize(actualRawStep));
-		assertNull(stepDescriptorFound);
+		SearchResult<T> searchResult = tree.search(stepTokenizer.tokenize(actualRawStep));
+		assertNull(searchResult);
 	}
 }

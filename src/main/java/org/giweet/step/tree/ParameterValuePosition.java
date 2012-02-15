@@ -3,28 +3,28 @@ package org.giweet.step.tree;
 public class ParameterValuePosition {
 	
 	private final int dynamicTokenPosition;
-	private final int startPosition;
-	private int endPosition;
+	private final int valueTokenStartPosition;
+	private int valueTokenEndPosition;
 	
 	public ParameterValuePosition(int dynamicTokenPosition, int startPosition) {
 		this.dynamicTokenPosition = dynamicTokenPosition;
-		this.startPosition = startPosition;
-		this.endPosition = startPosition;
+		this.valueTokenStartPosition = startPosition;
+		this.valueTokenEndPosition = startPosition;
 	}
 
 	public int getDynamicTokenPosition() {
 		return dynamicTokenPosition;
 	}
 
-	public int getStartPosition() {
-		return startPosition;
+	public int getValueTokenStartPosition() {
+		return valueTokenStartPosition;
 	}
 
-	public int getEndPosition() {
-		return endPosition;
+	public int getValueTokenEndPosition() {
+		return valueTokenEndPosition;
 	}
 
-	public void setEndPosition(int endPosition) {
-		this.endPosition = Math.max(this.startPosition, endPosition);
+	public void setValueTokenEndPosition(int endPosition) {
+		this.valueTokenEndPosition = Math.max(this.valueTokenStartPosition, endPosition);
 	}
 }
