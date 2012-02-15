@@ -13,18 +13,25 @@ public class StepTokenIterator implements Iterator<StepToken> {
 	private final StepToken [] stepTokens;
 	private int cursor;
 	private int nextCursor;
+	private int previousCursor;
 	private List<ParameterValue> parameterValues = new ArrayList<ParameterValue>();
 	private int lastTokenAsParameterValueCursor = -1;
 	
-	public StepTokenIterator(StepToken[] stepTokens) {
+	public StepTokenIterator(StepToken... stepTokens) {
 		this.stepTokens = stepTokens;
 		this.cursor = -1;
 		this.nextCursor = cursor;
+		this.previousCursor = cursor;
 	}
 
 	public boolean hasNext() {
 		nextCursor = getNextCursor();
 		return nextCursor < stepTokens.length;
+	}
+
+	public boolean hasPrevious() {
+		previousCursor = getPreviousCursor();
+		return previousCursor >= 0;
 	}
 
 	private int getNextCursor() {
@@ -36,6 +43,15 @@ public class StepTokenIterator implements Iterator<StepToken> {
 		return stepTokens.length;
 	}
 	
+	private int getPreviousCursor() {
+		for (int i = cursor - 1 ; i >= 0 ; i--) {
+			if (stepTokens[i].isMeaningful()) {
+				return i;
+			}
+		}
+		return -1;
+	}
+
 	public StepToken next() {
 		if (nextCursor <= cursor) {
 			nextCursor = getNextCursor();
@@ -43,10 +59,23 @@ public class StepTokenIterator implements Iterator<StepToken> {
 		if (nextCursor == stepTokens.length) {
 			throw new NoSuchElementException();
 		}
+		previousCursor = cursor;
 		cursor = nextCursor;
 		return stepTokens[cursor];
 	}
 	
+	public StepToken previous() {
+		if (previousCursor >= cursor) {
+			previousCursor = getPreviousCursor();
+		}
+		if (previousCursor == -1) {
+			throw new NoSuchElementException();
+		}
+		nextCursor = cursor;
+		cursor = previousCursor;
+		return stepTokens[cursor];
+	}
+
 	public void markCurrentAsParameter (int dynamicTokenPosition) {
 		ParameterValue parameterValue = getParameterValue(dynamicTokenPosition);
 		if (parameterValue == null) {
@@ -78,5 +107,4 @@ public class StepTokenIterator implements Iterator<StepToken> {
 		}
 		return null;
 	}
-
 }

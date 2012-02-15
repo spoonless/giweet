@@ -39,6 +39,12 @@ public class StepTokenTree {
 			if (stepTokenNode != null) {
 				result = stepTokenNode.search(stepTokenIterator);
 			}
+			if (result == null) {
+				StepTokenNode lastStepTokenNode = stepTokenNodes.get(stepTokenNodes.size() - 1);
+				if (lastStepTokenNode.getStepToken().isDynamic()) {
+					result = lastStepTokenNode.search(stepTokenIterator);
+				}
+			}
 		}
 		
 		if (result != null) {

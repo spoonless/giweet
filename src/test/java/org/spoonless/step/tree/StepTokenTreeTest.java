@@ -71,6 +71,23 @@ public class StepTokenTreeTest {
 	}
 	
 	@Test
+	public void canFindStepsBySearchingThroughDifferentBranchesOfTheTree() {
+		List<StepDescriptor> stepDescriptors = new ArrayList<StepDescriptor>();
+		StepDescriptor stepDescriptor = new StepDescriptor("test searching through the wrong branch");
+		stepDescriptors.add(stepDescriptor);
+		stepDescriptor = new StepDescriptor("test $1 through another branch");
+		stepDescriptors.add(stepDescriptor);
+		stepDescriptor = new StepDescriptor("test $1 through the wrong branch again");
+		stepDescriptors.add(stepDescriptor);
+		stepDescriptor = new StepDescriptor("$1 through $2 right branch");
+		stepDescriptors.add(stepDescriptor);
+
+		StepTokenTree underTest = new StepTokenTree(stepDescriptors);
+		
+		assertStepDescriptorFoundInStepTokenTree(underTest, "$1 through $2 right branch", "test searching through the right branch");
+	}
+
+	@Test
 	public void canFindAllRawStepsWithOnlyOneDynamicToken() {
 		List<StepDescriptor> stepDescriptors = new ArrayList<StepDescriptor>();
 		StepDescriptor stepDescriptor = new StepDescriptor("$any");

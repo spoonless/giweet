@@ -25,6 +25,10 @@ public class StepTokenNode {
 		this.stepDescriptor = stepDescriptor;
 	}
 
+	public StepToken getStepToken() {
+		return stepToken;
+	}
+
 	public boolean matches(StepDescriptor stepDescriptor) {
 		StepToken[] tokens = stepDescriptor.getTokens();
 		return depth < tokens.length && tokens[depth].equals(stepToken);
@@ -79,19 +83,29 @@ public class StepTokenNode {
 				result = this.stepDescriptor.getTokens().length == depth + 1 ? this.stepDescriptor : null;
 			}
 		}
-		else  if (nextNodes != null) {
+		else if (nextNodes != null) {
 			StepToken nextStepToken = stepTokenIterator.next();
 			StepTokenNode stepTokenNode = StepTokenNode.find(nextStepToken, nextNodes);
 			if (stepTokenNode != null) {
 				result = stepTokenNode.search(stepTokenIterator);
 			}
-			else if (stepToken.isDynamic()) {
+			if (result == null) {
+				StepTokenNode lastStepTokenNode = nextNodes.get(nextNodes.size() - 1);
+				if (lastStepTokenNode.stepToken.isDynamic()) {
+					result = lastStepTokenNode.search(stepTokenIterator);
+				}
+			}
+			if (result == null && stepToken.isDynamic()) {
 				result = this.search(stepTokenIterator);
+			}
+			if (result == null) {
+				stepTokenIterator.previous();
 			}
 		}
 		else if (nextNodes == null) {
 			result = searchOnlyFromStepDescriptor(stepTokenIterator);
 		}
+		
 		// TODO one case is missing : when descendants are only argument tokens
 		return result;
 	}
@@ -100,9 +114,11 @@ public class StepTokenNode {
 		int currentDepth;
 		StepToken previousStepToken = stepToken;
 		StepToken[] stepDescriptorTokens = this.stepDescriptor.getTokens();
+		int nbNextCall = 0 ;
 		for (currentDepth = depth + 1 ; stepTokenIterator.hasNext() && currentDepth < stepDescriptorTokens.length ; ) {
 			StepToken nextStepToken = stepDescriptorTokens[currentDepth];
 			StepToken nextStepToken2 = stepTokenIterator.next();
+			nbNextCall++;
 			if (nextStepToken.equals(nextStepToken2)) {
 				currentDepth++;
 			}
@@ -129,6 +145,11 @@ public class StepTokenNode {
 			}
 			result = this.stepDescriptor;
 		}
+		else {
+			for (int i = 0 ; i < nbNextCall ; i++) {
+				stepTokenIterator.previous();
+			}
+		}
 		return result;
 	}
 
@@ -136,12 +157,7 @@ public class StepTokenNode {
 		StepTokenNode result = null;
 		if (!stepTokenNodes.isEmpty()) {
 			int index = Collections.binarySearch(stepTokenNodes, stepToken, comparator);
-			if (index < 0) {
-				StepTokenNode lastStepTokenNode = stepTokenNodes.get(stepTokenNodes.size() - 1);
-				if (lastStepTokenNode.stepToken.isDynamic()) {
-					result = lastStepTokenNode;
-				}
-			} else {
+			if (index >= 0) {
 				result = stepTokenNodes.get(index);
 			}
 		}
@@ -152,7 +168,7 @@ public class StepTokenNode {
 
 	private static class StepTokenNodeStepTokenComparator implements Comparator<Object> {
 		public int compare(Object node, Object token) {
-			StepToken stepToken = ((StepTokenNode)node).stepToken;
+			StepToken stepToken = ((StepTokenNode)node).getStepToken();
 			return stepToken.compareTo((StepToken) token);
 		}
 	}
