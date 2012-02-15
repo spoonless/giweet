@@ -84,26 +84,32 @@ public class StepTokenNode<T extends StepDescriptor> {
 			}
 		}
 		else if (nextNodes != null) {
-			StepToken nextStepToken = meaningfulStepTokenIterator.next();
-			StepTokenNode<T> stepTokenNode = StepTokenNode.search(nextStepToken, nextNodes);
-			if (stepTokenNode != null) {
-				result = stepTokenNode.search(meaningfulStepTokenIterator);
-			}
-			if (result == null) {
-				StepTokenNode<T> lastStepTokenNode = nextNodes.get(nextNodes.size() - 1);
-				if (lastStepTokenNode.stepToken.isParameter()) {
-					result = lastStepTokenNode.search(meaningfulStepTokenIterator);
-				}
-			}
-			if (result == null && stepToken.isParameter()) {
-				result = this.search(meaningfulStepTokenIterator);
-			}
-			if (result == null) {
-				meaningfulStepTokenIterator.previous();
+			result = searchThroughNextNodes(meaningfulStepTokenIterator);
+		}
+		else {
+			result = searchOnlyFromStepDescriptor(meaningfulStepTokenIterator);
+		}
+		return result;
+	}
+
+	private T searchThroughNextNodes(MeaningfulStepTokenIterator meaningfulStepTokenIterator) {
+		T result = null;
+		StepToken nextStepToken = meaningfulStepTokenIterator.next();
+		StepTokenNode<T> stepTokenNode = StepTokenNode.search(nextStepToken, nextNodes);
+		if (stepTokenNode != null) {
+			result = stepTokenNode.search(meaningfulStepTokenIterator);
+		}
+		if (result == null) {
+			StepTokenNode<T> lastStepTokenNode = nextNodes.get(nextNodes.size() - 1);
+			if (lastStepTokenNode.stepToken.isParameter()) {
+				result = lastStepTokenNode.search(meaningfulStepTokenIterator);
 			}
 		}
-		else if (nextNodes == null) {
-			result = searchOnlyFromStepDescriptor(meaningfulStepTokenIterator);
+		if (result == null && stepToken.isParameter()) {
+			result = this.search(meaningfulStepTokenIterator);
+		}
+		if (result == null) {
+			meaningfulStepTokenIterator.previous();
 		}
 		return result;
 	}
