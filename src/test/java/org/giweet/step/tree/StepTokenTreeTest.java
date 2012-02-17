@@ -86,6 +86,7 @@ public class StepTokenTreeTest {
 		StepTokenTree<StepDescriptor> underTest = new StepTokenTree<StepDescriptor>(stepDescriptors);
 		
 		assertStepDescriptorFoundInStepTokenTree(underTest, "$1 through $2 right branch", "test searching through the right branch");
+		assertStepDescriptorFoundInStepTokenTree(underTest, "test $1 through another branch", "test searching through the right branch through another branch");
 	}
 
 	@Test
