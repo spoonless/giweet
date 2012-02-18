@@ -11,7 +11,10 @@ import java.util.Locale;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
-public class NumberConverter implements Converter {
+import org.giweet.StringUtils;
+import org.giweet.step.StepToken;
+
+public class NumberConverter extends ArraySupportConverter {
 	
 	private final NumberFormat numberFormat;
 	private final DecimalFormatSymbols decimalFormatSymbols;
@@ -26,58 +29,32 @@ public class NumberConverter implements Converter {
 		this.decimalFormatSymbols = decimalFormat.getDecimalFormatSymbols();
 	}
 
-	public boolean canConvert(Class<?> targetClass) {
-		targetClass = convertFromPrimitive(targetClass);
-		return Number.class.isAssignableFrom(targetClass);
-	}
-
-	private Class<?> convertFromPrimitive(Class<?> targetClass) {
-		if (targetClass.isPrimitive()) {
-			if (int.class.equals(targetClass)) {
-				targetClass = Integer.class;
-			} 
-			else if (long.class.equals(targetClass)) {
-				targetClass = Long.class;
-			} 
-			else if (double.class.equals(targetClass)) {
-				targetClass = Double.class;
-			} 
-			else if (float.class.equals(targetClass)) {
-				targetClass = Float.class;
-			} 
-			else if (byte.class.equals(targetClass)) {
-				targetClass = Byte.class;
-			}
-			else if (short.class.equals(targetClass)) {
-				targetClass = Short.class;
-			} 
-		}
-		return targetClass;
-	}
-
-	public Object convert(Class<?> targetClass, Annotation[] annotations, String value) throws CannotConvertException {
-		targetClass = convertFromPrimitive(targetClass);
+	@Override
+	protected Object convertSingle(Class<?> baseTargetClass, Annotation[] annotations, StepToken[] values) throws CannotConvertException {
 		String[] patterns = Pattern.getPatterns(annotations);
 		Number result = null;
 		try {
 			if (patterns == null || patterns.length == 0) {
-				result = numberFormat.parse(value);
+				result = numberFormat.parse(StringUtils.toString(values));
 			}
 			else {
 				DecimalFormat decimalFormat = new DecimalFormat(patterns[0], decimalFormatSymbols);
-				if (BigInteger.class.isAssignableFrom(targetClass) || BigDecimal.class.isAssignableFrom(targetClass)) {
+				if (BigInteger.class.isAssignableFrom(baseTargetClass) || BigDecimal.class.isAssignableFrom(baseTargetClass)) {
 					decimalFormat.setParseBigDecimal(true);
 				}
-				result = decimalFormat.parse(value);
+				result = decimalFormat.parse(StringUtils.toString(values));
 			}
 		}
 		catch (ParseException e) {
-			throw new CannotConvertException(targetClass, value, e);
+			throw new CannotConvertException(baseTargetClass, values, e);
 		}
-		return convert(targetClass, result);
+		return convert(baseTargetClass, result);
 	}
 	
 	private Object convert(Class<?> targetClass, Number result) throws CannotConvertException {
+		if (targetClass.isPrimitive()) {
+			targetClass = getWrapperClass(targetClass);
+		}
 		if (targetClass.isAssignableFrom(result.getClass())) {
 			return result;
 		}
@@ -114,6 +91,45 @@ public class NumberConverter implements Converter {
 		else if (targetClass.equals(BigDecimal.class)) {
 			return new BigDecimal(result.doubleValue());
 		}
-		throw new CannotConvertException(targetClass, result.toString());
+		throw new CannotConvertException(targetClass, String.valueOf(result));
+	}
+
+	@Override
+	protected boolean canConvertSingle(Class<?> targetClass) {
+		boolean canConvert = Number.class.isAssignableFrom(targetClass);
+		if (! canConvert && targetClass.isPrimitive()) {
+			Class<?> wrapperClass = getWrapperClass(targetClass);
+			canConvert = wrapperClass != null;
+		}
+		return canConvert;
+	}
+
+	private Class<?> getWrapperClass(Class<?> targetClass) {
+		Class<?> wrapperClass = null;
+		if (int.class.equals(targetClass)) {
+			wrapperClass = Integer.class;
+		}
+		else if (long.class.equals(targetClass)) {
+			wrapperClass = Long.class;
+		} 
+		else if (double.class.equals(targetClass)) {
+			wrapperClass = Double.class;
+		} 
+		else if (float.class.equals(targetClass)) {
+			wrapperClass = Float.class;
+		} 
+		else if (short.class.equals(targetClass)) {
+			wrapperClass = Short.class;
+		} 
+		else if (byte.class.equals(targetClass)) {
+			wrapperClass = Byte.class;
+		} 
+		return wrapperClass;
+	}
+
+	@Override
+	protected Object convertArray(Class<?> baseTargetClass, Annotation[] annotations, StepToken[] values) throws CannotConvertException {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

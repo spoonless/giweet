@@ -232,7 +232,7 @@ public class StepTokenizer {
 		case '/':
 		case '@':
 		case '\\':
-		// TODO some characters missing as token letters
+		// FIXME some characters missing as token letters
 		case '\u2030': // PER MILLE SIGN
 		case '\u2031': // PER TEN THOUSAND SIGN
 		case '\uFE5F' : // SMALL NUMBER SIGN
