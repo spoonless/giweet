@@ -1,13 +1,14 @@
 package org.giweet.step.converter;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.lang.annotation.Annotation;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
-import java.text.ParseException;
 import java.util.Locale;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
@@ -23,6 +24,12 @@ public class NumberConverterTest {
 		NumberConverter underTest = new NumberConverter(Locale.US);
 		
 		assertTrue(underTest.canConvert(Number.class));
+		assertTrue(underTest.canConvert(int.class));
+		assertTrue(underTest.canConvert(long.class));
+		assertTrue(underTest.canConvert(double.class));
+		assertTrue(underTest.canConvert(float.class));
+		assertTrue(underTest.canConvert(short.class));
+		assertTrue(underTest.canConvert(byte.class));
 		assertTrue(underTest.canConvert(Integer.class));
 		assertTrue(underTest.canConvert(Long.class));
 		assertTrue(underTest.canConvert(Double.class));
@@ -69,6 +76,9 @@ public class NumberConverterTest {
 		assertEquals(10, ((Number)result).intValue());
 
 		result = underTest.convert(Integer.class, annotations, "10");
+		assertEquals(Integer.valueOf(10), result);
+
+		result = underTest.convert(int.class, annotations, "10");
 		assertEquals(Integer.valueOf(10), result);
 
 		result = underTest.convert(Long.class, annotations, "1,000");

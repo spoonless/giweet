@@ -27,10 +27,36 @@ public class NumberConverter implements Converter {
 	}
 
 	public boolean canConvert(Class<?> targetClass) {
+		targetClass = convertFromPrimitive(targetClass);
 		return Number.class.isAssignableFrom(targetClass);
 	}
 
+	private Class<?> convertFromPrimitive(Class<?> targetClass) {
+		if (targetClass.isPrimitive()) {
+			if (int.class.equals(targetClass)) {
+				targetClass = Integer.class;
+			} 
+			else if (long.class.equals(targetClass)) {
+				targetClass = Long.class;
+			} 
+			else if (double.class.equals(targetClass)) {
+				targetClass = Double.class;
+			} 
+			else if (float.class.equals(targetClass)) {
+				targetClass = Float.class;
+			} 
+			else if (byte.class.equals(targetClass)) {
+				targetClass = Byte.class;
+			}
+			else if (short.class.equals(targetClass)) {
+				targetClass = Short.class;
+			} 
+		}
+		return targetClass;
+	}
+
 	public Object convert(Class<?> targetClass, Annotation[] annotations, String value) throws CannotConvertException {
+		targetClass = convertFromPrimitive(targetClass);
 		String[] patterns = Pattern.getPatterns(annotations);
 		Number result = null;
 		try {
