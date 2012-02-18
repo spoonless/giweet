@@ -11,8 +11,6 @@ import java.util.Locale;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
-import org.giweet.annotation.Param;
-
 public class NumberConverter implements Converter {
 	
 	private final NumberFormat numberFormat;
@@ -32,23 +30,28 @@ public class NumberConverter implements Converter {
 		return Number.class.isAssignableFrom(targetClass);
 	}
 
-	public Object convert(Class<?> targetClass, Annotation[] annotations, String value) throws ParseException {
-		String[] patterns = getPatterns(annotations);
+	public Object convert(Class<?> targetClass, Annotation[] annotations, String value) throws CannotConvertException {
+		String[] patterns = Pattern.getPatterns(annotations);
 		Number result = null;
-		if (patterns == null || patterns.length == 0) {
-			result = numberFormat.parse(value);
-		}
-		else {
-			DecimalFormat decimalFormat = new DecimalFormat(patterns[0], decimalFormatSymbols);
-			if (BigInteger.class.isAssignableFrom(targetClass) || BigDecimal.class.isAssignableFrom(targetClass)) {
-				decimalFormat.setParseBigDecimal(true);
+		try {
+			if (patterns == null || patterns.length == 0) {
+				result = numberFormat.parse(value);
 			}
-			result = decimalFormat.parse(value);
+			else {
+				DecimalFormat decimalFormat = new DecimalFormat(patterns[0], decimalFormatSymbols);
+				if (BigInteger.class.isAssignableFrom(targetClass) || BigDecimal.class.isAssignableFrom(targetClass)) {
+					decimalFormat.setParseBigDecimal(true);
+				}
+				result = decimalFormat.parse(value);
+			}
+		}
+		catch (ParseException e) {
+			throw new CannotConvertException(targetClass, value, e);
 		}
 		return convert(targetClass, result);
 	}
 	
-	private Object convert(Class<?> targetClass, Number result) {
+	private Object convert(Class<?> targetClass, Number result) throws CannotConvertException {
 		if (targetClass.isAssignableFrom(result.getClass())) {
 			return result;
 		}
@@ -85,18 +88,6 @@ public class NumberConverter implements Converter {
 		else if (targetClass.equals(BigDecimal.class)) {
 			return new BigDecimal(result.doubleValue());
 		}
-		// FIXME should we really return null
-		return null;
+		throw new CannotConvertException(targetClass, result.toString());
 	}
-
-	private String[] getPatterns(Annotation[] annotations) {
-		for (Annotation annotation : annotations) {
-			if (annotation instanceof Param) {
-				Param paramAnnotation = (Param) annotation;
-				return paramAnnotation.pattern();
-			}
-		}
-		return null;
-	}
-
 }

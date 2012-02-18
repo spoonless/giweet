@@ -13,30 +13,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.giweet.annotation.Param;
+import org.giweet.annotation.ParamDouble;
 import org.junit.Test;
 
 public class NumberConverterTest {
-
-	private final class ParamDouble implements Param {
-		
-		private final String[] pattern;
-
-		public ParamDouble(String ... pattern) {
-			this.pattern = pattern;
-		}
-		
-		public Class<? extends Annotation> annotationType() {
-			return null;
-		}
-
-		public String[] pattern() {
-			return pattern;
-		}
-
-		public String[] name() {
-			return null;
-		}
-	}
 
 	@Test
 	public void canConvert() {
@@ -71,15 +51,19 @@ public class NumberConverterTest {
 		canConvertValue(underTest, new Annotation[] {param});
 	}
 
-	@Test
-	public void cannotConvertValueWhenExpectedNotANumber() throws Exception {
+	@Test(expected = CannotConvertException.class)
+	public void cannotConvertValueWhenExpectedClassNotANumber() throws Exception {
 		NumberConverter underTest = new NumberConverter(Locale.US);
-		Object result = underTest.convert(IllegalArgumentException.class, new Annotation[] {}, "0");
-		
-		assertNull(result);
+		underTest.convert(IllegalArgumentException.class, new Annotation[] {}, "0");
 	}
 
-	private void canConvertValue(NumberConverter underTest, Annotation[] annotations) throws ParseException {
+	@Test(expected = CannotConvertException.class)
+	public void cannotConvertValueWhenValueIsNotANumber() throws Exception {
+		NumberConverter underTest = new NumberConverter(Locale.US);
+		underTest.convert(Integer.class, new Annotation[] {}, "a");
+	}
+
+	private void canConvertValue(NumberConverter underTest, Annotation[] annotations) throws CannotConvertException {
 		Object result = underTest.convert(Number.class, annotations, "10");
 		assertTrue(result instanceof Number);
 		assertEquals(10, ((Number)result).intValue());

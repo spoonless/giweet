@@ -6,6 +6,6 @@ public interface Converter {
 	
 	boolean canConvert(Class<?> targetClass);
 	
-	Object convert (Class<?> targetClass, Annotation[] annotations, String value) throws Exception;
+	Object convert (Class<?> targetClass, Annotation[] annotations, String value) throws CannotConvertException;
 
 }
