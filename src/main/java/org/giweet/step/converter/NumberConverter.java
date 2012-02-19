@@ -35,33 +35,35 @@ public class NumberConverter extends ArraySupportConverter {
 	}
 
 	@Override
-	protected Object convertSingle(Class<?> baseTargetClass, Annotation[] annotations, StepToken[] values) throws CannotConvertException {
-		String[] patterns = Pattern.getPatterns(annotations);
-		String value = StringUtils.toString(values);
-		Number result = convertSingle(baseTargetClass, value, patterns);
-		return cast(baseTargetClass, result);
-	}
-
-	private Number convertSingle(Class<?> baseTargetClass, String value, String[] patterns) throws CannotConvertException {
+	protected Object convertSingle(Class<?> baseTargetClass, Annotation[] annotations, StepToken[] stepTokens) throws CannotConvertException {
+		String value = StringUtils.toString(stepTokens);
+		NumberFormat numberFormat = getNumberFormat(baseTargetClass, annotations);
 		Number result = null;
 		try {
-			if (patterns == null || patterns.length == 0) {
-				result = numberFormat.parse(value);
-			}
-			else {
-				DecimalFormat decimalFormat = new DecimalFormat(patterns[0], decimalFormatSymbols);
-				if (BigInteger.class.isAssignableFrom(baseTargetClass) || BigDecimal.class.isAssignableFrom(baseTargetClass)) {
-					decimalFormat.setParseBigDecimal(true);
-				}
-				result = decimalFormat.parse(value);
-			}
+			result = numberFormat.parse(value);
 		}
 		catch (ParseException e) {
 			throw new CannotConvertException(baseTargetClass, value, e);
 		}
-		return result;
+		return cast(baseTargetClass, result);
 	}
 	
+	private NumberFormat getNumberFormat(Class<?> baseTargetClass, Annotation[] annotations) {
+		String[] patterns = Pattern.getPatterns(annotations);
+		NumberFormat numberFormat = null;
+		if (patterns == null || patterns.length == 0) {
+			numberFormat = this.numberFormat;
+		}
+		else {
+			DecimalFormat decimalFormat = new DecimalFormat(patterns[0], decimalFormatSymbols);
+			if (BigInteger.class.isAssignableFrom(baseTargetClass) || BigDecimal.class.isAssignableFrom(baseTargetClass)) {
+				decimalFormat.setParseBigDecimal(true);
+			}
+			numberFormat = decimalFormat;
+		}
+		return numberFormat;
+	}
+
 	private static Object cast(Class<?> targetClass, Number result) throws CannotConvertException {
 		if (targetClass.isPrimitive()) {
 			targetClass = getWrapperClass(targetClass);
@@ -140,9 +142,8 @@ public class NumberConverter extends ArraySupportConverter {
 
 	@Override
 	protected Object convertArray(Class<?> baseTargetClass, Annotation[] annotations, StepToken[] stepTokens) throws CannotConvertException {
-		String[] patterns = Pattern.getPatterns(annotations);
-		
 		List<String> meaningfulValues = null;
+		NumberFormat numberFormat = getNumberFormat(baseTargetClass, annotations);
 		if (decimalFormatSymbols.getGroupingSeparator() != NON_BREAKABLE_SPACE) {
 			meaningfulValues = getMeaningfulValues(stepTokens);
 		}
@@ -151,10 +152,14 @@ public class NumberConverter extends ArraySupportConverter {
 		}
 		
 		Object resultArray = Array.newInstance(baseTargetClass, meaningfulValues.size());
-		
 		for (int i = 0; i < meaningfulValues.size(); i++) {
-			Number result = convertSingle(baseTargetClass, meaningfulValues.get(i), patterns);
-			Array.set(resultArray, i, cast(baseTargetClass, result));
+			String value = meaningfulValues.get(i);
+			try {
+				Number result = numberFormat.parse(value);
+				Array.set(resultArray, i, cast(baseTargetClass, result));
+			} catch (ParseException e) {
+				throw new CannotConvertException(baseTargetClass, value, e);
+			}
 		}
 		return resultArray;
 	}
