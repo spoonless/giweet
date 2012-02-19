@@ -1,5 +1,6 @@
 package org.giweet.step.converter;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -21,6 +22,7 @@ import org.junit.Test;
 public class NumberConverterTest {
 
 	private StepTokenizer stepTokenizer = new StepTokenizer(false, true);
+	private Annotation[] dummyAnnotations = new Annotation[0];
 
 	@Test
 	public void canConvert() {
@@ -49,7 +51,6 @@ public class NumberConverterTest {
 	@Test
 	public void canConvertValue() throws Exception {
 		NumberConverter underTest = new NumberConverter(Locale.US);
-		Annotation[] dummyAnnotations = new Annotation[0];
 		canConvertValue(underTest, dummyAnnotations);
 	}
 
@@ -59,6 +60,43 @@ public class NumberConverterTest {
 
 		NumberConverter underTest = new NumberConverter(new DecimalFormat("0", new DecimalFormatSymbols(Locale.US)));
 		canConvertValue(underTest, new Annotation[] {param});
+	}
+
+	@Test
+	public void canConvertValueAsArray() throws Exception {
+		NumberConverter underTest = new NumberConverter(Locale.US);
+		
+		Long[] result = (Long[]) underTest.convert(Long[].class, dummyAnnotations, stepTokenizer.tokenize("0 1, -2"));
+		assertArrayEquals(new Long[]{0L, 1L, -2L}, result);
+		
+		long[] primiviteResult = (long[]) underTest.convert(long[].class, dummyAnnotations, stepTokenizer.tokenize("0 1, -2"));
+		assertArrayEquals(new long[]{0L, 1L, -2L}, primiviteResult);
+
+		float[] primiviteFloatResult = (float[]) underTest.convert(float[].class, dummyAnnotations, stepTokenizer.tokenize("0 1.3, -2"));
+		assertArrayEquals(new float[]{0f, 1.3f, -2f}, primiviteFloatResult, 0);
+	}
+
+	@Test
+	public void canConvertValueAsArrayWithNonBreakableSpaceFixForFrench() throws Exception {
+		NumberConverter underTest = new NumberConverter(Locale.FRENCH);
+		
+		double[] result = (double[]) underTest.convert(double[].class, dummyAnnotations, stepTokenizer.tokenize("1 000,0, 10000,30 -10 000\u00a0000"));
+		assertArrayEquals(new double[]{1000, 10000.3, -10000000}, result, 0);
+
+		result = (double[]) underTest.convert(double[].class, dummyAnnotations, stepTokenizer.tokenize("1 2 3"));
+		assertArrayEquals(new double[]{1, 2, 3}, result, 0);
+
+		result = (double[]) underTest.convert(double[].class, dummyAnnotations, stepTokenizer.tokenize("99 999\n999"));
+		assertArrayEquals(new double[]{99999, 999}, result, 0);
+
+		result = (double[]) underTest.convert(double[].class, dummyAnnotations, stepTokenizer.tokenize("9 999 999"));
+		assertArrayEquals(new double[]{9999999}, result, 0);
+
+		result = (double[]) underTest.convert(double[].class, dummyAnnotations, stepTokenizer.tokenize("9  999"));
+		assertArrayEquals(new double[]{9, 999}, result, 0);
+
+		result = (double[]) underTest.convert(double[].class, dummyAnnotations, stepTokenizer.tokenize("9 999 -999"));
+		assertArrayEquals(new double[]{9999, -999}, result, 0);
 	}
 
 	@Test(expected = CannotConvertException.class)

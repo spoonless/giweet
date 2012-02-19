@@ -21,24 +21,19 @@ public class BooleanConverter extends ArraySupportConverter {
 	}
 	
 	@Override
-	protected Object convertSingle(Class<?> baseTargetClass, Annotation[] annotations, StepToken[] values) {
+	protected Object convertSingle(Class<?> baseTargetClass, Annotation[] annotations, StepToken[] stepTokens) {
 		String[] patterns = getPatterns(annotations);
-		return applyPatterns(patterns, StringUtils.toString(values));
+		return applyPatterns(patterns, StringUtils.toString(stepTokens));
 	}
 
 	@Override
-	protected Object convertArray(Class<?> targetClass, Annotation[] annotations, StepToken[] values) {
+	protected Object convertArray(Class<?> targetClass, Annotation[] annotations, StepToken[] stepTokens) {
 		String[] patterns = getPatterns(annotations);
-		List<StepToken> meaningfulStepTokens = getMeaningfulTokens(values);
-		Object result = Array.newInstance(targetClass, meaningfulStepTokens.size());
-		for (int i = 0 ; i < meaningfulStepTokens.size() ; i++) {
-			boolean tokenValue = applyPatterns(patterns, String.valueOf(meaningfulStepTokens.get(i)));
-			if (targetClass.isPrimitive()) {
-				Array.setBoolean(result, i, tokenValue);
-			}
-			else {
-				Array.set(result, i, Boolean.valueOf(tokenValue));
-			}
+		List<String> meaningfulValues = getMeaningfulValues(stepTokens);
+		Object result = Array.newInstance(targetClass, meaningfulValues.size());
+		for (int i = 0 ; i < meaningfulValues.size() ; i++) {
+			boolean tokenValue = applyPatterns(patterns, meaningfulValues.get(i));
+			Array.set(result, i, Boolean.valueOf(tokenValue));
 		}
 		return result;
 	}
