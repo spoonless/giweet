@@ -72,8 +72,8 @@ public class NumberConverterTest {
 		long[] primiviteResult = (long[]) underTest.convert(long[].class, dummyAnnotations, stepTokenizer.tokenize("0 1, -2"));
 		assertArrayEquals(new long[]{0L, 1L, -2L}, primiviteResult);
 
-		float[] primiviteFloatResult = (float[]) underTest.convert(float[].class, dummyAnnotations, stepTokenizer.tokenize("0 1.3, -2"));
-		assertArrayEquals(new float[]{0f, 1.3f, -2f}, primiviteFloatResult, 0);
+		float[] primiviteFloatResult = (float[]) underTest.convert(float[].class, dummyAnnotations, stepTokenizer.tokenize("0 1.3, -2,000"));
+		assertArrayEquals(new float[]{0f, 1.3f, -2000f}, primiviteFloatResult, 0);
 	}
 
 	@Test
