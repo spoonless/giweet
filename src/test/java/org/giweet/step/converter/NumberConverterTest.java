@@ -16,8 +16,6 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import org.giweet.annotation.Param;
 import org.giweet.annotation.ParamDouble;
-import org.giweet.step.StaticStepToken;
-import org.giweet.step.StepToken;
 import org.giweet.step.StepTokenizer;
 import org.junit.Test;
 
