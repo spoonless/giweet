@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<suite xmlns="http://www.giweet.org/test/StepTokenizerTest" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.giweet.org/test/StepTokenizerTest StepTokenizerTest.xsd ">
+  <test>
+    <actual>       </actual>
+    <expected>
+    </expected>
+  </test>
+  <test>
+    <actual>hello the world</actual>
+    <expected>
+      <token>hello</token>
+      <token>the</token>
+      <token>world</token>
+    </expected>
+  </test>
+  <test withMeaninglessTokens="true">
+    <actual>hello the world</actual>
+    <expected>
+      <token>hello</token>
+      <token meaningful="false"> </token>
+      <token>the</token>
+      <token meaningful="false"> </token>
+      <token>world</token>
+    </expected>
+  </test>
+  <test>
+    <actual>hello the $world</actual>
+    <expected>
+      <token>hello</token>
+      <token>the</token>
+      <token>$world</token>
+    </expected>
+  </test>
+  <test allowParameterTokens="true">
+    <actual>hello the $world</actual>
+    <expected>
+      <token>hello</token>
+      <token>the</token>
+      <token parameter="true">$world</token>
+    </expected>
+  </test>
+</suite>

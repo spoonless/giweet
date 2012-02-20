@@ -14,15 +14,15 @@ public class StepTokenizer {
 	private static final int END_COMMENT = 0x40 | TOKEN_SEPARATOR;
 	private static final int TOKEN_LETTER = 0x80;
 
-	private final boolean allowParameterToken;
+	private final boolean allowParameterTokens;
 	private final boolean withMeaninglessTokens;
 	
-	public StepTokenizer(boolean allowParameterToken) {
-		this (allowParameterToken, false);
+	public StepTokenizer(boolean allowParameterTokens) {
+		this (allowParameterTokens, false);
 	}
 	
-	public StepTokenizer(boolean allowParameterToken, boolean withMeaninglessTokens) {
-		this.allowParameterToken = allowParameterToken;
+	public StepTokenizer(boolean allowParameterTokens, boolean withMeaninglessTokens) {
+		this.allowParameterTokens = allowParameterTokens;
 		this.withMeaninglessTokens = withMeaninglessTokens;
 	}
 
@@ -76,7 +76,7 @@ public class StepTokenizer {
 				if (letterCount > 0) {
 					letterCount -= trailingCount;
 					boolean isArgumentToken = false;
-					if (characters[startPosition] == '$' && letterCount > 1 && allowParameterToken) {
+					if (characters[startPosition] == '$' && letterCount > 1 && allowParameterTokens) {
 						startPosition++;
 						letterCount--;
 						isArgumentToken = true;

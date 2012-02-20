@@ -4,10 +4,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import org.giweet.step.ParameterStepToken;
-import org.giweet.step.StaticStepToken;
-import org.giweet.step.StepToken;
-import org.giweet.step.StepTokenizer;
 import org.junit.Test;
 
 public class StepTokenizerTest {
@@ -139,6 +135,11 @@ public class StepTokenizerTest {
 
 		stepTokens = underTest.tokenize("$");
 		testTokenization(stepTokens, new StaticStepToken("$"));
+	}
+	
+	@Test
+	public void testFromXmlFile() throws Exception {
+		StepTokenizerTestFromXml.testFromFile("/org/giweet/step/StepTokenizerTest.xml");
 	}
 
 	private void testTokenization(StepToken[] stepTokens, String... expectedTokens) {
