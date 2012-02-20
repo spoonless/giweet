@@ -17,6 +17,7 @@ public class CharacterConverterTest {
 		
 		assertTrue(underTest.canConvert(char.class));
 		assertTrue(underTest.canConvert(Character.class));
+		assertFalse(underTest.canConvert(Integer.class));
 	}
 
 	@Test

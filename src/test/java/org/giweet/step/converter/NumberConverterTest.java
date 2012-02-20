@@ -16,6 +16,8 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import org.giweet.annotation.Param;
 import org.giweet.annotation.ParamDouble;
+import org.giweet.step.StaticStepToken;
+import org.giweet.step.StepToken;
 import org.giweet.step.StepTokenizer;
 import org.junit.Test;
 
@@ -46,6 +48,7 @@ public class NumberConverterTest {
 		assertTrue(underTest.canConvert(BigInteger.class));
 		assertTrue(underTest.canConvert(BigDecimal.class));
 		assertFalse(underTest.canConvert(Object.class));
+		assertFalse(underTest.canConvert(boolean.class));
 	}
 
 	@Test
@@ -109,6 +112,12 @@ public class NumberConverterTest {
 	public void cannotConvertValueWhenValueIsNotANumber() throws Exception {
 		NumberConverter underTest = new NumberConverter(Locale.US);
 		underTest.convert(Integer.class, new Annotation[] {}, stepTokenizer.tokenize("a"));
+	}
+
+	@Test(expected = CannotConvertException.class)
+	public void cannotConvertArrayValueWhenOneValueIsNotANumber() throws Exception {
+		NumberConverter underTest = new NumberConverter(Locale.US);
+		underTest.convert(int[].class, new Annotation[] {}, stepTokenizer.tokenize("1 2 a"));
 	}
 
 	private void canConvertValue(NumberConverter underTest, Annotation[] annotations) throws CannotConvertException {
