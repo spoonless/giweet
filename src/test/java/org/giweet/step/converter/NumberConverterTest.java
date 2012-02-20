@@ -102,7 +102,7 @@ public class NumberConverterTest {
 	@Test(expected = CannotConvertException.class)
 	public void cannotConvertValueWhenExpectedClassNotANumber() throws Exception {
 		NumberConverter underTest = new NumberConverter(Locale.US);
-		underTest.convert(IllegalArgumentException.class, new Annotation[] {}, stepTokenizer.tokenize("0"));
+		underTest.convert(Boolean.class, new Annotation[] {}, stepTokenizer.tokenize("0"));
 	}
 
 	@Test(expected = CannotConvertException.class)
