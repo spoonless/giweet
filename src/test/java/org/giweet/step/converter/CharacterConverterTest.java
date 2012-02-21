@@ -35,7 +35,7 @@ public class CharacterConverterTest {
 	public void canConvertArrayValue() throws Exception {
 		CharacterConverter underTest = new CharacterConverter();
 		
-		char[] result = (char[]) underTest.convert(char[].class, new Annotation[0], stepTokenizer.tokenize("abc"));
+		char[] result = (char[]) underTest.convert(char[].class, new Annotation[0], stepTokenizer.tokenize("a b c"));
 		assertArrayEquals(new String("abc").toCharArray(), result);
 	}
 
@@ -43,7 +43,7 @@ public class CharacterConverterTest {
 	public void canConvertArrayValueOfWrapperClass() throws Exception {
 		CharacterConverter underTest = new CharacterConverter();
 		
-		Character[] result = (Character[]) underTest.convert(Character[].class, new Annotation[0], stepTokenizer.tokenize("abc"));
+		Character[] result = (Character[]) underTest.convert(Character[].class, new Annotation[0], stepTokenizer.tokenize("a b c"));
 		assertArrayEquals(new Character[]{'a', 'b', 'c'}, result);
 
 		result = (Character[]) underTest.convert(Character[].class, new Annotation[0], stepTokenizer.tokenize(""));
