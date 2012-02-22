@@ -2,22 +2,16 @@ package org.giweet.step.converter;
 
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.giweet.step.StepToken;
 
 public abstract class ArraySupportConverter implements Converter {
 
-	public final boolean canConvert(Class<?> targetClass) {
-		targetClass = getSimpleType(targetClass);
-		return canConvertSingle(targetClass);
-	}
-
-	protected abstract boolean canConvertSingle(Class<?> targetClass) ;
-	
 	public final Object convert(Class<?> targetClass, Annotation[] annotations, StepToken[] stepTokens) throws CannotConvertException {
-		if (! canConvert(targetClass)) {
-			throw new CannotConvertException(targetClass, stepTokens);
+		if (! Arrays.asList(getSupportedClasses()).contains(getSimpleType(targetClass))) {
+			throw new CannotConvertException(targetClass, stepTokens); 
 		}
 		Object result = null;
 		if (! targetClass.isArray()) {

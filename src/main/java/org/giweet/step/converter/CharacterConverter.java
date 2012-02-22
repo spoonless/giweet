@@ -8,9 +8,8 @@ import org.giweet.step.StepToken;
 
 public class CharacterConverter extends ArraySupportConverter {
 
-	@Override
-	protected boolean canConvertSingle(Class<?> targetClass) {
-		return char.class.equals(targetClass) || Character.class.equals(targetClass);
+	public Class<?>[] getSupportedClasses() {
+		return new Class<?>[]{char.class, Character.class};
 	}
 
 	@Override

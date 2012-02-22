@@ -24,10 +24,9 @@ public class DateConverter extends ArraySupportConverter {
 			dateFormats[i++] = new SimpleDateFormat(datePattern, locale);
 		}
 	}
-
-	@Override
-	protected boolean canConvertSingle(Class<?> targetClass) {
-		return Date.class.equals(targetClass);
+	
+	public Class<?>[] getSupportedClasses() {
+		return new Class<?>[]{Date.class};
 	}
 
 	@Override
@@ -54,6 +53,7 @@ public class DateConverter extends ArraySupportConverter {
 	}
 
 	@Override
+	// FIXME add support for pattern from annotations
 	protected Object convertArray(Class<?> baseTargetClass, Annotation[] annotations, StepToken[] stepTokens) throws CannotConvertException {
 		List<Date> result = new ArrayList<Date>(stepTokens.length);
 		Date dateToComputeSteps = new Date(0);

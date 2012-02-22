@@ -6,7 +6,7 @@ import org.giweet.step.StepToken;
 
 public interface Converter {
 	
-	boolean canConvert(Class<?> targetClass);
+	Class<?>[] getSupportedClasses();
 	
 	Object convert (Class<?> targetClass, Annotation[] annotations, StepToken[] values) throws CannotConvertException;
 

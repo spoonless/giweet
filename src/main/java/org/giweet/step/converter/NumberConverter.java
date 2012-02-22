@@ -33,6 +33,28 @@ public class NumberConverter extends ArraySupportConverter {
 		this.numberFormat = decimalFormat;
 		this.decimalFormatSymbols = decimalFormat.getDecimalFormatSymbols();
 	}
+	
+	public Class<?>[] getSupportedClasses() {
+		return new Class<?>[]{
+			Number.class,
+			Integer.class,
+			Long.class,
+			Double.class,
+			Float.class,
+			Short.class,
+			Byte.class,
+			int.class,
+			long.class,
+			double.class,
+			float.class,
+			short.class,
+			byte.class,
+			AtomicInteger.class,
+			AtomicLong.class,
+			BigInteger.class,
+			BigDecimal.class
+		};
+	}
 
 	@Override
 	protected Object convertSingle(Class<?> baseTargetClass, Annotation[] annotations, StepToken[] stepTokens) throws CannotConvertException {
@@ -105,16 +127,6 @@ public class NumberConverter extends ArraySupportConverter {
 			return new BigDecimal(result.doubleValue());
 		}
 		throw new CannotConvertException(targetClass, String.valueOf(result));
-	}
-
-	@Override
-	protected boolean canConvertSingle(Class<?> targetClass) {
-		boolean canConvert = Number.class.isAssignableFrom(targetClass);
-		if (! canConvert && targetClass.isPrimitive()) {
-			Class<?> wrapperClass = getWrapperClass(targetClass);
-			canConvert = wrapperClass != null;
-		}
-		return canConvert;
 	}
 
 	private static Class<?> getWrapperClass(Class<?> targetClass) {

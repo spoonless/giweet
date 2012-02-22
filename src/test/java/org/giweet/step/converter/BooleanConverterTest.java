@@ -14,14 +14,10 @@ public class BooleanConverterTest {
 	private StepTokenizer stepTokenizer = new StepTokenizer(false, true);
 	
 	@Test
-	public void canConvert() {
+	public void canGetSupportedClasses() {
 		BooleanConverter underTest = new BooleanConverter();
 		
-		assertTrue(underTest.canConvert(Boolean.class));
-		assertTrue(underTest.canConvert(boolean.class));
-		assertTrue(underTest.canConvert(Boolean[].class));
-		assertTrue(underTest.canConvert(boolean[].class));
-		assertFalse(underTest.canConvert(Integer.class));
+		assertArrayEquals(new Class<?>[]{boolean.class, Boolean.class}, underTest.getSupportedClasses());
 	}
 
 	@Test

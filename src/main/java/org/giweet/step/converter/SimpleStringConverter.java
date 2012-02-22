@@ -6,9 +6,9 @@ import org.giweet.StringUtils;
 import org.giweet.step.StepToken;
 
 public class SimpleStringConverter implements Converter {
-
-	public boolean canConvert(Class<?> targetClass) {
-		return String.class.isAssignableFrom(targetClass);
+	
+	public Class<?>[] getSupportedClasses() {
+		return new Class<?>[]{String.class};
 	}
 
 	public Object convert(Class<?> targetClass, Annotation[] annotations, StepToken[] values) throws CannotConvertException {

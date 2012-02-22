@@ -12,12 +12,10 @@ public class CharacterConverterTest {
 	private StepTokenizer stepTokenizer = new StepTokenizer(false, true);
 
 	@Test
-	public void canConvert() {
+	public void canGetSupportedClasses() {
 		CharacterConverter underTest = new CharacterConverter();
 		
-		assertTrue(underTest.canConvert(char.class));
-		assertTrue(underTest.canConvert(Character.class));
-		assertFalse(underTest.canConvert(Integer.class));
+		assertArrayEquals(new Class<?>[]{char.class, Character.class}, underTest.getSupportedClasses());
 	}
 
 	@Test

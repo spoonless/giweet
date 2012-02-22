@@ -10,6 +10,8 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
@@ -25,28 +27,32 @@ public class NumberConverterTest {
 	private Annotation[] dummyAnnotations = new Annotation[0];
 
 	@Test
-	public void canConvert() {
+	public void canGetSupportedClasses() {
 		NumberConverter underTest = new NumberConverter(Locale.US);
 		
-		assertTrue(underTest.canConvert(Number.class));
-		assertTrue(underTest.canConvert(Integer.class));
-		assertTrue(underTest.canConvert(Long.class));
-		assertTrue(underTest.canConvert(Double.class));
-		assertTrue(underTest.canConvert(Float.class));
-		assertTrue(underTest.canConvert(Short.class));
-		assertTrue(underTest.canConvert(Byte.class));
-		assertTrue(underTest.canConvert(int.class));
-		assertTrue(underTest.canConvert(long.class));
-		assertTrue(underTest.canConvert(double.class));
-		assertTrue(underTest.canConvert(float.class));
-		assertTrue(underTest.canConvert(short.class));
-		assertTrue(underTest.canConvert(byte.class));
-		assertTrue(underTest.canConvert(AtomicInteger.class));
-		assertTrue(underTest.canConvert(AtomicLong.class));
-		assertTrue(underTest.canConvert(BigInteger.class));
-		assertTrue(underTest.canConvert(BigDecimal.class));
-		assertFalse(underTest.canConvert(Object.class));
-		assertFalse(underTest.canConvert(boolean.class));
+		Class<?>[] result = underTest.getSupportedClasses();
+
+		List<Class<?>> convertibleClasses = Arrays.asList(result);
+		assertEquals(17, convertibleClasses.size());
+		assertTrue(convertibleClasses.contains(Number.class));
+		assertTrue(convertibleClasses.contains(Integer.class));
+		assertTrue(convertibleClasses.contains(Long.class));
+		assertTrue(convertibleClasses.contains(Double.class));
+		assertTrue(convertibleClasses.contains(Float.class));
+		assertTrue(convertibleClasses.contains(Short.class));
+		assertTrue(convertibleClasses.contains(Byte.class));
+		assertTrue(convertibleClasses.contains(int.class));
+		assertTrue(convertibleClasses.contains(long.class));
+		assertTrue(convertibleClasses.contains(double.class));
+		assertTrue(convertibleClasses.contains(float.class));
+		assertTrue(convertibleClasses.contains(short.class));
+		assertTrue(convertibleClasses.contains(byte.class));
+		assertTrue(convertibleClasses.contains(AtomicInteger.class));
+		assertTrue(convertibleClasses.contains(AtomicLong.class));
+		assertTrue(convertibleClasses.contains(BigInteger.class));
+		assertTrue(convertibleClasses.contains(BigDecimal.class));
+		assertFalse(convertibleClasses.contains(Object.class));
+		assertFalse(convertibleClasses.contains(boolean.class));
 	}
 
 	@Test

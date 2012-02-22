@@ -16,11 +16,10 @@ public class DateConverterTest {
 	private Annotation[] dummyAnnotations = new Annotation[0];
 
 	@Test
-	public void canConvert() {
+	public void canGetSupportedClasses() {
 		DateConverter underTest = new DateConverter(Locale.US);
 		
-		assertTrue(underTest.canConvert(Date.class));
-		assertTrue(underTest.canConvert(Date[].class));
+		assertArrayEquals(new Class<?>[]{Date.class}, underTest.getSupportedClasses());
 	}
 
 	@Test

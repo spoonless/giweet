@@ -15,9 +15,8 @@ public class BooleanConverter extends ArraySupportConverter {
 		this.patterns = patterns;
 	}
 	
-	@Override
-	protected boolean canConvertSingle(Class<?> targetClass) {
-		return boolean.class.isAssignableFrom(targetClass) || Boolean.class.isAssignableFrom(targetClass);
+	public Class<?>[] getSupportedClasses() {
+		return new Class<?>[]{boolean.class, Boolean.class};
 	}
 	
 	@Override

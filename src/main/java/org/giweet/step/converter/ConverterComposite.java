@@ -1,34 +1,33 @@
 package org.giweet.step.converter;
 
 import java.lang.annotation.Annotation;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 import org.giweet.StringUtils;
 import org.giweet.step.StepToken;
 
 public class ConverterComposite implements Converter {
 	
-	private final List<Converter> converters = new ArrayList<Converter>();
+	private Map<Class<?>, Converter> mapConvertersByClass = new HashMap<Class<?>, Converter>();
 	
 	public ConverterComposite(Converter... converters) {
-		this.converters.addAll(Arrays.asList(converters));
-	}
-
-	public boolean canConvert(Class<?> targetClass) {
-		targetClass = getRealTargetClass(targetClass);
-		return getConverter(targetClass) != null;
-	}
-	
-	private Converter getConverter(Class<?> targetClass) {
 		for (Converter converter : converters) {
-			if (converter.canConvert(targetClass)) {
-				return converter;
+			for (Class<?> supportedClasses : converter.getSupportedClasses()) {
+				mapConvertersByClass.put(supportedClasses, converter);
 			}
 		}
-		return null;
+	}
+	
+	public Class<?>[] getSupportedClasses() {
+		Set<Class<?>> keySet = mapConvertersByClass.keySet();
+		return keySet.toArray(new Class<?>[keySet.size()]);
+	}
+
+	private Converter getConverter(Class<?> targetClass) {
+		return mapConvertersByClass.get(targetClass);
 	}
 
 	private Class<?> getRealTargetClass(Class<?> targetClass) {
