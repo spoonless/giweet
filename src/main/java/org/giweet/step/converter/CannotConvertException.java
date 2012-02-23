@@ -1,6 +1,5 @@
 package org.giweet.step.converter;
 
-import org.giweet.StringUtils;
 
 public class CannotConvertException extends Exception {
 
@@ -11,14 +10,6 @@ public class CannotConvertException extends Exception {
 	
 	public CannotConvertException(Class<?> targetClass, String value) {
 		super (createMessage(targetClass, value));
-	}
-
-	public CannotConvertException(Class<?> targetClass, Object[] values) {
-		super (createMessage(targetClass, StringUtils.toString(values)));
-	}
-
-	public CannotConvertException(Class<?> targetClass, Object[] values, Throwable e) {
-		this(targetClass, StringUtils.toString(values), e);
 	}
 
 	public CannotConvertException(Class<?> targetClass, String value, Throwable e) {

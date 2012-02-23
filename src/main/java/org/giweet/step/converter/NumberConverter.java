@@ -1,24 +1,17 @@
 package org.giweet.step.converter;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
-import org.giweet.StringUtils;
-import org.giweet.step.StaticStepToken;
-import org.giweet.step.StepToken;
-
-public class NumberConverter extends ArraySupportConverter {
+public class NumberConverter implements Converter {
 	
 	private static final char NON_BREAKABLE_SPACE = '\u00a0';
 	private final NumberFormat numberFormat;
@@ -56,21 +49,22 @@ public class NumberConverter extends ArraySupportConverter {
 		};
 	}
 
-	@Override
-	protected Object convertSingle(Class<?> baseTargetClass, Annotation[] annotations, StepToken[] stepTokens) throws CannotConvertException {
-		String value = StringUtils.toString(stepTokens);
-		NumberFormat numberFormat = getNumberFormat(baseTargetClass, annotations);
+	public Object convert(Class<?> targetClass, Annotation[] annotations, String value) throws CannotConvertException {
+		NumberFormat numberFormat = getNumberFormat(targetClass, annotations);
 		Number result = null;
 		try {
+			if (decimalFormatSymbols.getGroupingSeparator() == NON_BREAKABLE_SPACE) {
+				value = fixNonBreakableSpaceForGroupSeparator(value);
+			}
 			result = numberFormat.parse(value);
 		}
 		catch (ParseException e) {
-			throw new CannotConvertException(baseTargetClass, value, e);
+			throw new CannotConvertException(targetClass, value, e);
 		}
-		return cast(baseTargetClass, result);
+		return cast(targetClass, result);
 	}
 	
-	private NumberFormat getNumberFormat(Class<?> baseTargetClass, Annotation[] annotations) {
+	private NumberFormat getNumberFormat(Class<?> targetClass, Annotation[] annotations) {
 		String[] patterns = Pattern.getPatterns(annotations);
 		NumberFormat numberFormat = null;
 		if (patterns == null || patterns.length == 0) {
@@ -78,12 +72,27 @@ public class NumberConverter extends ArraySupportConverter {
 		}
 		else {
 			DecimalFormat decimalFormat = new DecimalFormat(patterns[0], decimalFormatSymbols);
-			if (BigInteger.class.isAssignableFrom(baseTargetClass) || BigDecimal.class.isAssignableFrom(baseTargetClass)) {
+			if (BigInteger.class.isAssignableFrom(targetClass) || BigDecimal.class.isAssignableFrom(targetClass)) {
 				decimalFormat.setParseBigDecimal(true);
 			}
 			numberFormat = decimalFormat;
 		}
 		return numberFormat;
+	}
+	
+	/**
+	 * Workaround: for some locales (like french and finnish, group separator character 
+	 * is a non breakable space.
+	 * @see http://bugs.sun.com/view_bug.do?bug_id=4510618
+	 */
+	private String fixNonBreakableSpaceForGroupSeparator(String value) {
+		char[] chars = value.toCharArray();
+		for (int i = 0; i < chars.length; i++) {
+			if (Character.isWhitespace(chars[i])) {
+				chars[i] = NON_BREAKABLE_SPACE;
+			}
+		}
+		return new String(chars);
 	}
 
 	private static Object cast(Class<?> targetClass, Number result) throws CannotConvertException {
@@ -150,111 +159,5 @@ public class NumberConverter extends ArraySupportConverter {
 			wrapperClass = Byte.class;
 		} 
 		return wrapperClass;
-	}
-
-	@Override
-	protected Object convertArray(Class<?> baseTargetClass, Annotation[] annotations, StepToken[] stepTokens) throws CannotConvertException {
-		List<String> meaningfulValues = null;
-		NumberFormat numberFormat = getNumberFormat(baseTargetClass, annotations);
-		if (decimalFormatSymbols.getGroupingSeparator() != NON_BREAKABLE_SPACE) {
-			meaningfulValues = getMeaningfulValues(stepTokens);
-		}
-		else {
-			meaningfulValues = getMeaningfulValueWithNonBreakableSpaceFix(stepTokens);
-		}
-		
-		Object resultArray = Array.newInstance(baseTargetClass, meaningfulValues.size());
-		for (int i = 0; i < meaningfulValues.size(); i++) {
-			String value = meaningfulValues.get(i);
-			try {
-				Number result = numberFormat.parse(value);
-				Array.set(resultArray, i, cast(baseTargetClass, result));
-			} catch (ParseException e) {
-				throw new CannotConvertException(baseTargetClass, value, e);
-			}
-		}
-		return resultArray;
-	}
-	
-	/**
-	 * Workaround: for some locales (like french and finnish, group separator character 
-	 * is a non breakable space. If such character is present then we assume that simple space
-	 * must also be present.
-	 * @see http://bugs.sun.com/view_bug.do?bug_id=4510618
-	 */
-	private List<String> getMeaningfulValueWithNonBreakableSpaceFix(StepToken[] stepTokens) {
-		List<String> reformattedList = new ArrayList<String>(stepTokens.length);
-		stepTokens = stepTokens.clone();
-		StepToken groupSeparator = new StaticStepToken(String.valueOf(NON_BREAKABLE_SPACE), false);
-		
-		replaceByGroupSeparator(stepTokens, groupSeparator);
-		
-		String currentListItem = null;
-		for (StepToken stepToken : stepTokens) {
-			if (stepToken.isMeaningful()) {
-				if (currentListItem == null) {
-					currentListItem = String.valueOf(stepToken);
-				}
-				else {
-					currentListItem += String.valueOf(stepToken);
-				}
-			}
-			else if (currentListItem != null){
-				if (stepToken == groupSeparator) {
-					currentListItem += String.valueOf(stepToken);
-				}
-				else {
-					reformattedList.add(currentListItem);
-					currentListItem = null;
-				}
-			}
-		}
-		if (currentListItem != null) {
-			reformattedList.add(currentListItem);
-		}
-		return reformattedList;
-	}
-
-	private void replaceByGroupSeparator(StepToken[] stepTokens, StepToken groupSeparator) {
-		boolean maybeGroupSeparator = false;
-		for (int i = stepTokens.length - 1; i >= 0; i--) {
-			StepToken stepToken = stepTokens[i];
-			String value = String.valueOf(stepToken);
-			boolean signIsFirst = false;
-			if (stepToken.isMeaningful()) {
-				int nbDigit = 0;
-				int j = 0;
-				for (; j < value.length(); j++) {
-					char currentCharacter = value.charAt(j);
-					if (Character.isDigit(currentCharacter)) {
-						nbDigit++;
-					}
-					else if (j == 0 && currentCharacter == decimalFormatSymbols.getMinusSign()){
-						signIsFirst = true;
-					}
-					else {
-						break;
-					}
-				}
-				if (maybeGroupSeparator && j == value.length() && nbDigit <= 3) {
-					stepTokens[i+1] = groupSeparator;
-				}
-				maybeGroupSeparator = nbDigit == 3 && !signIsFirst;
-			}
-			else if (maybeGroupSeparator) {
-				if (value.length() != 1) {
-					maybeGroupSeparator = false;
-				}
-				else if (! stepTokens[i+1].isMeaningful()) {
-					maybeGroupSeparator = false;
-				}
-				else {
-					char separatorChar = value.charAt(0);
-					if (separatorChar != ' ' && separatorChar != NON_BREAKABLE_SPACE) {
-						maybeGroupSeparator = false;
-					}
-				}
-			}
-		}
 	}
 }

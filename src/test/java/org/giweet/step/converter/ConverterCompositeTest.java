@@ -8,8 +8,6 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.Locale;
 
-import org.giweet.step.StaticStepToken;
-import org.giweet.step.StepToken;
 import org.junit.Test;
 
 public class ConverterCompositeTest {
@@ -30,7 +28,7 @@ public class ConverterCompositeTest {
 		Annotation[] dummyAnnotations = {};
 		ConverterComposite underTest = new ConverterComposite(new SimpleStringConverter(), new BooleanConverter(), new NumberConverter(Locale.US));
 		
-		Object result = underTest.convert(Integer.class, dummyAnnotations , toArray(new StaticStepToken("1")));
+		Object result = underTest.convert(Integer.class, dummyAnnotations , "1");
 		assertEquals(Integer.valueOf(1), result);
 	}
 
@@ -39,10 +37,6 @@ public class ConverterCompositeTest {
 		Annotation[] dummyAnnotations = {};
 		ConverterComposite underTest = new ConverterComposite();
 		
-		underTest.convert(Integer.class, dummyAnnotations , toArray(new StaticStepToken("1")));
-	}
-	
-	private static StepToken[] toArray(StepToken... stepTokens) {
-		return stepTokens;
+		underTest.convert(Integer.class, dummyAnnotations , "1");
 	}
 }

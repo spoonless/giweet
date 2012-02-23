@@ -1,13 +1,8 @@
 package org.giweet.step.converter;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Array;
-import java.util.List;
 
-import org.giweet.StringUtils;
-import org.giweet.step.StepToken;
-
-public class BooleanConverter extends ArraySupportConverter {
+public class BooleanConverter implements Converter {
 
 	private final String[] patterns;
 
@@ -19,22 +14,12 @@ public class BooleanConverter extends ArraySupportConverter {
 		return new Class<?>[]{boolean.class, Boolean.class};
 	}
 	
-	@Override
-	protected Object convertSingle(Class<?> baseTargetClass, Annotation[] annotations, StepToken[] stepTokens) {
-		String[] patterns = getPatterns(annotations);
-		return applyPatterns(patterns, StringUtils.toString(stepTokens));
-	}
-
-	@Override
-	protected Object convertArray(Class<?> targetClass, Annotation[] annotations, StepToken[] stepTokens) {
-		String[] patterns = getPatterns(annotations);
-		List<String> meaningfulValues = getMeaningfulValues(stepTokens);
-		Object result = Array.newInstance(targetClass, meaningfulValues.size());
-		for (int i = 0 ; i < meaningfulValues.size() ; i++) {
-			boolean tokenValue = applyPatterns(patterns, meaningfulValues.get(i));
-			Array.set(result, i, Boolean.valueOf(tokenValue));
+	public Object convert(Class<?> targetClass, Annotation[] annotations, String value) throws CannotConvertException {
+		if (! boolean.class.equals(targetClass) && ! Boolean.class.equals(targetClass)) {
+			throw new CannotConvertException(targetClass, value);
 		}
-		return result;
+		String[] patterns = getPatterns(annotations);
+		return applyPatterns(patterns, value);
 	}
 
 	private String[] getPatterns(Annotation[] annotations) {

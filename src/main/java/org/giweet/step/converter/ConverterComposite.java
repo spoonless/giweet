@@ -6,9 +6,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import org.giweet.StringUtils;
-import org.giweet.step.StepToken;
-
 public class ConverterComposite implements Converter {
 	
 	private Map<Class<?>, Converter> mapConvertersByClass = new HashMap<Class<?>, Converter>();
@@ -40,11 +37,11 @@ public class ConverterComposite implements Converter {
 		return targetClass;
 	}
 	
-	public Object convert(Class<?> targetClass, Annotation[] annotations, StepToken[] value) throws CannotConvertException {
+	public Object convert(Class<?> targetClass, Annotation[] annotations, String value) throws CannotConvertException {
 		Class<?> realTargetClass = getRealTargetClass(targetClass);
 		Converter converter = getConverter(realTargetClass);
 		if (converter == null) {
-			throw new CannotConvertException(targetClass, StringUtils.toString(value));
+			throw new CannotConvertException(targetClass, value);
 		}
 		return converter.convert(targetClass, annotations, value);
 	}

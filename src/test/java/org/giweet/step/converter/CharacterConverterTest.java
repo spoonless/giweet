@@ -1,16 +1,14 @@
 package org.giweet.step.converter;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
 
 import java.lang.annotation.Annotation;
 
-import org.giweet.step.StepTokenizer;
 import org.junit.Test;
 
 public class CharacterConverterTest {
 	
-	private StepTokenizer stepTokenizer = new StepTokenizer(false, true);
-
 	@Test
 	public void canGetSupportedClasses() {
 		CharacterConverter underTest = new CharacterConverter();
@@ -22,43 +20,31 @@ public class CharacterConverterTest {
 	public void canConvertValue() throws Exception {
 		CharacterConverter underTest = new CharacterConverter();
 		
-		Character result = (Character) underTest.convert(char.class, new Annotation[0], stepTokenizer.tokenize("a"));
+		Character result = (Character) underTest.convert(char.class, new Annotation[0], "a");
 		assertEquals(Character.valueOf('a'), result);
 
-		result = (Character) underTest.convert(Character.class, new Annotation[0], stepTokenizer.tokenize("b"));
+		result = (Character) underTest.convert(Character.class, new Annotation[0], "b");
 		assertEquals(Character.valueOf('b'), result);
-	}
-
-	@Test
-	public void canConvertArrayValue() throws Exception {
-		CharacterConverter underTest = new CharacterConverter();
-		
-		char[] result = (char[]) underTest.convert(char[].class, new Annotation[0], stepTokenizer.tokenize("a b c"));
-		assertArrayEquals(new String("abc").toCharArray(), result);
-	}
-
-	@Test
-	public void canConvertArrayValueOfWrapperClass() throws Exception {
-		CharacterConverter underTest = new CharacterConverter();
-		
-		Character[] result = (Character[]) underTest.convert(Character[].class, new Annotation[0], stepTokenizer.tokenize("a b c"));
-		assertArrayEquals(new Character[]{'a', 'b', 'c'}, result);
-
-		result = (Character[]) underTest.convert(Character[].class, new Annotation[0], stepTokenizer.tokenize(""));
-		assertArrayEquals(new Character[0], result);
 	}
 
 	@Test(expected=CannotConvertException.class)
 	public void cannotConvertValueWhenEmptyString() throws Exception {
 		CharacterConverter underTest = new CharacterConverter();
 		
-		underTest.convert(char.class, new Annotation[0], stepTokenizer.tokenize(""));
+		underTest.convert(char.class, new Annotation[0], "");
+	}
+
+	@Test(expected=CannotConvertException.class)
+	public void cannotConvertValueWhenTargetClassIsNotCharacter() throws Exception {
+		CharacterConverter underTest = new CharacterConverter();
+		
+		underTest.convert(int.class, new Annotation[0], "1");
 	}
 
 	@Test(expected=CannotConvertException.class)
 	public void cannotConvertValueWhenStringContainsMoreThanOneCharacter() throws Exception {
 		CharacterConverter underTest = new CharacterConverter();
 		
-		underTest.convert(char.class, new Annotation[0], stepTokenizer.tokenize("ab"));
+		underTest.convert(char.class, new Annotation[0], "ab");
 	}
 }
