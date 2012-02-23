@@ -1,10 +1,8 @@
-package org.giweet.step.converter;
+package org.giweet.step;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import org.giweet.StringUtils;
-import org.giweet.step.StepToken;
-import org.giweet.step.StepTokenizer;
 import org.junit.Test;
 
 public class StepTokenArraySplitterTest {

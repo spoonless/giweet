@@ -1,10 +1,7 @@
-package org.giweet.step.converter;
+package org.giweet.step;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import org.giweet.step.StepToken;
-import org.giweet.step.StepTokenizer;
 
 public class StepTokenArraySplitter {
 	
