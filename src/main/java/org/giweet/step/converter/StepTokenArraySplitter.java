@@ -8,9 +8,10 @@ import org.giweet.step.StepTokenizer;
 
 public class StepTokenArraySplitter {
 	
+	private static final int FIRST_SEPARATOR_TOKEN = 0x1;
+	private static final int LAST_SEPARATOR_TOKEN = 0x2;
 	private final StepToken[][] listSeparators;
 	
-	// FIXME what to do if one separator is "" (means stepToken[] of size 0)
 	public StepTokenArraySplitter(String... separators) {
 		StepTokenizer stepTokenizer = new StepTokenizer(false, true);
 		listSeparators = new StepToken[separators.length][];
@@ -30,14 +31,20 @@ public class StepTokenArraySplitter {
 			else {
 				int endIndex = i;
 				if (startIndex < endIndex) {
-					resultAsList.add(subArray(stepTokens, startIndex, endIndex - startIndex));
+					StepToken[] subArray = subArray(stepTokens, startIndex, endIndex - startIndex);
+					if (subArray != null) {
+						resultAsList.add(subArray);
+					}
 				}
 				i+= nextSeparator.length;
 				startIndex = i;
 			}
 		}
 		if (startIndex < stepTokens.length) {
-			resultAsList.add(subArray(stepTokens, startIndex, stepTokens.length - startIndex));
+			StepToken[] subArray = subArray(stepTokens, startIndex, stepTokens.length - startIndex);
+			if (subArray != null) {
+				resultAsList.add(subArray);
+			}
 		}
 		return resultAsList.toArray(new StepToken[resultAsList.size()][]);
 	}
@@ -57,13 +64,20 @@ public class StepTokenArraySplitter {
 		if (separator.length <= stepTokens.length - stepTokenIndex) {
 			isSeparatorNext = true;
 			for (int i = 0; isSeparatorNext && i < separator.length; i++) {
-				isSeparatorNext = areEquals(separator[i], stepTokens[stepTokenIndex + i]);
+				int tokenRange = 0;
+				if (i == 0) {
+					tokenRange = FIRST_SEPARATOR_TOKEN;
+				}
+				if (i == separator.length - 1) {
+					tokenRange |= LAST_SEPARATOR_TOKEN;
+				}
+				isSeparatorNext = areEquals(separator[i], stepTokens[stepTokenIndex + i], tokenRange);
 			}
 		}
 		return isSeparatorNext;
 	}
 	
-	private static boolean areEquals (StepToken separator, StepToken stepToken) {
+	private static boolean areEquals (StepToken separator, StepToken stepToken, int tokenRange) {
 		boolean areEquals = false;
 		if (separator.isMeaningful()) {
 			if (stepToken.isMeaningful()) {
@@ -77,25 +91,45 @@ public class StepTokenArraySplitter {
 			if (indexOfSeparator >= 0) {
 				boolean nonWhitespaceFound = false;
 				char[] stepTokenValueAsChar = stepTokenValue.toCharArray();
-				for (int i = 0; i < indexOfSeparator && !nonWhitespaceFound; i++) {
-					nonWhitespaceFound = !Character.isWhitespace(stepTokenValueAsChar[i]);
+				if ((tokenRange & FIRST_SEPARATOR_TOKEN) == 0) {
+					for (int i = 0; i < indexOfSeparator && !nonWhitespaceFound; i++) {
+						nonWhitespaceFound = !Character.isWhitespace(stepTokenValueAsChar[i]);
+					}
 				}
-				if (! nonWhitespaceFound) {
+				if (! nonWhitespaceFound && (tokenRange & LAST_SEPARATOR_TOKEN) == 0) {
 					for (int i = indexOfSeparator + separatorValue.length(); i < stepTokenValueAsChar.length && !nonWhitespaceFound; i++) {
 						nonWhitespaceFound = !Character.isWhitespace(stepTokenValueAsChar[i]);
 					}
-					areEquals = !nonWhitespaceFound;
 				}
+				areEquals = !nonWhitespaceFound;
 			}
 		}
 		return areEquals;
 	}
 
 	private static StepToken[] subArray(StepToken[] stepTokens, int offset, int count) {
-		StepToken[] subStepTokens = new StepToken[count];
-		for (int i = 0; i < subStepTokens.length; i++) {
-			subStepTokens[i] = stepTokens[i + offset];
+		StepToken[] subStepTokens = null;
+		int lastIndex = offset + count;
+
+		for (; offset < lastIndex; offset++) {
+			if (stepTokens[offset].isMeaningful()) {
+				break;
+			}
 		}
+		
+		for (; lastIndex > offset; lastIndex--) {
+			if (stepTokens[lastIndex - 1].isMeaningful()) {
+				break;
+			}
+		}
+		
+		if (offset < lastIndex) {
+			subStepTokens = new StepToken[lastIndex - offset];
+			for (int i = 0; i < subStepTokens.length; i++) {
+				subStepTokens[i] = stepTokens[i + offset];
+			}
+		}
+		
 		return subStepTokens;
 	}
 }

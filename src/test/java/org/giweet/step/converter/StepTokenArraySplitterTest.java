@@ -18,6 +18,9 @@ public class StepTokenArraySplitterTest {
 		StepToken[][] result = underTest.split(stepTokenizer.tokenize(""));
 		assertSplitEquals(result);
 		
+		result = underTest.split(stepTokenizer.tokenize(", , , , , , "));
+		assertSplitEquals(result);
+
 		result = underTest.split(stepTokenizer.tokenize("a"));
 		assertSplitEquals(result, "a");
 
@@ -54,10 +57,16 @@ public class StepTokenArraySplitterTest {
 		StepTokenArraySplitter underTest = new StepTokenArraySplitter("and also");
 		
 		StepToken[][] result = underTest.split(stepTokenizer.tokenize("a and also b"));
-		assertSplitEquals(result, "a ", " b");
+		assertSplitEquals(result, "a", "b");
 
 		result = underTest.split(stepTokenizer.tokenize("a and b and also c and also d e f"));
-		assertSplitEquals(result, "a and b ", " c ", " d e f");
+		assertSplitEquals(result, "a and b", "c", "d e f");
+
+		result = underTest.split(stepTokenizer.tokenize("a and, also b"));
+		assertSplitEquals(result, "a and, also b");
+
+		result = underTest.split(stepTokenizer.tokenize("a and ,also b"));
+		assertSplitEquals(result, "a and ,also b");
 	}
 
 	@Test
@@ -65,13 +74,27 @@ public class StepTokenArraySplitterTest {
 		StepTokenArraySplitter underTest = new StepTokenArraySplitter("and also", "between", "and");
 		
 		StepToken[][] result = underTest.split(stepTokenizer.tokenize("a between b and c and also d"));
-		assertSplitEquals(result, "a ", " b ", " c ", " d");
+		assertSplitEquals(result, "a", "b", "c", "d");
 
 		result = underTest.split(stepTokenizer.tokenize("a between b and c and            also d"));
-		assertSplitEquals(result, "a ", " b ", " c ", " d");
+		assertSplitEquals(result, "a", "b", "c", "d");
 
 		result = underTest.split(stepTokenizer.tokenize("a between b and c \"and also\" d"));
-		assertSplitEquals(result, "a ", " b ", " c and also d");
+		assertSplitEquals(result, "a", "b", "c and also d");
+	}
+
+	@Test
+	public void canSplitWithComplexMixedSeparators2() {
+		StepTokenArraySplitter underTest = new StepTokenArraySplitter("$,", "$.");
+		
+		StepToken[][] result = underTest.split(stepTokenizer.tokenize("1 $, 2 $."));
+		assertSplitEquals(result, "1", "2");
+
+		result = underTest.split(stepTokenizer.tokenize("1 $ , 2 $ ."));
+		assertSplitEquals(result, "1", "2");
+
+		result = underTest.split(stepTokenizer.tokenize("1 $ !, 2 $."));
+		assertSplitEquals(result, "1 $ !, 2");
 	}
 
 	@Test
@@ -88,6 +111,9 @@ public class StepTokenArraySplitterTest {
 		
 		StepToken[][] result = underTest.split(stepTokenizer.tokenize("\n - item1\n  - item2\n- item3"));
 		assertSplitEquals(result, "item1", "item2", "item3");
+
+		result = underTest.split(stepTokenizer.tokenize("\n - item1\n -, item2"));
+		assertSplitEquals(result, "item1\n -, item2");
 	}
 
 	@Test
@@ -118,12 +144,10 @@ public class StepTokenArraySplitterTest {
 		assertSplitEquals(result, "a", "b");
 
 		result = underTest.split(stepTokenizer.tokenize("a, b"));
-		// FIXME Wrong! good result should be "a," "b"
-		assertSplitEquals(result, "a, b");
+		assertSplitEquals(result, "a", "b");
 
 		result = underTest.split(stepTokenizer.tokenize("a ,b"));
-		// FIXME Wrong! good result should be "a" ",b"
-		assertSplitEquals(result, "a ,b");
+		assertSplitEquals(result, "a", "b");
 	}
 
 	private void assertSplitEquals(StepToken[][] result, String... expected) {
