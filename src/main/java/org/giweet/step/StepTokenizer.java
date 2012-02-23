@@ -8,7 +8,7 @@ public class StepTokenizer {
 	private static final int TOKEN_SEPARATOR_IF_LEADING = 0x2;
 	private static final int TOKEN_SEPARATOR_IF_TRAILING = 0x4;
 	private static final int TOKEN_SEPARATOR_IF_LEADING_OR_TRAILING = TOKEN_SEPARATOR_IF_LEADING | TOKEN_SEPARATOR_IF_TRAILING;
-	private static final int START_QUOTE = 0x8 | TOKEN_SEPARATOR;
+	private static final int START_QUOTE = 0x8;
 	private static final int END_QUOTE = 0x10 | TOKEN_SEPARATOR;
 	private static final int START_COMMENT = 0x20 | TOKEN_SEPARATOR;
 	private static final int END_COMMENT = 0x40 | TOKEN_SEPARATOR;
@@ -73,7 +73,7 @@ public class StepTokenizer {
 			}
 			
 			if ((characterType & TOKEN_SEPARATOR) != 0) {
-				if (letterCount > 0) {
+				if (letterCount > 0 || characterType == END_QUOTE) {
 					letterCount -= trailingCount;
 					boolean isArgumentToken = false;
 					if (characters[startPosition] == '$' && letterCount > 1 && allowParameterTokens) {
@@ -126,8 +126,23 @@ public class StepTokenizer {
 				commentBlockCount++;
 				break;
 			case START_QUOTE:
-				expectedEndQuote = getExpectedEndQuote(c);
-				startPosition = i+1;
+				if (letterCount == 0) {
+					if (withMeaninglessTokens && separatorCount > 0) {
+						String stringToken = new String (characters, startPosition, separatorCount);
+						tokensAsList.add(new StaticStepToken(stringToken, false));
+						separatorCount = 0;
+					}
+					trailingCount = 0;
+					startPosition = i+1;
+					expectedEndQuote = getExpectedEndQuote(c);
+				}
+				else {
+					letterCount++;
+				}
+				break;
+			case END_QUOTE:
+				startPosition++;
+				separatorCount--;
 				break;
 			}
 		}
@@ -191,6 +206,7 @@ public class StepTokenizer {
 		case Character.OTHER_LETTER:
 		case Character.OTHER_NUMBER:
 		case Character.OTHER_SYMBOL:
+		case Character.FINAL_QUOTE_PUNCTUATION:
 			characterType = TOKEN_LETTER;
 			break;
 
@@ -203,9 +219,6 @@ public class StepTokenizer {
 			break;
 		case Character.INITIAL_QUOTE_PUNCTUATION:
 			characterType = START_QUOTE;
-			break;
-		case Character.FINAL_QUOTE_PUNCTUATION:
-			characterType = END_QUOTE;
 			break;
 		case Character.OTHER_PUNCTUATION:
 			characterType = getCharacterTypeForOtherPunctuation(c);

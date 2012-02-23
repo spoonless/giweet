@@ -59,16 +59,16 @@ public class StepTokenizerTestFromXml {
 				stringBuilder = null;
 			}
 			else if ("expected".equals(localName)) {
-				Assert.assertEquals("For actual \"" + actual + "\", invalid number of tokens ", expectedTokenIndex, actualStepTokens.length);
+				Assert.assertEquals("For actual \"" + actual + "\", invalid number of tokens", expectedTokenIndex, actualStepTokens.length);
 			}
 			else if ("token".equals(localName)) {
 				String expectedContent = stringBuilder.toString();
 				String message = "For actual \"" + actual + "\", stepToken " + expectedTokenIndex + " ";
-				Assert.assertTrue(message + "unexpected, only " + actualStepTokens.length + " tokens was parsed" , expectedTokenIndex < actualStepTokens.length);
+				Assert.assertTrue(message + "unexpected, only " + actualStepTokens.length + " tokens were parsed" , expectedTokenIndex < actualStepTokens.length);
 				StepToken stepToken = actualStepTokens[expectedTokenIndex];
-				Assert.assertEquals(message + "content ", expectedContent, stepToken.toString());
-				Assert.assertEquals(message + "as parameter ", expectedParameter, stepToken.isParameter());
-				Assert.assertEquals(message + "as meaningful ", expectedMeaningful, stepToken.isMeaningful());
+				Assert.assertEquals(message + "content", expectedContent, stepToken.toString());
+				Assert.assertEquals(message + "as parameter", expectedParameter, stepToken.isParameter());
+				Assert.assertEquals(message + "as meaningful", expectedMeaningful, stepToken.isMeaningful());
 				expectedTokenIndex++;
 				stringBuilder = null;
 			}
