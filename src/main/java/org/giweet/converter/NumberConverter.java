@@ -67,7 +67,7 @@ public class NumberConverter implements Converter {
 	private NumberFormat getNumberFormat(Class<?> targetClass, Annotation[] annotations) {
 		String[] patterns = Pattern.getPatterns(annotations);
 		NumberFormat numberFormat = null;
-		if (patterns == null || patterns.length == 0) {
+		if (patterns.length == 0) {
 			numberFormat = this.numberFormat;
 		}
 		else {

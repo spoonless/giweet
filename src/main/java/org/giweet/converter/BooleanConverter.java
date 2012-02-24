@@ -24,7 +24,7 @@ public class BooleanConverter implements Converter {
 
 	private String[] getPatterns(Annotation[] annotations) {
 		String[] patterns = Pattern.getPatterns(annotations);
-		if (patterns == null || patterns.length == 0) {
+		if (patterns.length == 0) {
 			patterns = this.patterns;
 		}
 		return patterns;

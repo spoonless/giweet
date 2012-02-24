@@ -50,7 +50,7 @@ public class DateConverter implements Converter {
 	private DateFormat[] getDateFormats(Annotation[] annotations) {
 		String[] patterns = Pattern.getPatterns(annotations);
 		DateFormat[] dateFormats = this.dateFormats;
-		if (patterns != null && patterns.length > 0) {
+		if (patterns.length > 0) {
 			dateFormats = new DateFormat[patterns.length];
 			for (int i = 0; i < patterns.length; i++) {
 				dateFormats[i] = new SimpleDateFormat(patterns[i], getLocale());
