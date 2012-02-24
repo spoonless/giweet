@@ -1,4 +1,4 @@
-package org.giweet.step.converter;
+package org.giweet.converter;
 
 
 public class CannotConvertException extends Exception {

@@ -1,4 +1,4 @@
-package org.giweet.step.converter;
+package org.giweet.converter;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
