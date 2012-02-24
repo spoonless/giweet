@@ -1,8 +1,40 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>org.giweet</groupId>
-  <artifactId>giweet</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>org.giweet</groupId>
+	<artifactId>giweet</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+
+	<name>Giweet</name>
+	<url>http://sourceforge.net/projects/giweet/</url>
+	<inceptionYear>2012</inceptionYear>
+	<description>
+		Giweet is a BDD (Behaviour Driven Development) framework.
+		It's unique motto is: forget the framework and enjoy designing and testing your application.
+		Giweet is designed to be simple to install (only one jar is needed) and to use.
+	</description>
+
+	<licenses>
+		<license>
+			<name>BSD License</name>
+			<distribution>manual</distribution>
+		</license>
+	</licenses>
+
+	<developers>
+		<developer>
+			<id>spoonless</id>
+			<name>David Gayerie</name>
+			<email>spoonless@users.sourceforge.net</email>
+			<timezone>+1</timezone>
+		</developer>
+	</developers>
+
+	<scm>
+		<connection>scm:git:git://git.code.sf.net/p/giweet/code</connection>
+		<developerConnection>ssh://spoonless@git.code.sf.net/p/giweet/code</developerConnection>
+		<url>http://sourceforge.net/p/giweet/code/</url>
+	</scm>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
