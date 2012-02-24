@@ -8,6 +8,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
+import org.giweet.annotation.ParamDouble;
 import org.junit.Test;
 
 public class DateConverterTest {
@@ -47,7 +48,7 @@ public class DateConverterTest {
 		SimpleDateFormat dateFormat = new SimpleDateFormat(datePattern);
 		DateConverter underTest = new DateConverter(Locale.US, "dd/MM/yyyy HH:mm:ss", "dd MM yyyy HH mm ss", "dd MMMM yyyy", "dd/MM/yyyy");
 		
-		Date result = (Date) underTest.convert(Date.class, dummyAnnotations, "01/12/1970 08:30:10, 2 March 1971, 03 04 1972 01 02 03");
+		Date result = (Date) underTest.convert(Date.class, dummyAnnotations, "01/12/1970 08:30:10");
 		assertEquals("01/12/1970 08:30:10", dateFormat.format(result));
 
 		result = (Date) underTest.convert(Date.class, dummyAnnotations, "2 March 1971");
@@ -58,6 +59,17 @@ public class DateConverterTest {
 
 		result = (Date) underTest.convert(Date.class, dummyAnnotations, "03 04 1972 01 02 03");
 		assertEquals("03/04/1972 01:02:03", dateFormat.format(result));
+	}
+
+	@Test
+	public void canConvertValueByParamPattern() throws Exception {
+		SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+		DateConverter underTest = new DateConverter(Locale.US, "dd/MM/yyyy");
+		Annotation[] annotations = {new ParamDouble("dd MMMM yyyy")};
+		
+		Date result = (Date) underTest.convert(Date.class, annotations, "1 january 1970");
+
+		assertEquals("01/01/1970 00:00:00", dateFormat.format(result));
 	}
 
 	@Test(expected=CannotConvertException.class)

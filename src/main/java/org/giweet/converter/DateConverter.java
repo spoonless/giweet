@@ -10,8 +10,10 @@ import java.util.Locale;
 public class DateConverter implements Converter {
 
 	private final DateFormat[] dateFormats;
+	private final Locale locale;
 
 	public DateConverter(Locale locale, String... datePatterns) {
+		this.locale = locale;
 		dateFormats = new DateFormat[datePatterns.length];
 		int i = 0;
 		for (String datePattern : datePatterns) {
@@ -23,12 +25,12 @@ public class DateConverter implements Converter {
 		return new Class<?>[]{Date.class};
 	}
 
-	// FIXME add support for pattern from annotations
 	public Object convert(Class<?> targetClass, Annotation[] annotations, String value) throws CannotConvertException {
 		if (! Date.class.equals(targetClass)) {
 			throw new CannotConvertException(targetClass, value);
 		}
 		Date result = null;
+		DateFormat[] dateFormats = getDateFormats(annotations);
 		Exception exceptionCaught = null;
 		for (DateFormat dateFormat : dateFormats) {
 			try {
@@ -43,5 +45,17 @@ public class DateConverter implements Converter {
 			throw new CannotConvertException(targetClass, value, exceptionCaught);
 		}
 		return result;
+	}
+
+	private DateFormat[] getDateFormats(Annotation[] annotations) {
+		String[] patterns = Pattern.getPatterns(annotations);
+		DateFormat[] dateFormats = this.dateFormats;
+		if (patterns != null && patterns.length > 0) {
+			dateFormats = new DateFormat[patterns.length];
+			for (int i = 0; i < patterns.length; i++) {
+				dateFormats[i] = new SimpleDateFormat(patterns[i], locale);
+			}
+		}
+		return dateFormats;
 	}
 }
