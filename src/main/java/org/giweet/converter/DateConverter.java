@@ -53,9 +53,13 @@ public class DateConverter implements Converter {
 		if (patterns != null && patterns.length > 0) {
 			dateFormats = new DateFormat[patterns.length];
 			for (int i = 0; i < patterns.length; i++) {
-				dateFormats[i] = new SimpleDateFormat(patterns[i], locale);
+				dateFormats[i] = new SimpleDateFormat(patterns[i], getLocale());
 			}
 		}
 		return dateFormats;
+	}
+
+	public Locale getLocale() {
+		return locale;
 	}
 }
