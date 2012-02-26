@@ -9,5 +9,5 @@ import java.lang.annotation.RetentionPolicy;
 @Documented
 @Inherited
 public @interface Step {
-	String value();
+	String[] value() default {};
 }
