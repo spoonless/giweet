@@ -8,7 +8,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
 
-import org.giweet.annotation.ParamDouble;
+import org.giweet.annotation.PatternDouble;
 import org.junit.Test;
 
 public class CalendarConverterTest {
@@ -76,7 +76,7 @@ public class CalendarConverterTest {
 	public void canConvertValueByParamPattern() throws Exception {
 		SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
 		CalendarConverter underTest = new CalendarConverter(Locale.US, "dd/MM/yyyy");
-		Annotation[] annotations = {new ParamDouble("dd MMMM yyyy")};
+		Annotation[] annotations = {new PatternDouble("dd MMMM yyyy")};
 		
 		Calendar result = (Calendar) underTest.convert(Calendar.class, annotations, "1 january 1970");
 

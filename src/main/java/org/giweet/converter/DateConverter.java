@@ -48,7 +48,7 @@ public class DateConverter implements Converter {
 	}
 
 	private DateFormat[] getDateFormats(Annotation[] annotations) {
-		String[] patterns = Pattern.getPatterns(annotations);
+		String[] patterns = PatternUtils.getPatterns(annotations);
 		DateFormat[] dateFormats = this.dateFormats;
 		if (patterns.length > 0) {
 			dateFormats = new DateFormat[patterns.length];

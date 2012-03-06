@@ -6,7 +6,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.lang.annotation.Annotation;
 
-import org.giweet.annotation.ParamDouble;
+import org.giweet.annotation.PatternDouble;
 import org.junit.Test;
 
 public class BooleanConverterTest {
@@ -42,7 +42,7 @@ public class BooleanConverterTest {
 	@Test
 	public void canConvertValueFromPatternInAnnotation() throws Exception {
 		BooleanConverter underTest = new BooleanConverter("correct but not used");
-		Annotation[] annotations = {new ParamDouble("correct")};
+		Annotation[] annotations = {new PatternDouble("correct")};
 		
 		Boolean result = (Boolean) underTest.convert(Boolean.class, annotations, "correct");
 		assertTrue(result);

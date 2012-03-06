@@ -15,8 +15,8 @@ import java.util.Locale;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
-import org.giweet.annotation.Param;
-import org.giweet.annotation.ParamDouble;
+import org.giweet.annotation.Pattern;
+import org.giweet.annotation.PatternDouble;
 import org.junit.Test;
 
 public class NumberConverterTest {
@@ -60,10 +60,10 @@ public class NumberConverterTest {
 
 	@Test
 	public void canConvertValueWithPattern() throws Exception {
-		Param param = new ParamDouble("#,##0.0#");
+		Pattern pattern = new PatternDouble("#,##0.0#");
 
 		NumberConverter underTest = new NumberConverter(new DecimalFormat("0", new DecimalFormatSymbols(Locale.US)));
-		canConvertValue(underTest, new Annotation[] {param});
+		canConvertValue(underTest, new Annotation[] {pattern});
 	}
 
 	@Test

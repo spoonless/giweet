@@ -10,7 +10,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Inherited
-@Target(ElementType.METHOD)
-public @interface Step {
+@Target(ElementType.PARAMETER)
+public @interface Pattern {
 	String[] value() default {};
 }
