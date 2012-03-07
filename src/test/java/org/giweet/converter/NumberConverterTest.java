@@ -61,9 +61,18 @@ public class NumberConverterTest {
 	@Test
 	public void canConvertValueWithPattern() throws Exception {
 		Pattern pattern = new PatternDouble("#,##0.0#");
+		NumberConverter underTest = new NumberConverter(Locale.US, new DecimalFormat("0", new DecimalFormatSymbols(Locale.US)));
 
-		NumberConverter underTest = new NumberConverter(new DecimalFormat("0", new DecimalFormatSymbols(Locale.US)));
 		canConvertValue(underTest, new Annotation[] {pattern});
+	}
+
+	@Test
+	public void canConvertValueWithPatterns() throws Exception {
+		Pattern pattern = new PatternDouble("0.0", "other 0.0");
+		NumberConverter underTest = new NumberConverter(Locale.US, new DecimalFormat("other 0", new DecimalFormatSymbols(Locale.US)));
+
+		Object result = underTest.convert(Integer.class, new Annotation[] {pattern}, "other 10");
+		assertEquals(Integer.valueOf(10), result);
 	}
 
 	@Test
@@ -84,6 +93,12 @@ public class NumberConverterTest {
 	}
 
 	@Test(expected = CannotConvertException.class)
+	public void cannotConvertValueWhenExpectedPrimitiveNotANumber() throws Exception {
+		NumberConverter underTest = new NumberConverter(Locale.US);
+		underTest.convert(char.class, dummyAnnotations, "0");
+	}
+
+	@Test(expected = CannotConvertException.class)
 	public void cannotConvertValueWhenValueIsNotANumber() throws Exception {
 		NumberConverter underTest = new NumberConverter(Locale.US);
 		underTest.convert(Integer.class, dummyAnnotations, "a");
@@ -100,11 +115,23 @@ public class NumberConverterTest {
 		result = underTest.convert(Long.class, annotations, "1,000");
 		assertEquals(Long.valueOf(1000), result);
 
+		result = underTest.convert(Long.class, annotations, "1,000,000");
+		assertEquals(Long.valueOf(1000000), result);
+
+		result = underTest.convert(Long.class, annotations, "1000");
+		assertEquals(Long.valueOf(1000), result);
+
+		result = underTest.convert(Long.class, annotations, "1000000");
+		assertEquals(Long.valueOf(1000000), result);
+
 		result = underTest.convert(Double.class, annotations, "1.1");
 		assertEquals(Double.valueOf(1.1), result);
 
 		result = underTest.convert(Float.class, annotations, "1.1");
 		assertEquals(Float.valueOf(1.1f), result);
+
+		result = underTest.convert(Float.class, annotations, "1.11111111");
+		assertEquals(Float.valueOf(1.11111111f), result);
 
 		result = underTest.convert(Short.class, annotations, "1.1");
 		assertEquals(Short.valueOf((short)1), result);

@@ -5,7 +5,6 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
-import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.Locale;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -13,20 +12,21 @@ import java.util.concurrent.atomic.AtomicLong;
 
 public class NumberConverter implements Converter {
 	
+	private static final String DEFAULT_DECIMAL_PATTERN = "0,000.0";
 	private static final char NON_BREAKABLE_SPACE = '\u00a0';
-	private final NumberFormat numberFormat;
+	private final DecimalFormat[] decimalFormats;
 	private final DecimalFormatSymbols decimalFormatSymbols;
 
-	public NumberConverter(Locale locale) {
-		this.numberFormat = NumberFormat.getInstance(locale);
-		this.decimalFormatSymbols = new DecimalFormatSymbols(locale);
+	public NumberConverter(Locale locale, DecimalFormat... decimalFormats) {
+		this.decimalFormatSymbols = new DecimalFormatSymbols(locale); 
+		if (decimalFormats.length == 0) {
+			this.decimalFormats = new DecimalFormat[]{new DecimalFormat(DEFAULT_DECIMAL_PATTERN, this.decimalFormatSymbols)};
+		}
+		else {
+			this.decimalFormats = decimalFormats;
+		}
 	}
 
-	public NumberConverter(DecimalFormat decimalFormat) {
-		this.numberFormat = decimalFormat;
-		this.decimalFormatSymbols = decimalFormat.getDecimalFormatSymbols();
-	}
-	
 	public Class<?>[] getSupportedClasses() {
 		return new Class<?>[]{
 			Number.class,
@@ -50,34 +50,39 @@ public class NumberConverter implements Converter {
 	}
 
 	public Object convert(Class<?> targetClass, Annotation[] annotations, String value) throws CannotConvertException {
-		NumberFormat numberFormat = getNumberFormat(targetClass, annotations);
+		DecimalFormat[] decimalFormats = getDecimalFormats(targetClass, annotations);
 		Number result = null;
-		try {
-			if (decimalFormatSymbols.getGroupingSeparator() == NON_BREAKABLE_SPACE) {
-				value = fixNonBreakableSpaceForGroupSeparator(value);
-			}
-			result = numberFormat.parse(value);
+		if (decimalFormatSymbols.getGroupingSeparator() == NON_BREAKABLE_SPACE) {
+			value = fixNonBreakableSpaceForGroupSeparator(value);
 		}
-		catch (ParseException e) {
-			throw new CannotConvertException(targetClass, value, e);
+		boolean bigDecimalExpected = BigInteger.class.isAssignableFrom(targetClass) || BigDecimal.class.isAssignableFrom(targetClass); 
+		for (int i = 0; i < decimalFormats.length; i++) {
+			DecimalFormat decimalFormat = decimalFormats[i];
+			decimalFormat.setParseBigDecimal(bigDecimalExpected);
+			try {
+				result = decimalFormat.parse(value);
+			} catch (ParseException e) {
+			}
+		}
+		if (result == null) {
+			throw new CannotConvertException(targetClass, value);
 		}
 		return cast(targetClass, result);
 	}
 	
-	private NumberFormat getNumberFormat(Class<?> targetClass, Annotation[] annotations) {
+	private DecimalFormat[] getDecimalFormats(Class<?> targetClass, Annotation[] annotations) {
 		String[] patterns = PatternUtils.getPatterns(annotations);
-		NumberFormat numberFormat = null;
+		DecimalFormat[] decimalFormats = null;
 		if (patterns.length == 0) {
-			numberFormat = this.numberFormat;
+			decimalFormats = this.decimalFormats;
 		}
 		else {
-			DecimalFormat decimalFormat = new DecimalFormat(patterns[0], decimalFormatSymbols);
-			if (BigInteger.class.isAssignableFrom(targetClass) || BigDecimal.class.isAssignableFrom(targetClass)) {
-				decimalFormat.setParseBigDecimal(true);
+			decimalFormats = new DecimalFormat[patterns.length];
+			for (int i = 0; i < decimalFormats.length; i++) {
+				decimalFormats[i] = new DecimalFormat(patterns[i], decimalFormatSymbols);
 			}
-			numberFormat = decimalFormat;
 		}
-		return numberFormat;
+		return decimalFormats;
 	}
 	
 	/**
@@ -97,7 +102,11 @@ public class NumberConverter implements Converter {
 
 	private static Object cast(Class<?> targetClass, Number result) throws CannotConvertException {
 		if (targetClass.isPrimitive()) {
-			targetClass = getWrapperClass(targetClass);
+			Class<?> wrapperClass = getWrapperClass(targetClass);
+			if (wrapperClass == null) {
+				throw new CannotConvertException(targetClass, String.valueOf(result));
+			}
+			targetClass = wrapperClass;
 		}
 		if (targetClass.isAssignableFrom(result.getClass())) {
 			return result;
@@ -157,7 +166,7 @@ public class NumberConverter implements Converter {
 		} 
 		else if (byte.class.equals(targetClass)) {
 			wrapperClass = Byte.class;
-		} 
+		}
 		return wrapperClass;
 	}
 }
