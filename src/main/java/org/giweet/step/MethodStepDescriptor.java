@@ -3,6 +3,7 @@ package org.giweet.step;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Type;
 
 public class MethodStepDescriptor extends StepDescriptor {
 
@@ -19,8 +20,8 @@ public class MethodStepDescriptor extends StepDescriptor {
 		return method.invoke(instance, args);
 	}
 
-	public Class<?>[] getParameterTypes() {
-		return method.getParameterTypes();
+	public Type[] getGenericParameterTypes() {
+		return method.getGenericParameterTypes();
 	}
 	
 	public Annotation[][] getParameterAnnotations() {
