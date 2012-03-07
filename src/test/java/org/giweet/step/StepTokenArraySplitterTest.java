@@ -123,6 +123,14 @@ public class StepTokenArraySplitterTest {
 	}
 
 	@Test
+	public void canSplitWithNoSeparatorPattern() {
+		StepTokenArraySplitter underTest = new StepTokenArraySplitter();
+		
+		StepToken[][] result = underTest.split(stepTokenizer.tokenize("a b"));
+		assertSplitEquals(result, "a b");
+	}
+
+	@Test
 	public void canSplitWithWhitespaceSeparator() {
 		StepTokenArraySplitter underTest = new StepTokenArraySplitter(" ");
 		
