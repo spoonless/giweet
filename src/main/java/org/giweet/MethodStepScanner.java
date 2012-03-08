@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.giweet.annotation.Step;
-import org.giweet.step.MethodStepDescriptor;
 
 public class MethodStepScanner {
 	

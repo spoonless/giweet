@@ -9,10 +9,6 @@ public class ParameterStepToken extends AbstractStepToken {
 	public boolean isParameter() {
 		return true;
 	}
-	@Override
-	public String toString() {
-		return "$" + super.toString();
-	}
 	
 	public boolean isMeaningful() {
 		return true;

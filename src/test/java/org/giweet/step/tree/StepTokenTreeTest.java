@@ -137,7 +137,7 @@ public class StepTokenTreeTest {
 
 		parameterValues = searchResult.getParameterValues();
 		assertEquals(1, parameterValues.length);
-		assertEquals("$1", parameterValues[0].getParameterToken().toString());
+		assertEquals("1", parameterValues[0].getParameterToken().toString());
 		assertEquals(4, parameterValues[0].getParameterTokenPosition());
 		assertEquals("giweet", parameterValues[0].getValue());
 		assertEquals(8, parameterValues[0].getValueTokenStartPosition());
@@ -149,7 +149,7 @@ public class StepTokenTreeTest {
 
 		parameterValues = searchResult.getParameterValues();
 		assertEquals(2, parameterValues.length);
-		assertEquals("$1", parameterValues[0].getParameterToken().toString());
+		assertEquals("1", parameterValues[0].getParameterToken().toString());
 		assertEquals(0, parameterValues[0].getParameterTokenPosition());
 		assertEquals("goodbye", parameterValues[0].getValue());
 		assertEquals(0, parameterValues[0].getValueTokenStartPosition());
@@ -157,7 +157,7 @@ public class StepTokenTreeTest {
 		assertEquals(1, parameterValues[0].getValueTokens().length);
 		assertArrayEquals(stepTokenizer.tokenize("goodbye"), parameterValues[0].getValueTokens());
 
-		assertEquals("$2", parameterValues[1].getParameterToken().toString());
+		assertEquals("2", parameterValues[1].getParameterToken().toString());
 		assertEquals(1, parameterValues[1].getParameterTokenPosition());
 		assertEquals("giweet and good luck", parameterValues[1].getValue());
 		assertEquals(2, parameterValues[1].getValueTokenStartPosition());

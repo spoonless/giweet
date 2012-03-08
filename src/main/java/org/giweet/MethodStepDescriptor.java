@@ -1,9 +1,11 @@
-package org.giweet.step;
+package org.giweet;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
+
+import org.giweet.step.StepDescriptor;
 
 public class MethodStepDescriptor extends StepDescriptor {
 

@@ -36,7 +36,7 @@
     <expected>
       <token>hello</token>
       <token>the</token>
-      <token parameter="true">$world</token>
+      <token parameter="true">world</token>
     </expected>
   </test>
   <test withMeaninglessTokens="true">
