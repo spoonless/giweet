@@ -53,8 +53,8 @@ public class JavaBeanUtils {
 	}
 
 	private static boolean isCandidateMethod(Method method, String property, int nbParam) {
-		return method.getName().endsWith(property) 
-				&& (method.getModifiers() & Modifier.PUBLIC) > 0
-				&& method.getParameterTypes().length == nbParam;
+		return (method.getModifiers() & Modifier.PUBLIC) > 0
+				&& method.getParameterTypes().length == nbParam
+				&& method.getName().endsWith(property); 
 	}
 }
