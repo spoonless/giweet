@@ -7,6 +7,9 @@ import org.giweet.annotation.Pattern;
 public class PatternUtils {
 	
 	private static final String[] EMPTY_ARRAY = new String[0];
+	
+	private PatternUtils() {
+	}
 
 	public static String[] getPatterns(Annotation[] annotations) {
 		String[] patterns = EMPTY_ARRAY;

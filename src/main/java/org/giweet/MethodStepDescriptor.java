@@ -7,7 +7,7 @@ import java.lang.reflect.Type;
 
 import org.giweet.step.StepDescriptor;
 
-public class MethodStepDescriptor extends StepDescriptor {
+public class MethodStepDescriptor extends StepDescriptor implements InvocableMethod {
 
 	private final Method method;
 	private final Object instance;
@@ -29,5 +29,8 @@ public class MethodStepDescriptor extends StepDescriptor {
 	public Annotation[][] getParameterAnnotations() {
 		return method.getParameterAnnotations();
 	}
-
+	
+	public InvocableMethod getInvocableSetterMethod(String[] path) throws IllegalAccessException, InvocationTargetException, IllegalArgumentException, NoSuchMethodException {
+		return new InvocableSetterMethod(instance, path);
+	}
 }
