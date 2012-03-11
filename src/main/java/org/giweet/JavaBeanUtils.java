@@ -36,7 +36,7 @@ public class JavaBeanUtils {
 					expectedMethod = method;
 					break;
 				}
-				else if ("is".equals(methodPrefix) && (boolean.class.equals(method.getReturnType()) || Boolean.class.equals(method.getReturnType()))) {
+				else if ("is".equals(methodPrefix) && isBooleanType(method.getReturnType())) {
 					expectedMethod = method;
 					break;
 				}
@@ -46,6 +46,10 @@ public class JavaBeanUtils {
 			throw new NoSuchMethodException("Cannot find public getter method for property \"" + property + "\" in class " + clazz);
 		}
 		return expectedMethod;
+	}
+
+	private static boolean isBooleanType(Class<?> type) {
+		return boolean.class.equals(type) || Boolean.class.equals(type);
 	}
 
 	private static String getMethodNamePrefix(Method method, String property) {
