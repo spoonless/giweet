@@ -36,9 +36,11 @@ public class JavaBeanUtils {
 					expectedMethod = method;
 					break;
 				}
-				else if ("is".equals(methodPrefix) && (boolean.class.equals(method.getReturnType()) || Boolean.class.equals(method.getReturnType()))) {
-					expectedMethod = method;
-					break;
+				else if ("is".equals(methodPrefix)) {
+					if (boolean.class.equals(method.getReturnType()) || Boolean.class.equals(method.getReturnType())) {
+						expectedMethod = method;
+						break;
+					}
 				}
 			}
 		}

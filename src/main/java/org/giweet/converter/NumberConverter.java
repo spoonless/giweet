@@ -50,7 +50,7 @@ public class NumberConverter implements Converter {
 	}
 
 	public Object convert(Class<?> targetClass, Annotation[] annotations, String value) throws CannotConvertException {
-		DecimalFormat[] decimalFormats = getDecimalFormats(targetClass, annotations);
+		DecimalFormat[] decimalFormats = getDecimalFormats(annotations);
 		Number result = null;
 		if (decimalFormatSymbols.getGroupingSeparator() == NON_BREAKABLE_SPACE) {
 			value = fixNonBreakableSpaceForGroupSeparator(value);
@@ -70,7 +70,7 @@ public class NumberConverter implements Converter {
 		return cast(targetClass, result);
 	}
 	
-	private DecimalFormat[] getDecimalFormats(Class<?> targetClass, Annotation[] annotations) {
+	private DecimalFormat[] getDecimalFormats(Annotation[] annotations) {
 		String[] patterns = PatternUtils.getPatterns(annotations);
 		DecimalFormat[] decimalFormats = null;
 		if (patterns.length == 0) {

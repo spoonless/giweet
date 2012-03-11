@@ -62,12 +62,10 @@ public class StepTokenNode<T extends StepDescriptor> {
 	}
 
 	private void createNextNodeIfNecessary() {
-		if (this.stepDescriptor != null) {
-			if (this.stepDescriptor.getTokens().length > depth + 1) {
-				this.nextNodes = new ArrayList<StepTokenNode<T>>();
-				this.nextNodes.add(new StepTokenNode<T>(this.stepDescriptor, depth+1));
-				this.stepDescriptor = null;
-			}
+		if (this.stepDescriptor != null && this.stepDescriptor.getTokens().length > depth + 1) {
+			this.nextNodes = new ArrayList<StepTokenNode<T>>();
+			this.nextNodes.add(new StepTokenNode<T>(this.stepDescriptor, depth+1));
+			this.stepDescriptor = null;
 		}
 	}
 	
