@@ -2,7 +2,6 @@ package org.giweet.step.tokenizer;
 
 import java.io.IOException;
 import java.io.Reader;
-import java.io.StringReader;
 
 import org.giweet.step.StepToken;
 
@@ -34,11 +33,16 @@ public class StepTokenizer {
 	}
 	
 	public StepToken[] tokenize(String value) {
-		Reader reader = new StringReader(value);
+		char[] buffer = value.toCharArray();
 		DefaultStepTokenizerListener listener = new DefaultStepTokenizerListener(strategy);
-		try {
-			tokenize(reader, listener);
-		}catch (IOException e){}
+		TokenizerContext ctx = new TokenizerContext();
+		ctx.listener = listener;
+		ctx.bufferLength = buffer.length;
+
+		tokenize(buffer, ctx);
+
+		ctx.createMeaningfulToken(buffer, false);
+		ctx.createMeaninglessToken(buffer);
 		return listener.getStepTokens();
 	}
 
@@ -57,12 +61,8 @@ public class StepTokenizer {
 			tokenize(buffer, ctx);
 			buffer = updateBuffer(ctx, buffer);
 		}
-
-		buffer[ctx.bufferOffset] = ctx.expectedEndQuote;
-		ctx.bufferLength = 1;
-		tokenize(buffer, ctx);
 		
-		ctx.separatorCount--;
+		ctx.createMeaningfulToken(buffer, false);
 		ctx.createMeaninglessToken(buffer);
 	}
 
