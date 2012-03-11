@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <suite xmlns="http://www.giweet.org/test/StepTokenizerTest" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.giweet.org/test/StepTokenizerTest StepTokenizerTest.xsd ">
-  <test>
+  <test strategy="TOKENIZE_STEP_DESCRIPTOR">
     <actual>       </actual>
     <expected>
     </expected>
   </test>
-  <test>
+  <test strategy="TOKENIZE_STEP_DESCRIPTOR">
     <actual>hello the world</actual>
     <expected>
       <token>hello</token>
@@ -13,7 +13,7 @@
       <token>world</token>
     </expected>
   </test>
-  <test withMeaninglessTokens="true">
+  <test strategy="TOKENIZE_SCENARIO">
     <actual>hello the world</actual>
     <expected>
       <token>hello</token>
@@ -23,15 +23,36 @@
       <token>world</token>
     </expected>
   </test>
-  <test>
-    <actual>hello the $world</actual>
+  <test strategy="TOKENIZE_SCENARIO">
+    <actual>	hello, the world</actual>
+    <expected>
+      <token meaningful="false">	</token>
+      <token>hello</token>
+      <token meaningful="false">, </token>
+      <token>the</token>
+      <token meaningful="false"> </token>
+      <token>world</token>
+    </expected>
+  </test>
+  <test strategy="TOKENIZE_SCENARIO">
+    <actual>hello the (beautiful) world</actual>
+    <expected>
+      <token>hello</token>
+      <token meaningful="false"> </token>
+      <token>the</token>
+      <token meaningful="false"> (beautiful) </token>
+      <token>world</token>
+    </expected>
+  </test>
+  <test strategy="TOKENIZE_STEP_DESCRIPTOR">
+    <actual>(before ignorable block) hello(this must be ignored)the (and that also) world (after ignorable block)</actual>
     <expected>
       <token>hello</token>
       <token>the</token>
-      <token>$world</token>
+      <token>world</token>
     </expected>
   </test>
-  <test allowParameterTokens="true">
+  <test strategy="TOKENIZE_STEP_DESCRIPTOR">
     <actual>hello the $world</actual>
     <expected>
       <token>hello</token>
@@ -39,19 +60,19 @@
       <token parameter="true">world</token>
     </expected>
   </test>
-  <test withMeaninglessTokens="true">
-    <actual>hello the "sunny shiny", world</actual>
+  <test strategy="TOKENIZE_SCENARIO">
+    <actual>hello the "sunny, shiny and brightly", world</actual>
     <expected>
       <token>hello</token>
       <token meaningful="false"> </token>
       <token>the</token>
       <token meaningful="false"> </token>
-      <token>sunny shiny</token>
+      <token>sunny, shiny and brightly</token>
       <token meaningful="false">, </token>
       <token>world</token>
     </expected>
   </test>
-  <test withMeaninglessTokens="true">
+  <test strategy="TOKENIZE_SCENARIO">
     <actual>hello the sunny"shiny"world</actual>
     <expected>
       <token>hello</token>
@@ -61,10 +82,16 @@
       <token>sunny"shiny"world</token>
     </expected>
   </test>
-  <test>
+  <test strategy="TOKENIZE_STEP_DESCRIPTOR">
     <actual>""</actual>
     <expected>
       <token></token>
+    </expected>
+  </test>
+  <test strategy="TOKENIZE_STEP_DESCRIPTOR">
+    <actual>"	"</actual>
+    <expected>
+      <token>	</token>
     </expected>
   </test>
 </suite>

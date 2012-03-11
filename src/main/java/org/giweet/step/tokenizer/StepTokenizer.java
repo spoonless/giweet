@@ -1,0 +1,192 @@
+package org.giweet.step.tokenizer;
+
+import java.io.IOException;
+import java.io.Reader;
+import java.io.StringReader;
+
+import org.giweet.step.StepToken;
+
+public class StepTokenizer {
+	private final CharacterAnalyzer characterAnalyzer;
+	private final TokenizerStrategy strategy;
+
+	public StepTokenizer(TokenizerStrategy strategy) {
+		this(strategy, new DefaultCharacterAnalyzer());
+	}
+
+	public StepTokenizer(TokenizerStrategy strategy, CharacterAnalyzer characterAnalyzer) {
+		this.strategy = strategy;
+		this.characterAnalyzer = characterAnalyzer;
+	}
+	
+	public StepToken[] tokenize(String value) {
+		Reader reader = new StringReader(value);
+		DefaultStepTokenizerListener listener = new DefaultStepTokenizerListener(strategy);
+		try {
+			tokenize(reader, listener);
+		}catch (IOException e){}
+		return listener.getStepTokens();
+	}
+
+	private void tokenize(Reader reader, StepTokenizerListener listener) throws IOException {
+		TokenizerContext ctx = new TokenizerContext();
+		ctx.listener = listener;
+		char[] buffer = new char[1];
+		
+		while ((ctx.bufferLength = reader.read(buffer, ctx.bufferOffset, buffer.length - ctx.bufferOffset)) > 0) {
+			tokenize(buffer, ctx);
+			buffer = updateBuffer(ctx, buffer);
+		}
+
+		buffer[ctx.bufferOffset] = ctx.expectedEndQuote;
+		ctx.bufferLength = 1;
+		tokenize(buffer, ctx);
+		
+		ctx.separatorCount--;
+		ctx.createMeaninglessToken(buffer);
+	}
+
+	private char[] updateBuffer(TokenizerContext ctx, char[] buffer) {
+		int remainingCharCount = ctx.bufferLength + ctx.bufferOffset - ctx.tokenStartPosition;
+		if (remainingCharCount > 0) {
+			char[] newBuffer = buffer;
+			if (remainingCharCount >= newBuffer.length) {
+				newBuffer = new char[newBuffer.length + remainingCharCount];
+			}
+			System.arraycopy(buffer, ctx.tokenStartPosition, newBuffer, 0, remainingCharCount);
+			buffer = newBuffer;
+		}
+		ctx.bufferOffset = remainingCharCount;
+		ctx.tokenStartPosition = 0;
+		return buffer;
+	}
+	
+	private class TokenizerContext {
+		public int bufferOffset;
+		public int bufferLength;
+		public int tokenStartPosition;
+		public int letterCount;
+		public int separatorCount;
+		public int trailingCharCount;
+		public int commentCharCount;
+		public char expectedEndQuote;
+		public StepTokenizerListener listener;
+		
+		public boolean isQuote() {
+			return this.expectedEndQuote != 0;
+		}
+		
+		public boolean isQuoteEnd(char currentChar) {
+			if (currentChar != expectedEndQuote) {
+				letterCount++;
+				return false;
+			}
+			else {
+				expectedEndQuote = 0;
+			}
+			return true;
+		}
+		
+		public void createMeaningfulToken(char[] characters, boolean allowEmpty) {
+			if (letterCount > 0 || allowEmpty) {
+				letterCount -= trailingCharCount;
+
+				String token = new String (characters, tokenStartPosition, letterCount);
+				listener.newToken(token, true);
+
+				tokenStartPosition += letterCount;
+				separatorCount += trailingCharCount;
+				letterCount = 0;
+				trailingCharCount = 0;
+			}
+		}
+		
+		public void createMeaninglessToken(char[] characters) {
+			if (separatorCount > 0) {
+				String token = new String (characters, tokenStartPosition, separatorCount);
+				listener.newToken(token, false);
+			}
+			tokenStartPosition += separatorCount;
+			separatorCount = 0;
+		}
+	}
+	
+	private void tokenize (char[] characters, TokenizerContext ctx) {
+		int lastPosition = ctx.bufferOffset + ctx.bufferLength;
+		for (int i = ctx.bufferOffset ; i < lastPosition ; i++) {
+			char c = characters[i];
+			int characterType = 0;
+			
+			if (ctx.isQuote()) {
+				if (! ctx.isQuoteEnd(c)) {
+					continue;
+				}
+				characterType = CharacterAnalyzer.QUOTE_TAIL;
+			}
+			else {
+				characterType = characterAnalyzer.getCharacterType(c);
+			}
+			
+			if (ctx.commentCharCount > 0) {
+				switch (characterType) {
+				case CharacterAnalyzer.COMMENT_HEAD:
+					ctx.commentCharCount++;
+					break;
+				case CharacterAnalyzer.COMMENT_TAIL:
+					ctx.commentCharCount--;
+					break;
+				}
+				characterType = CharacterAnalyzer.SEPARATOR;
+			}
+			
+			if ((characterType & CharacterAnalyzer.SEPARATOR) != 0) {
+				ctx.createMeaningfulToken(characters, characterType == CharacterAnalyzer.QUOTE_TAIL);
+				ctx.separatorCount++;
+			}
+
+			switch (characterType) {
+			case CharacterAnalyzer.LETTER:
+				ctx.createMeaninglessToken(characters);
+				ctx.letterCount++;
+				ctx.trailingCharCount = 0;
+				break;
+			case CharacterAnalyzer.SEPARATOR_IF_LEADING:
+				if (ctx.letterCount != 0) {
+					ctx.letterCount++;
+				}
+				else {
+					ctx.separatorCount++;
+				}
+				break;
+			case CharacterAnalyzer.SEPARATOR_IF_TRAILING:
+			case CharacterAnalyzer.SEPARATOR_IF_LEADING_OR_TRAILING:
+				if (ctx.letterCount != 0) {
+					ctx.letterCount++;
+					ctx.trailingCharCount++;
+				}
+				else {
+					// FIXME unappropriate behavior for SEPARATOR_IF_TRAILING
+					ctx.separatorCount++;
+				}
+				break;
+			case CharacterAnalyzer.COMMENT_HEAD:
+				ctx.commentCharCount++;
+				break;
+			case CharacterAnalyzer.QUOTE_HEAD:
+				if (ctx.letterCount == 0) {
+					ctx.createMeaninglessToken(characters);
+					ctx.tokenStartPosition ++;
+					ctx.expectedEndQuote = characterAnalyzer.getExpectedEndQuote(c);
+				}
+				else {
+					ctx.letterCount++;
+				}
+				break;
+			case CharacterAnalyzer.QUOTE_TAIL:
+				ctx.tokenStartPosition++;
+				ctx.separatorCount--;
+				break;
+			}
+		}
+	}
+}

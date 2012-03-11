@@ -12,6 +12,8 @@ import javax.xml.validation.SchemaFactory;
 
 import junit.framework.Assert;
 
+import org.giweet.step.tokenizer.StepTokenizer;
+import org.giweet.step.tokenizer.TokenizerStrategy;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.ext.DefaultHandler2;
@@ -31,7 +33,7 @@ public class StepTokenizerTestFromXml {
 		@Override
 		public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
 			if ("test".equals(localName)) {
-				stepTokenizer = new StepTokenizer(Boolean.valueOf(attributes.getValue("allowParameterTokens")), Boolean.valueOf(attributes.getValue("withMeaninglessTokens")));
+				stepTokenizer = new StepTokenizer(TokenizerStrategy.valueOf(attributes.getValue("strategy")));
 			}
 			else if ("actual".equals(localName)) {
 				stringBuilder = new StringBuilder();

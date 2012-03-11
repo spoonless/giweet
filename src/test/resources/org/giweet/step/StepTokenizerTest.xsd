@@ -14,8 +14,15 @@
     		<element name="actual" type="string"></element>
     		<element name="expected" type="tns:expectedType"></element>
     	</sequence>
-    	<attribute name="allowParameterTokens" type="boolean"></attribute>
-    	<attribute name="withMeaninglessTokens" type="boolean"></attribute>
+    	<attribute name="strategy" use="required">
+    		<simpleType>
+    			<restriction base="string">
+    				<enumeration value="TOKENIZE_STEP_DESCRIPTOR"></enumeration>
+    				<enumeration value="TOKENIZE_SCENARIO"></enumeration>
+    			</restriction>
+    		</simpleType>
+    	</attribute>
+    	
     </complexType>
 
     <complexType name="expectedType">
