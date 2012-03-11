@@ -138,8 +138,21 @@ public class StepTokenizerTest {
 	}
 	
 	@Test
-	public void testFromXmlFile() throws Exception {
-		StepTokenizerTestFromXml.testFromFile("/org/giweet/step/StepTokenizerTest.xml");
+	public void canTokenizeAsStringFromXmlFile() throws Exception {
+		StepTokenizerTestFromXml stepTokenizerTestFromXml = new StepTokenizerTestFromXml();
+		stepTokenizerTestFromXml.testFromFile("/org/giweet/step/StepTokenizerTest.xml", 0);
+	}
+
+	@Test
+	public void canTokenizeAsStreamWithTinyBufferFromXmlFile() throws Exception {
+		StepTokenizerTestFromXml stepTokenizerTestFromXml = new StepTokenizerTestFromXml();
+		stepTokenizerTestFromXml.testFromFile("/org/giweet/step/StepTokenizerTest.xml", 1);
+	}
+
+	@Test
+	public void canTokenizeAsStreamFromXmlFile() throws Exception {
+		StepTokenizerTestFromXml stepTokenizerTestFromXml = new StepTokenizerTestFromXml();
+		stepTokenizerTestFromXml.testFromFile("/org/giweet/step/StepTokenizerTest.xml", 10);
 	}
 
 	private void testTokenization(StepToken[] stepTokens, String... expectedTokens) {

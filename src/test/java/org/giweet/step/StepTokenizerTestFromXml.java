@@ -1,6 +1,7 @@
 package org.giweet.step;
 
 import java.io.IOException;
+import java.io.StringReader;
 
 import javax.xml.XMLConstants;
 import javax.xml.parsers.ParserConfigurationException;
@@ -20,8 +21,11 @@ import org.xml.sax.ext.DefaultHandler2;
 
 public class StepTokenizerTestFromXml {
 
-	public static class SaxHandler extends DefaultHandler2 {
+	private SAXParserFactory saxParserFactory;
+
+	private static class SaxHandler extends DefaultHandler2 {
 		
+		private final int tokenizerBufferSize;
 		private StringBuilder stringBuilder;
 		private StepTokenizer stepTokenizer;
 		private StepToken[] actualStepTokens;
@@ -30,10 +34,19 @@ public class StepTokenizerTestFromXml {
 		private int expectedTokenIndex;
 		private String actual;
 		
+		public SaxHandler(int tokenizerBufferSize) {
+			this.tokenizerBufferSize = tokenizerBufferSize;
+		}
+		
 		@Override
 		public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
 			if ("test".equals(localName)) {
-				stepTokenizer = new StepTokenizer(TokenizerStrategy.valueOf(attributes.getValue("strategy")));
+				if (this.tokenizerBufferSize == 0) {
+					stepTokenizer = new StepTokenizer(TokenizerStrategy.valueOf(attributes.getValue("strategy")));
+				}
+				else {
+					stepTokenizer = new StepTokenizer(TokenizerStrategy.valueOf(attributes.getValue("strategy")), this.tokenizerBufferSize);
+				}
 			}
 			else if ("actual".equals(localName)) {
 				stringBuilder = new StringBuilder();
@@ -57,7 +70,16 @@ public class StepTokenizerTestFromXml {
 			}
 			else if ("actual".equals(localName)) {
 				actual = stringBuilder.toString();
-				this.actualStepTokens = stepTokenizer.tokenize(actual);
+				if (tokenizerBufferSize == 0) {
+					this.actualStepTokens = stepTokenizer.tokenize(actual);
+				}
+				else {
+					try {
+						this.actualStepTokens = stepTokenizer.tokenize(new StringReader(actual));
+					} catch (IOException e) {
+						throw new SAXException(e);
+					}
+				}
 				stringBuilder = null;
 			}
 			else if ("expected".equals(localName)) {
@@ -84,14 +106,17 @@ public class StepTokenizerTestFromXml {
 		}
 	}
 	
-	public static void testFromFile(String xmlResourcePath) throws IOException, SAXException, ParserConfigurationException {
+	public StepTokenizerTestFromXml() throws SAXException {
 		SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
 		Schema schema = schemaFactory.newSchema(new StreamSource(StepTokenizerTestFromXml.class.getResourceAsStream("/org/giweet/step/StepTokenizerTest.xsd")));
-		SAXParserFactory saxParserFactory = SAXParserFactory.newInstance();
+		saxParserFactory = SAXParserFactory.newInstance();
 		saxParserFactory.setValidating(true);
 		saxParserFactory.setNamespaceAware(true);
 		saxParserFactory.setSchema(schema);
+	}
+	
+	public void testFromFile(String xmlResourcePath, int tokenizerBufferSize) throws IOException, SAXException, ParserConfigurationException {
 		SAXParser saxParser = saxParserFactory.newSAXParser();
-		saxParser.parse(StepTokenizerTestFromXml.class.getResourceAsStream(xmlResourcePath), new SaxHandler());
+		saxParser.parse(StepTokenizerTestFromXml.class.getResourceAsStream(xmlResourcePath), new SaxHandler(tokenizerBufferSize));
 	}
 }

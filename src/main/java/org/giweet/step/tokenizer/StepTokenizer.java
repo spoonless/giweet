@@ -7,16 +7,30 @@ import java.io.StringReader;
 import org.giweet.step.StepToken;
 
 public class StepTokenizer {
+	private static final int DEFAULT_BUFFER_SIZE = 100;
 	private final CharacterAnalyzer characterAnalyzer;
 	private final TokenizerStrategy strategy;
+	private final int bufferSize;
 
 	public StepTokenizer(TokenizerStrategy strategy) {
-		this(strategy, new DefaultCharacterAnalyzer());
+		this(strategy, new DefaultCharacterAnalyzer(), DEFAULT_BUFFER_SIZE);
+	}
+
+	public StepTokenizer(TokenizerStrategy strategy, int bufferSize) {
+		this(strategy, new DefaultCharacterAnalyzer(), bufferSize);
 	}
 
 	public StepTokenizer(TokenizerStrategy strategy, CharacterAnalyzer characterAnalyzer) {
+		this(strategy, characterAnalyzer, DEFAULT_BUFFER_SIZE);
+	}
+
+	public StepTokenizer(TokenizerStrategy strategy, CharacterAnalyzer characterAnalyzer, int bufferSize) {
+		if (bufferSize == 0) {
+			throw new IllegalArgumentException("buffer size must be greater than 0");
+		}
 		this.strategy = strategy;
 		this.characterAnalyzer = characterAnalyzer;
+		this.bufferSize = bufferSize;
 	}
 	
 	public StepToken[] tokenize(String value) {
@@ -28,10 +42,16 @@ public class StepTokenizer {
 		return listener.getStepTokens();
 	}
 
-	private void tokenize(Reader reader, StepTokenizerListener listener) throws IOException {
+	public StepToken[] tokenize(Reader reader) throws IOException {
+		DefaultStepTokenizerListener listener = new DefaultStepTokenizerListener(strategy);
+		this.tokenize(reader, listener);
+		return listener.getStepTokens();
+	}
+
+	public void tokenize(Reader reader, StepTokenizerListener listener) throws IOException {
 		TokenizerContext ctx = new TokenizerContext();
 		ctx.listener = listener;
-		char[] buffer = new char[1];
+		char[] buffer = new char[bufferSize];
 		
 		while ((ctx.bufferLength = reader.read(buffer, ctx.bufferOffset, buffer.length - ctx.bufferOffset)) > 0) {
 			tokenize(buffer, ctx);
