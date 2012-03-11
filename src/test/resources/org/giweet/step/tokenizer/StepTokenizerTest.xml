@@ -138,6 +138,12 @@
 		</expected>
 	</test>
 	<test strategy="TOKENIZE_STEP_DESCRIPTOR">
+		<actual>«hello the world</actual>
+		<expected>
+			<token>hello the world</token>
+		</expected>
+	</test>
+	<test strategy="TOKENIZE_STEP_DESCRIPTOR">
 		<actual>«"»</actual>
 		<expected>
 			<token>"</token>
