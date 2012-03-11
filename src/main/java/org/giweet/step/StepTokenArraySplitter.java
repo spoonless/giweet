@@ -3,6 +3,9 @@ package org.giweet.step;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.giweet.step.tokenizer.StepTokenizer;
+import org.giweet.step.tokenizer.TokenizerStrategy;
+
 public class StepTokenArraySplitter {
 	
 	private static final int FIRST_SEPARATOR_TOKEN = 0x1;
@@ -10,7 +13,7 @@ public class StepTokenArraySplitter {
 	private final StepToken[][] listSeparators;
 	
 	public StepTokenArraySplitter(String... separators) {
-		StepTokenizer stepTokenizer = new StepTokenizer(false, true);
+		StepTokenizer stepTokenizer = new StepTokenizer(TokenizerStrategy.TOKENIZE_SCENARIO);
 		listSeparators = new StepToken[separators.length][];
 		for (int i = 0; i < separators.length; i++) {
 			listSeparators[i] = stepTokenizer.tokenize(separators[i]);

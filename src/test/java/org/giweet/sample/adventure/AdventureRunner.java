@@ -17,7 +17,8 @@ import org.giweet.converter.EnumConverter;
 import org.giweet.converter.NumberConverter;
 import org.giweet.converter.SimpleStringConverter;
 import org.giweet.step.StepToken;
-import org.giweet.step.StepTokenizer;
+import org.giweet.step.tokenizer.StepTokenizer;
+import org.giweet.step.tokenizer.TokenizerStrategy;
 import org.giweet.step.tree.SearchResult;
 import org.giweet.step.tree.StepTokenTree;
 import org.junit.Test;
@@ -57,7 +58,7 @@ public class AdventureRunner {
 
 		List<MethodStepDescriptor> methodStepDescriptors = methodStepScanner.scan(step);
 		StepTokenTree<MethodStepDescriptor> tree = new StepTokenTree<MethodStepDescriptor>(methodStepDescriptors);
-		StepTokenizer stepTokenizer = new StepTokenizer(false, true);
+		StepTokenizer stepTokenizer = new StepTokenizer(TokenizerStrategy.TOKENIZE_SCENARIO);
 		
 		for (String scenarioStep : scenario) {
 			StepToken[] stepTokens = stepTokenizer.tokenize(scenarioStep);

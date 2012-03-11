@@ -1,4 +1,4 @@
-package org.giweet.step;
+package org.giweet.step.tokenizer;
 
 import java.io.IOException;
 import java.io.StringReader;
@@ -13,6 +13,7 @@ import javax.xml.validation.SchemaFactory;
 
 import junit.framework.Assert;
 
+import org.giweet.step.StepToken;
 import org.giweet.step.tokenizer.StepTokenizer;
 import org.giweet.step.tokenizer.TokenizerStrategy;
 import org.xml.sax.Attributes;
@@ -108,7 +109,7 @@ public class StepTokenizerTestFromXml {
 	
 	public StepTokenizerTestFromXml() throws SAXException {
 		SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-		Schema schema = schemaFactory.newSchema(new StreamSource(StepTokenizerTestFromXml.class.getResourceAsStream("/org/giweet/step/StepTokenizerTest.xsd")));
+		Schema schema = schemaFactory.newSchema(new StreamSource(StepTokenizerTestFromXml.class.getResourceAsStream("StepTokenizerTest.xsd")));
 		saxParserFactory = SAXParserFactory.newInstance();
 		saxParserFactory.setValidating(true);
 		saxParserFactory.setNamespaceAware(true);

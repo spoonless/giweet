@@ -1,19 +1,22 @@
 package org.giweet.step.tree;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.giweet.step.ParameterValue;
 import org.giweet.step.StepDescriptor;
-import org.giweet.step.StepTokenizer;
-import org.giweet.step.tree.StepTokenTree;
+import org.giweet.step.tokenizer.StepTokenizer;
+import org.giweet.step.tokenizer.TokenizerStrategy;
 import org.junit.Test;
 
 public class StepTokenTreeTest {
 
-	private StepTokenizer stepTokenizer = new StepTokenizer(false, true);
+	private StepTokenizer stepTokenizer = new StepTokenizer(TokenizerStrategy.TOKENIZE_SCENARIO);
 
 	@Test
 	public void canSearchRawStepsWithOneStepDescriptorAvailable() {
@@ -105,7 +108,6 @@ public class StepTokenTreeTest {
 
 	@Test
 	public void canSearchEvenIfInputContainsMeaninglessStepTokens() {
-		this.stepTokenizer = new StepTokenizer(false, true);
 		List<StepDescriptor> stepDescriptors = new ArrayList<StepDescriptor>();
 		StepDescriptor stepDescriptor = new StepDescriptor("hello the world");
 		stepDescriptors.add(stepDescriptor);
@@ -117,7 +119,6 @@ public class StepTokenTreeTest {
 
 	@Test
 	public void canSearchAndReturnParameterValue() {
-		this.stepTokenizer = new StepTokenizer(false, true);
 		List<StepDescriptor> stepDescriptors = new ArrayList<StepDescriptor>();
 		StepDescriptor stepDescriptor = new StepDescriptor("hello the world");
 		stepDescriptors.add(stepDescriptor);

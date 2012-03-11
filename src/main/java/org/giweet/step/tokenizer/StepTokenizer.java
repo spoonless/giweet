@@ -7,7 +7,7 @@ import java.io.StringReader;
 import org.giweet.step.StepToken;
 
 public class StepTokenizer {
-	private static final int DEFAULT_BUFFER_SIZE = 100;
+	private static final int DEFAULT_BUFFER_SIZE = 10;
 	private final CharacterAnalyzer characterAnalyzer;
 	private final TokenizerStrategy strategy;
 	private final int bufferSize;

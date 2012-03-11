@@ -3,11 +3,13 @@ package org.giweet.step;
 import static org.junit.Assert.assertEquals;
 
 import org.giweet.StringUtils;
+import org.giweet.step.tokenizer.StepTokenizer;
+import org.giweet.step.tokenizer.TokenizerStrategy;
 import org.junit.Test;
 
 public class StepTokenArraySplitterTest {
 	
-	private StepTokenizer stepTokenizer = new StepTokenizer(false, true);
+	private StepTokenizer stepTokenizer = new StepTokenizer(TokenizerStrategy.TOKENIZE_SCENARIO);
 
 	@Test
 	public void canSplit() {

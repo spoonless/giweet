@@ -7,8 +7,8 @@ import static org.junit.Assert.assertTrue;
 import java.util.NoSuchElementException;
 
 import org.giweet.step.StepToken;
-import org.giweet.step.StepTokenizer;
-import org.giweet.step.tree.MeaningfulStepTokenIterator;
+import org.giweet.step.tokenizer.StepTokenizer;
+import org.giweet.step.tokenizer.TokenizerStrategy;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -18,7 +18,7 @@ public class MeaningfulStepTokenIteratorTest {
 
 	@Before
 	public void init() {
-		StepTokenizer stepTokenizer = new StepTokenizer(false, true);
+		StepTokenizer stepTokenizer = new StepTokenizer(TokenizerStrategy.TOKENIZE_SCENARIO);
 		StepToken[] stepTokens = stepTokenizer.tokenize("hello the world!");
 		assertEquals(6, stepTokens.length);
 		underTest = new MeaningfulStepTokenIterator(stepTokens);

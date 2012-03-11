@@ -17,13 +17,14 @@ import org.giweet.converter.Converter;
 import org.giweet.converter.ConverterComposite;
 import org.giweet.converter.NumberConverter;
 import org.giweet.converter.SimpleStringConverter;
-import org.giweet.step.StepTokenizer;
+import org.giweet.step.tokenizer.StepTokenizer;
+import org.giweet.step.tokenizer.TokenizerStrategy;
 import org.junit.Before;
 import org.junit.Test;
 
 public class ParamStepConverterTest {
 	
-	private StepTokenizer stepTokenizer = new StepTokenizer(false, true);
+	private StepTokenizer stepTokenizer = new StepTokenizer(TokenizerStrategy.TOKENIZE_SCENARIO);
 	private Converter converter;
 	private final Annotation[] dummyAnnotations = new Annotation[0];
 	

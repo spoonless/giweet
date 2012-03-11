@@ -1,16 +1,19 @@
-package org.giweet.step;
+package org.giweet.step.tokenizer;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import org.giweet.step.ParameterStepToken;
+import org.giweet.step.StaticStepToken;
+import org.giweet.step.StepToken;
 import org.junit.Test;
 
 public class StepTokenizerTest {
 
 	@Test
 	public void canTokenizeWithoutParameterToken() {
-		StepTokenizer underTest = new StepTokenizer(false);
+		StepTokenizer underTest = new StepTokenizer(TokenizerStrategy.TOKENIZE_STEP_DESCRIPTOR);
 
 		StepToken[] stepTokens = underTest.tokenize("hello the world");
 		testTokenization(stepTokens, "hello", "the", "world");
@@ -21,9 +24,6 @@ public class StepTokenizerTest {
 		stepTokens = underTest.tokenize("$");
 		testTokenization(stepTokens, "$");
 
-		stepTokens = underTest.tokenize("$test");
-		testTokenization(stepTokens, "$test");
-
 		stepTokens = underTest.tokenize("a b c d e");
 		testTokenization(stepTokens, "a", "b", "c", "d", "e");
 
@@ -33,7 +33,7 @@ public class StepTokenizerTest {
 
 	@Test
 	public void canTokenizeWithStringWithSpaces() {
-		StepTokenizer underTest = new StepTokenizer(false);
+		StepTokenizer underTest = new StepTokenizer(TokenizerStrategy.TOKENIZE_STEP_DESCRIPTOR);
 
 		StepToken[] stepTokens = underTest.tokenize("           hello         the world      ");
 		testTokenization(stepTokens, "hello", "the", "world");
@@ -41,7 +41,7 @@ public class StepTokenizerTest {
 
 	@Test
 	public void canTokenizeWithStringWithQuotes() {
-		StepTokenizer underTest = new StepTokenizer(false);
+		StepTokenizer underTest = new StepTokenizer(TokenizerStrategy.TOKENIZE_STEP_DESCRIPTOR);
 
 		StepToken[] stepTokens = underTest.tokenize("\"hello the world\"");
 		testTokenization(stepTokens, "hello the world");
@@ -58,7 +58,7 @@ public class StepTokenizerTest {
 
 	@Test
 	public void canTokenizeWithStringWithNonParsingCharacters() {
-		StepTokenizer underTest = new StepTokenizer(false);
+		StepTokenizer underTest = new StepTokenizer(TokenizerStrategy.TOKENIZE_STEP_DESCRIPTOR);
 
 		StepToken[] stepTokens = underTest.tokenize("@hello/the#world*");
 		testTokenization(stepTokens, "@hello/the#world*");
@@ -78,7 +78,7 @@ public class StepTokenizerTest {
 	
 	@Test
 	public void canTokenizeWithMeaninglessTokens() {
-		StepTokenizer underTest = new StepTokenizer(false, true);
+		StepTokenizer underTest = new StepTokenizer(TokenizerStrategy.TOKENIZE_SCENARIO);
 
 		StepToken[] stepTokens = underTest.tokenize("\thello, the world  ");
 		testTokenization(stepTokens, "\t", "hello", ", ", "the", " ", "world", "  ");
@@ -101,11 +101,14 @@ public class StepTokenizerTest {
 
 		stepTokens = underTest.tokenize("hello : world");
 		testTokenization(stepTokens, "hello", " : ", "world");
+
+		stepTokens = underTest.tokenize("hello the $world");
+		testTokenization(stepTokens, "hello", " ", "the", " ", "$world");
 	}
 
 	@Test
 	public void canTokenizeByIgnoringPartsIntoParenthesis() {
-		StepTokenizer underTest = new StepTokenizer(false);
+		StepTokenizer underTest = new StepTokenizer(TokenizerStrategy.TOKENIZE_STEP_DESCRIPTOR);
 
 		StepToken[] stepTokens = underTest.tokenize("(before ignorable block) hello(this must be ignored)the (and that also) world (after ignorable block)");
 		testTokenization(stepTokens, "hello", "the", "world");
@@ -116,7 +119,7 @@ public class StepTokenizerTest {
 
 	@Test
 	public void canTokenizeWithParameterToken() {
-		StepTokenizer underTest = new StepTokenizer(true);
+		StepTokenizer underTest = new StepTokenizer(TokenizerStrategy.TOKENIZE_STEP_DESCRIPTOR);
 		
 		StepToken[] stepTokens = underTest.tokenize("hello the $world");
 		testTokenization(stepTokens, new StaticStepToken("hello"), new StaticStepToken("the"), new ParameterStepToken("world"));
@@ -140,19 +143,19 @@ public class StepTokenizerTest {
 	@Test
 	public void canTokenizeAsStringFromXmlFile() throws Exception {
 		StepTokenizerTestFromXml stepTokenizerTestFromXml = new StepTokenizerTestFromXml();
-		stepTokenizerTestFromXml.testFromFile("/org/giweet/step/StepTokenizerTest.xml", 0);
+		stepTokenizerTestFromXml.testFromFile("StepTokenizerTest.xml", 0);
 	}
 
 	@Test
 	public void canTokenizeAsStreamWithTinyBufferFromXmlFile() throws Exception {
 		StepTokenizerTestFromXml stepTokenizerTestFromXml = new StepTokenizerTestFromXml();
-		stepTokenizerTestFromXml.testFromFile("/org/giweet/step/StepTokenizerTest.xml", 1);
+		stepTokenizerTestFromXml.testFromFile("StepTokenizerTest.xml", 1);
 	}
 
 	@Test
 	public void canTokenizeAsStreamFromXmlFile() throws Exception {
 		StepTokenizerTestFromXml stepTokenizerTestFromXml = new StepTokenizerTestFromXml();
-		stepTokenizerTestFromXml.testFromFile("/org/giweet/step/StepTokenizerTest.xml", 10);
+		stepTokenizerTestFromXml.testFromFile("StepTokenizerTest.xml", 10);
 	}
 
 	private void testTokenization(StepToken[] stepTokens, String... expectedTokens) {

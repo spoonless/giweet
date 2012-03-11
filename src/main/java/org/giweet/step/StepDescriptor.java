@@ -1,5 +1,8 @@
 package org.giweet.step;
 
+import org.giweet.step.tokenizer.StepTokenizer;
+import org.giweet.step.tokenizer.TokenizerStrategy;
+
 
 public class StepDescriptor implements Comparable<StepDescriptor> {
 	
@@ -8,7 +11,7 @@ public class StepDescriptor implements Comparable<StepDescriptor> {
 	
 	public StepDescriptor(String value) {
 		this.value = value;
-		this.tokens = new StepTokenizer(true).tokenize(value);
+		this.tokens = new StepTokenizer(TokenizerStrategy.TOKENIZE_STEP_DESCRIPTOR).tokenize(value);
 	}
 	
 	public String getValue() {
