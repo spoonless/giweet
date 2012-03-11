@@ -67,18 +67,17 @@ public class StepTokenizer {
 	}
 
 	private char[] updateBuffer(TokenizerContext ctx, char[] buffer) {
+		char[] newBuffer = buffer;
 		int remainingCharCount = ctx.bufferLength + ctx.bufferOffset - ctx.tokenStartPosition;
 		if (remainingCharCount > 0) {
-			char[] newBuffer = buffer;
 			if (remainingCharCount >= newBuffer.length) {
 				newBuffer = new char[newBuffer.length + remainingCharCount];
 			}
 			System.arraycopy(buffer, ctx.tokenStartPosition, newBuffer, 0, remainingCharCount);
-			buffer = newBuffer;
 		}
 		ctx.bufferOffset = remainingCharCount;
 		ctx.tokenStartPosition = 0;
-		return buffer;
+		return newBuffer;
 	}
 	
 	private class TokenizerContext {

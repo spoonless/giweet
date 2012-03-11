@@ -163,7 +163,7 @@ public class StepTokenNode<T extends StepDescriptor> {
 	public static <T extends StepDescriptor> StepTokenNode<T> search(StepToken stepToken, List<StepTokenNode<T>> stepTokenNodes) {
 		StepTokenNode<T> result = null;
 		if (!stepTokenNodes.isEmpty()) {
-			int index = Collections.binarySearch(stepTokenNodes, stepToken, comparator);
+			int index = Collections.binarySearch(stepTokenNodes, stepToken, COMPARATOR);
 			if (index >= 0) {
 				result = stepTokenNodes.get(index);
 			}
@@ -171,7 +171,7 @@ public class StepTokenNode<T extends StepDescriptor> {
 		return result;
 	}
 	
-	private static final StepTokenNodeStepTokenComparator comparator = new StepTokenNodeStepTokenComparator();
+	private static final StepTokenNodeStepTokenComparator COMPARATOR = new StepTokenNodeStepTokenComparator();
 
 	private static class StepTokenNodeStepTokenComparator implements Comparator<Object> {
 		public int compare(Object node, Object token) {

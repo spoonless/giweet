@@ -108,7 +108,6 @@ public class StepTokenArraySplitter {
 	}
 
 	private static StepToken[] subArray(StepToken[] stepTokens, int offset, int count) {
-		StepToken[] subStepTokens = null;
 		int lastIndex = offset + count;
 
 		for (; offset < lastIndex; offset++) {
@@ -123,6 +122,7 @@ public class StepTokenArraySplitter {
 			}
 		}
 		
+		StepToken[] subStepTokens = null;
 		if (offset < lastIndex) {
 			subStepTokens = new StepToken[lastIndex - offset];
 			for (int i = 0; i < subStepTokens.length; i++) {
