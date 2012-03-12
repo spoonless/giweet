@@ -11,6 +11,7 @@ public class StepDescriptor implements Comparable<StepDescriptor> {
 	
 	public StepDescriptor(String value) {
 		this.value = value;
+		// FIXME should be passed as argument
 		this.tokens = new StepTokenizer(TokenizerStrategy.TOKENIZE_STEP_DESCRIPTOR).tokenize(value);
 	}
 	
