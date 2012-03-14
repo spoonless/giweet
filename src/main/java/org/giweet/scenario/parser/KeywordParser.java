@@ -64,10 +64,8 @@ public class KeywordParser {
 	private String extractKeywordString(Pattern[] givenPatterns, String line) {
 		for (Pattern pattern : givenPatterns) {
 			Matcher matcher = pattern.matcher(line);
-			if (matcher.lookingAt()) {
-				if (matcher.start() == 0) {
+			if (matcher.lookingAt() && matcher.start() == 0) {
 					return line.substring(0, matcher.end());
-				}
 			}
 		}
 		return null;
