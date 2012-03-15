@@ -1,0 +1,10 @@
+* support for java bean converter (support for parameter step like $0.myProperty)
+* support for table parameter
+* support for parameterized scenario
+* support for property injection
+* open document parser
+* xml parser
+* explainer (trace the scenario parsing and step resolution)
+* scenario report
+* GUI runner 
+* javadoc tool to generate steps documentation
