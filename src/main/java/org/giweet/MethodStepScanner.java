@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.giweet.annotation.Step;
+import org.giweet.step.StepUtils;
 
 public class MethodStepScanner {
 	
@@ -24,31 +25,11 @@ public class MethodStepScanner {
 					}
 				}
 				else {
-					methoStepDescriptors.add(new MethodStepDescriptor(method, instance, getStepFromMethodName(method.getName())));
+					methoStepDescriptors.add(new MethodStepDescriptor(method, instance, StepUtils.getStepFromJavaIdentifier(method.getName())));
 				}
 			}
 		}
 		
 		return methoStepDescriptors;
 	}
-
-	private String getStepFromMethodName(String name) {
-		StringBuilder builder = new StringBuilder();
-		for (int i = 0 ; i < name.length() ; i++) {
-			char c = name.charAt(i);
-			if (i > 0) {
-				if (c == '_') {
-					builder.append(' ');
-					continue;
-				}
-				else if (c == '$' || Character.isUpperCase(c)) {
-					c = Character.toLowerCase(c);
-					builder.append(' ');
-				}
-			}
-			builder.append(c);
-		}
-		return builder.toString();
-	}
-
 }

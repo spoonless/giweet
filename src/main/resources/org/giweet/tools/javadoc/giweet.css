@@ -1,0 +1,41 @@
+@CHARSET "utf-8";
+
+body {
+}
+
+div {
+	margin-left: 1em;
+	margin-bottom: 1em;
+}
+
+h2 {
+	border-bottom: thin solid;
+	border-bottom-color: rgb(100,100,100);
+}
+
+h3 {
+	margin-bottom: 0.2em;
+}
+
+.generation-info {
+	font-size: 70%;
+	color: rgb(100,100,100);
+	font-family: sans-serif;
+}
+
+.footer {
+	margin-top: 1em;
+	text-align: right;
+}
+
+span.step {
+	color: #900B09;
+}
+
+a:link, a:visited {
+	color: #900B09;
+}
+
+a:hover, a:active {
+	color: #FF0000;
+}

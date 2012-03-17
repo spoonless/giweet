@@ -1,0 +1,111 @@
+package org.giweet.tools.javadoc;
+
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+
+import org.giweet.tools.javadoc.test.TestJavadocStep;
+import org.junit.Before;
+import org.junit.Test;
+
+import com.sun.javadoc.LanguageVersion;
+
+public class GiweetDocletTest {
+	
+	private static final String OUPUT_DIR = "target/generated-test-javadoc";
+	
+	@Before
+	public void removeOutputDir () {
+		File outputDir = new File(OUPUT_DIR);
+		if (outputDir.exists() && outputDir.isDirectory()) {
+			for (File file : outputDir.listFiles()) {
+				file.delete();
+			}
+		}
+		outputDir.delete();
+	}
+
+	@Test
+	public void isJava5Doclet() {
+		assertEquals(LanguageVersion.JAVA_1_5, GiweetDoclet.languageVersion());
+	}
+
+	@Test
+	public void canAcceptOptions() {
+		assertEquals(2, GiweetDoclet.optionLength(GiweetDoclet.LOCALE_OPTION));
+
+		assertEquals(2, GiweetDoclet.optionLength(GiweetDoclet.OUTPUT_DIR_OPTION));
+
+		assertEquals(2, GiweetDoclet.optionLength(GiweetDoclet.STYLESHEETFILE_OPTION));
+
+		assertEquals(0, GiweetDoclet.optionLength("unknownOption"));
+	}
+	
+	@Test
+	public void failIfOutputdirectoryIsFile() {
+		assertEquals(1, runJavadoc("pom.xml", "org.giweet.tools.javadoc.test"));
+	}
+	
+	@Test
+	public void canGenerateDocumentation() throws IOException {
+		assertEquals(0, runJavadoc("org.giweet.tools.javadoc.test"));
+		assertFileEquals(new File("src/main/resources/org/giweet/tools/javadoc/giweet.css"), new File(OUPUT_DIR + "/giweet.css"));
+		assertFileEquals(new File("src/test/resources/org/giweet/tools/javadoc/expected/steps." + TestJavadocStep.class.getCanonicalName() + ".html"), new File(OUPUT_DIR + "/steps." + TestJavadocStep.class.getCanonicalName() + ".html"));
+	}
+
+	private int runJavadoc(String subpackages) {
+		return runJavadoc(OUPUT_DIR, subpackages);
+	}
+	
+	private void assertFileEquals (File expected, File actual) throws IOException {
+		assertEquals(expected.length(), actual.length());
+		assertFileEquals(new FileInputStream(expected), new FileInputStream(actual));
+	}
+
+	
+	private void assertFileEquals (InputStream expected, InputStream actual) throws IOException {
+		byte[] expectedBuffer = new byte[512];
+		byte[] actualBuffer = new byte[512];
+		
+		try {
+			int expectedRead = expected.read(expectedBuffer);
+			int actualRead = actual.read(actualBuffer);
+			assertEquals("Nb bytes read", expectedRead, actualRead);
+			while (expectedRead != -1) {
+				assertArrayEquals(expectedBuffer, actualBuffer);
+				expectedRead = expected.read(expectedBuffer);
+				actualRead = actual.read(actualBuffer);
+				assertEquals("Nb bytes read", expectedRead, actualRead);
+			}
+		}
+		finally {
+			expected.close();
+			actual.close();
+		}
+	}
+
+	private int runJavadoc(String outputDir, String subpackages) {
+		int result = 1;
+		try {
+			result = com.sun.tools.javadoc.Main.execute(new String[] {"-locale", "en", "-generationdate", "FAKE DATE", "-d", outputDir, "-sourcepath", "src/test/java", "-doclet", GiweetDoclet.class.getCanonicalName(), "-docletpath", "target/classes/", "-subpackages", subpackages});
+		}
+		catch (NoClassDefFoundError ncdfe) {
+			String message = "This test failed due to the following error: " + ncdfe.toString() + "\n"
+					+ "It means that the JDK used to execute the test is not the same as the JDK used to resolve project dependencies.\n"
+					+ "It probabely means that you are running this test inside a IDE like Eclipse.\n"
+					+ "Please add manually tools.jar to your project dependency as a Java build path library.\n"
+					+ "Take care to pick the jar file from the same JDK installation as the one used to run the test.\n"
+					+ "Believe me, this problem does not come from Giweet implementation.\" +"
+					+ "To fix permanently this problem, use only the command line : \"mvn test\" :)";
+			System.err.println(message);
+			fail(message);
+		}
+		return result;
+	}
+
+}
