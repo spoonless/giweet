@@ -1,6 +1,5 @@
 package org.giweet.tools.javadoc;
 
-import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
@@ -8,6 +7,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 
 import org.giweet.tools.javadoc.test.TestJavadocStep;
 import org.junit.Before;
@@ -69,24 +70,24 @@ public class GiweetDocletTest {
 
 	
 	private void assertFileEquals (InputStream expected, InputStream actual) throws IOException {
-		byte[] expectedBuffer = new byte[512];
-		byte[] actualBuffer = new byte[512];
-		
 		try {
-			int expectedRead = expected.read(expectedBuffer);
-			int actualRead = actual.read(actualBuffer);
-			assertEquals("Nb bytes read", expectedRead, actualRead);
-			while (expectedRead != -1) {
-				assertArrayEquals(expectedBuffer, actualBuffer);
-				expectedRead = expected.read(expectedBuffer);
-				actualRead = actual.read(actualBuffer);
-				assertEquals("Nb bytes read", expectedRead, actualRead);
-			}
+			assertEquals(readFile(expected), readFile(actual));
 		}
 		finally {
 			expected.close();
 			actual.close();
 		}
+	}
+	
+	private String readFile (InputStream inputStream) throws IOException {
+		Reader reader = new InputStreamReader(inputStream, "utf-8");
+		StringBuilder stringBuilder = new StringBuilder();
+		char[] buffer = new char [512];
+		int nbRead = 0;
+		while ((nbRead = reader.read(buffer)) != -1) {
+			stringBuilder.append(buffer, 0, nbRead);
+		}
+		return stringBuilder.toString().toLowerCase();
 	}
 
 	private int runJavadoc(String outputDir, String subpackages) {
