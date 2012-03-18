@@ -190,7 +190,7 @@ public class GiweetDoclet {
 	}
 
 	private boolean isCandidateClassDoc(ClassDoc classDoc) {
-		return classDoc.isOrdinaryClass() && classDoc.isPublic() && classDoc.isIncluded() && (classDoc.modifierSpecifier() & Modifier.ABSTRACT) == 0;
+		return classDoc.isOrdinaryClass() && classDoc.isIncluded() && (classDoc.modifierSpecifier() & Modifier.ABSTRACT) == 0;
 	}
 	
 	private boolean isCandidateMethodDoc(MethodDoc methodDoc) {
