@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.util.Locale;
 
 import org.giweet.tools.javadoc.test.TestJavadocStep;
 import org.junit.Before;
@@ -49,7 +50,7 @@ public class GiweetDocletTest {
 	
 	@Test
 	public void failIfOutputdirectoryIsFile() {
-		assertEquals(1, runJavadoc("pom.xml", "org.giweet.tools.javadoc.test"));
+		assertEquals(1, runJavadoc(Locale.ENGLISH, "pom.xml", "org.giweet.tools.javadoc.test"));
 	}
 	
 	@Test
@@ -59,12 +60,26 @@ public class GiweetDocletTest {
 		assertFileEquals(new File("src/test/resources/org/giweet/tools/javadoc/expected/steps." + TestJavadocStep.class.getCanonicalName() + ".html"), new File(OUPUT_DIR + "/steps." + TestJavadocStep.class.getCanonicalName() + ".html"));
 	}
 
+	@Test
+	public void canGenerateDocumentationInFrench() throws IOException {
+		assertEquals(0, runJavadoc(Locale.FRENCH, OUPUT_DIR, "org.giweet.tools.javadoc.test"));
+		assertFileEquals(new File("src/main/resources/org/giweet/tools/javadoc/giweet.css"), new File(OUPUT_DIR + "/giweet.css"));
+		assertFileEquals(new File("src/test/resources/org/giweet/tools/javadoc/expected/steps." + TestJavadocStep.class.getCanonicalName() + "_fr.html"), new File(OUPUT_DIR + "/steps." + TestJavadocStep.class.getCanonicalName() + ".html"));
+	}
+
+	@Test
+	public void canGenerateEnglishDocumentationForUnknownLocale() throws IOException {
+		assertEquals(0, runJavadoc(Locale.PRC, OUPUT_DIR, "org.giweet.tools.javadoc.test"));
+		assertFileEquals(new File("src/main/resources/org/giweet/tools/javadoc/giweet.css"), new File(OUPUT_DIR + "/giweet.css"));
+		assertFileEquals(new File("src/test/resources/org/giweet/tools/javadoc/expected/steps." + TestJavadocStep.class.getCanonicalName() + ".html"), new File(OUPUT_DIR + "/steps." + TestJavadocStep.class.getCanonicalName() + ".html"));
+	}
+
 	private int runJavadoc(String subpackages) {
-		return runJavadoc(OUPUT_DIR, subpackages);
+		return runJavadoc(Locale.ENGLISH, OUPUT_DIR, subpackages);
 	}
 	
 	private void assertFileEquals (File expected, File actual) throws IOException {
-		assertEquals(expected.length(), actual.length());
+		assertEquals("Incorrect file length", expected.length(), actual.length());
 		assertFileEquals(new FileInputStream(expected), new FileInputStream(actual));
 	}
 
@@ -90,10 +105,10 @@ public class GiweetDocletTest {
 		return stringBuilder.toString().toLowerCase();
 	}
 
-	private int runJavadoc(String outputDir, String subpackages) {
+	private int runJavadoc(Locale locale, String outputDir, String subpackages) {
 		int result = 1;
 		try {
-			result = com.sun.tools.javadoc.Main.execute(new String[] {"-locale", "en", "-generationdate", "FAKE DATE", "-d", outputDir, "-sourcepath", "src/test/java", "-doclet", GiweetDoclet.class.getCanonicalName(), "-docletpath", "target/classes/", "-subpackages", subpackages});
+			result = com.sun.tools.javadoc.Main.execute(new String[] {"-locale", locale.getLanguage(), "-generationdate", "FAKE DATE", "-d", outputDir, "-sourcepath", "src/test/java", "-doclet", GiweetDoclet.class.getCanonicalName(), "-docletpath", "target/classes/", "-subpackages", subpackages});
 		}
 		catch (NoClassDefFoundError ncdfe) {
 			String message = "This test failed due to the following error: " + ncdfe.toString() + "\n"

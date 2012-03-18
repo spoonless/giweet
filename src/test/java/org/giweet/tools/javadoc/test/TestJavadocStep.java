@@ -26,7 +26,7 @@ public class TestJavadocStep {
 	}
 		
 	/**
-	 * This is step name is generated from the java method name
+	 * This step name is generated from the java method name
 	 */
 	@Step
 	public void testStep_generated_from_the_javaMethodName() {
