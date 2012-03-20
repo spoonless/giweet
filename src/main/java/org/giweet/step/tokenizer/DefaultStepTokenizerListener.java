@@ -3,7 +3,7 @@ package org.giweet.step.tokenizer;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.giweet.step.ParameterStepToken;
+import org.giweet.step.DynamicStepToken;
 import org.giweet.step.StaticStepToken;
 import org.giweet.step.StepToken;
 
@@ -18,8 +18,8 @@ public class DefaultStepTokenizerListener implements StepTokenizerListener {
 
 	public void newToken(String token, boolean isMeaningful) {
 		if (isMeaningful) {
-			if (token.length() > 1  && token.charAt(0) == '$' && strategy.isParameterStepTokenAllowed()) {
-				stepTokens.add(new ParameterStepToken(token.substring(1)));
+			if (token.length() > 1  && token.charAt(0) == '$' && strategy.isDynamicStepTokenAllowed()) {
+				stepTokens.add(new DynamicStepToken(token.substring(1)));
 			}
 			else {
 				stepTokens.add(new StaticStepToken(token, true));

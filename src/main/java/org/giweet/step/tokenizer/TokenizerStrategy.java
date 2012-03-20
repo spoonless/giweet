@@ -4,7 +4,7 @@ public enum TokenizerStrategy {
 	
 	TOKENIZE_STEP_DESCRIPTOR, TOKENIZE_SCENARIO;
 
-	public boolean isParameterStepTokenAllowed() {
+	public boolean isDynamicStepTokenAllowed() {
 		return this == TOKENIZE_STEP_DESCRIPTOR;
 	}
 	

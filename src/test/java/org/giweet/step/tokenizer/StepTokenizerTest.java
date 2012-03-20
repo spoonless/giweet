@@ -69,7 +69,7 @@ public class StepTokenizerTest {
 		assertEquals(expectedTokens.length, stepTokens.length);
 		for (int i = 0 ; i < expectedTokens.length ; i++) {
 			assertEquals(expectedTokens[i], stepTokens[i]);
-			assertTrue(expectedTokens[i].isParameter() == stepTokens[i].isParameter());
+			assertTrue(expectedTokens[i].isDynamic() == stepTokens[i].isDynamic());
 			assertEquals(expectedTokens[i].toString(), stepTokens[i].toString());
 		}
 	}

@@ -13,7 +13,7 @@ public class MeaningfulStepTokenIterator implements Iterator<StepToken> {
 	private int cursor;
 	private int nextCursor;
 	private int previousCursor;
-	private List<ParameterValuePosition> parameterValuePositions = new ArrayList<ParameterValuePosition>();
+	private List<StepTokenValuePosition> stepTokenValuePositions = new ArrayList<StepTokenValuePosition>();
 	
 	public MeaningfulStepTokenIterator(StepToken... stepTokens) {
 		this.stepTokens = stepTokens;
@@ -71,18 +71,18 @@ public class MeaningfulStepTokenIterator implements Iterator<StepToken> {
 		}
 		nextCursor = cursor;
 		cursor = previousCursor;
-		updateParameterValuePosition();
+		removeStepTokenValuePosition();
 		return stepTokens[cursor];
 	}
 
-	private void updateParameterValuePosition() {
-		for (int i = parameterValuePositions.size() - 1 ; i >= 0 ; i--) {
-			ParameterValuePosition parameterValuePosition = parameterValuePositions.get(i);
-			if (parameterValuePosition.getValueTokenStartPosition() > cursor) {
-				parameterValuePositions.remove(i);
+	private void removeStepTokenValuePosition() {
+		for (int i = stepTokenValuePositions.size() - 1 ; i >= 0 ; i--) {
+			StepTokenValuePosition stepTokenValuePosition = stepTokenValuePositions.get(i);
+			if (stepTokenValuePosition.getValueTokenStartPosition() > cursor) {
+				stepTokenValuePositions.remove(i);
 			}
-			else if (parameterValuePosition.getValueTokenEndPosition() > cursor) {
-				parameterValuePosition.setValueTokenEndPosition(cursor);
+			else if (stepTokenValuePosition.getValueTokenEndPosition() > cursor) {
+				stepTokenValuePosition.setValueTokenEndPosition(cursor);
 			}
 			else {
 				break;
@@ -90,29 +90,29 @@ public class MeaningfulStepTokenIterator implements Iterator<StepToken> {
 		}
 	}
 
-	public void markCurrentAsParameter (int parameterTokenPosition) {
-		ParameterValuePosition parameterValuePosition = getParameterValuePosition(parameterTokenPosition);
-		if (parameterValuePosition == null) {
-			parameterValuePosition = new ParameterValuePosition(parameterTokenPosition, cursor);
-			parameterValuePositions.add(parameterValuePosition);
+	public void markCurrentAsStepTokenValue (int dynamicStepTokenPosition) {
+		StepTokenValuePosition stepTokenValuePosition = getStepTokenValuePosition(dynamicStepTokenPosition);
+		if (stepTokenValuePosition == null) {
+			stepTokenValuePosition = new StepTokenValuePosition(dynamicStepTokenPosition, cursor);
+			stepTokenValuePositions.add(stepTokenValuePosition);
 		}
 		else {
-			parameterValuePosition.setValueTokenEndPosition(cursor);
+			stepTokenValuePosition.setValueTokenEndPosition(cursor);
 		}
 	}
 	
-	public List<ParameterValuePosition> getParameterValuePositions() {
-		return parameterValuePositions;
+	public List<StepTokenValuePosition> getStepTokenValuePositions() {
+		return stepTokenValuePositions;
 	}
 
 	public void remove() {
 		throw new UnsupportedOperationException();
 	}
 	
-	private ParameterValuePosition getParameterValuePosition(int parameterTokenPosition) {
-		if (! parameterValuePositions.isEmpty()) {
-			ParameterValuePosition parameterValue = parameterValuePositions.get(parameterValuePositions.size() - 1);
-			return parameterValue.getParameterTokenPosition() == parameterTokenPosition ? parameterValue : null;
+	private StepTokenValuePosition getStepTokenValuePosition(int dynamicStepTokenPosition) {
+		if (! stepTokenValuePositions.isEmpty()) {
+			StepTokenValuePosition stepTokenValuePosition = stepTokenValuePositions.get(stepTokenValuePositions.size() - 1);
+			return stepTokenValuePosition.getDynamicTokenPosition() == dynamicStepTokenPosition ? stepTokenValuePosition : null;
 		}
 		return null;
 	}

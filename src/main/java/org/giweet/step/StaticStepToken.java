@@ -13,7 +13,7 @@ public class StaticStepToken extends AbstractStepToken {
 		this.isMeaningful = isMeaningful;
 	}
 
-	public boolean isParameter() {
+	public boolean isDynamic() {
 		return false;
 	}
 	

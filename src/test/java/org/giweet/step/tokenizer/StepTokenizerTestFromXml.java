@@ -31,7 +31,7 @@ public class StepTokenizerTestFromXml {
 		private StepTokenizer stepTokenizer;
 		private StepToken[] actualStepTokens;
 		private boolean expectedMeaningful;
-		private boolean expectedParameter;
+		private boolean expectedDynamicToken;
 		private int expectedTokenIndex;
 		private String actual;
 		
@@ -57,7 +57,7 @@ public class StepTokenizerTestFromXml {
 			}
 			else if ("token".equals(localName)) {
 				expectedMeaningful = Boolean.valueOf(attributes.getValue("meaningful"));
-				expectedParameter = Boolean.valueOf(attributes.getValue("parameter"));
+				expectedDynamicToken = Boolean.valueOf(attributes.getValue("dynamic"));
 				stringBuilder = new StringBuilder();
 			}
 		}
@@ -92,8 +92,8 @@ public class StepTokenizerTestFromXml {
 				Assert.assertTrue(message + "unexpected, only " + actualStepTokens.length + " tokens were parsed" , expectedTokenIndex < actualStepTokens.length);
 				StepToken stepToken = actualStepTokens[expectedTokenIndex];
 				Assert.assertEquals(message + "content", expectedContent, stepToken.toString());
-				Assert.assertEquals(message + "as parameter", expectedParameter, stepToken.isParameter());
-				Assert.assertEquals(message + "as meaningful", expectedMeaningful, stepToken.isMeaningful());
+				Assert.assertEquals(message + "as dynamic step token", expectedDynamicToken, stepToken.isDynamic());
+				Assert.assertEquals(message + "as meaningful step token", expectedMeaningful, stepToken.isMeaningful());
 				expectedTokenIndex++;
 				stringBuilder = null;
 			}

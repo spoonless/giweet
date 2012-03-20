@@ -1,24 +1,24 @@
 package org.giweet.step.tree;
 
-import org.giweet.step.ParameterValue;
+import org.giweet.step.StepTokenValue;
 import org.giweet.step.StepDescriptor;
 
 public class SearchResult<T extends StepDescriptor> {
 	
 	private final T stepDescriptor;
-	private final ParameterValue[] parameterValues;
+	private final StepTokenValue[] stepTokenValues;
 	
-	public SearchResult(T stepDescriptor, ParameterValue... parameterValues) {
+	public SearchResult(T stepDescriptor, StepTokenValue... stepTokenValues) {
 		this.stepDescriptor = stepDescriptor;
-		this.parameterValues = parameterValues;
+		this.stepTokenValues = stepTokenValues;
 	}
 
 	public T getStepDescriptor() {
 		return stepDescriptor;
 	}
 
-	public ParameterValue[] getParameterValues() {
-		return parameterValues;
+	public StepTokenValue[] getStepTokenValues() {
+		return stepTokenValues;
 	}
 
 }

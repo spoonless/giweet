@@ -4,7 +4,7 @@
 	xsi:schemaLocation="http://www.giweet.org/test/StepTokenizerTest StepTokenizerTest.xsd ">
 
 	<!-- 
-		Tokenizing step descriptors (without meaningless tokens and with parameter tokens) 
+		Tokenizing step descriptors (without meaningless tokens and with dynamic tokens) 
 	-->
 	<test strategy="TOKENIZE_STEP_DESCRIPTOR">
 		<actual>       </actual>
@@ -58,31 +58,31 @@
 		<expected>
 			<token>hello</token>
 			<token>the</token>
-			<token parameter="true">world</token>
+			<token dynamic="true">world</token>
 		</expected>
 	</test>
 	<test strategy="TOKENIZE_STEP_DESCRIPTOR">
 		<actual>hello $the $world</actual>
 		<expected>
 			<token>hello</token>
-			<token parameter="true">the</token>
-			<token parameter="true">world</token>
+			<token dynamic="true">the</token>
+			<token dynamic="true">world</token>
 		</expected>
 	</test>
 	<test strategy="TOKENIZE_STEP_DESCRIPTOR">
 		<actual>$hello $the $world</actual>
 		<expected>
-			<token parameter="true">hello</token>
-			<token parameter="true">the</token>
-			<token parameter="true">world</token>
+			<token dynamic="true">hello</token>
+			<token dynamic="true">the</token>
+			<token dynamic="true">world</token>
 		</expected>
 	</test>
 	<test strategy="TOKENIZE_STEP_DESCRIPTOR">
 		<actual>hello$ $the$ $worl$d</actual>
 		<expected>
 			<token>hello$</token>
-			<token parameter="true">the$</token>
-			<token parameter="true">worl$d</token>
+			<token dynamic="true">the$</token>
+			<token dynamic="true">worl$d</token>
 		</expected>
 	</test>
 	<test strategy="TOKENIZE_STEP_DESCRIPTOR">
@@ -193,7 +193,7 @@
 	</test>
 
 	<!-- 
-		Tokenizing scenario (with meaningless tokens and without parameter tokens) 
+		Tokenizing scenario (with meaningless tokens and without dynamic tokens) 
 	-->
 	<test strategy="TOKENIZE_SCENARIO">
 		<actual>hello the world</actual>

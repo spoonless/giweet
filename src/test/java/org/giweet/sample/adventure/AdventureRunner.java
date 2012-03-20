@@ -64,7 +64,7 @@ public class AdventureRunner {
 			StepToken[] stepTokens = stepTokenizer.tokenize(scenarioStep);
 			SearchResult<MethodStepDescriptor> searchResult = tree.search(stepTokens);
 			System.out.println("invoke " + searchResult.getStepDescriptor().getValue());
-			Object result = methodStepInvoker.invoke(searchResult.getStepDescriptor(), searchResult.getParameterValues());
+			Object result = methodStepInvoker.invoke(searchResult.getStepDescriptor(), searchResult.getStepTokenValues());
 			if (result != null) {
 				methodStepDescriptors = methodStepScanner.scan(result);
 				if (!methodStepDescriptors.isEmpty()) {

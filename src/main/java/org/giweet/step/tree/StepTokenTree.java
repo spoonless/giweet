@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.giweet.step.ParameterValue;
+import org.giweet.step.StepTokenValue;
 import org.giweet.step.StepDescriptor;
 import org.giweet.step.StepToken;
 
@@ -37,9 +37,9 @@ public class StepTokenTree<T extends StepDescriptor> {
 		
 		SearchResult<T> searchResult = null;
 		if (stepDescriptorFound != null) {
-			List<ParameterValuePosition> parameterValuePositions = meaningfulStepTokenIterator.getParameterValuePositions();
-			ParameterValue[] parameterValues = createParameterValueArray(parameterValuePositions, stepDescriptorFound, stepTokens);
-			searchResult = new SearchResult<T>(stepDescriptorFound, parameterValues);
+			List<StepTokenValuePosition> stepTokenValuePositions = meaningfulStepTokenIterator.getStepTokenValuePositions();
+			StepTokenValue[] stepTokenValues = createStepTokenValueArray(stepTokenValuePositions, stepDescriptorFound, stepTokens);
+			searchResult = new SearchResult<T>(stepDescriptorFound, stepTokenValues);
 		}
 		return searchResult;
 	}
@@ -54,7 +54,7 @@ public class StepTokenTree<T extends StepDescriptor> {
 			}
 			if (stepDescriptorFound == null) {
 				StepTokenNode<T> lastStepTokenNode = stepTokenNodes.get(stepTokenNodes.size() - 1);
-				if (lastStepTokenNode.getStepToken().isParameter()) {
+				if (lastStepTokenNode.getStepToken().isDynamic()) {
 					stepDescriptorFound = lastStepTokenNode.search(meaningfulStepTokenIterator);
 				}
 			}
@@ -62,13 +62,13 @@ public class StepTokenTree<T extends StepDescriptor> {
 		return stepDescriptorFound;
 	}
 
-	private ParameterValue[] createParameterValueArray(List<ParameterValuePosition> parameterValuePositions, T stepDescriptorFound, StepToken... stepTokens) {
-		ParameterValue parameterValues[] = new ParameterValue[parameterValuePositions.size()];
-		for (int i = 0 ; i < parameterValues.length ; i++) {
-			ParameterValuePosition parameterValuePosition = parameterValuePositions.get(i);
-			ParameterValueImpl parameterValue = new ParameterValueImpl(parameterValuePosition, stepDescriptorFound.getTokens()[parameterValuePosition.getParameterTokenPosition()], stepTokens);
-			parameterValues[i] = parameterValue;
+	private StepTokenValue[] createStepTokenValueArray(List<StepTokenValuePosition> stepTokenValuePositions, T stepDescriptorFound, StepToken... stepTokens) {
+		StepTokenValue stepTokenValues[] = new StepTokenValue[stepTokenValuePositions.size()];
+		for (int i = 0 ; i < stepTokenValues.length ; i++) {
+			StepTokenValuePosition stepTokenValuePosition = stepTokenValuePositions.get(i);
+			StepTokenValueImpl stepTokenValue = new StepTokenValueImpl(stepTokenValuePosition, stepDescriptorFound.getTokens()[stepTokenValuePosition.getDynamicTokenPosition()], stepTokens);
+			stepTokenValues[i] = stepTokenValue;
 		}
-		return parameterValues;
+		return stepTokenValues;
 	}
 }

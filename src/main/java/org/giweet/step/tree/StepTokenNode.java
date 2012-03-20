@@ -72,8 +72,8 @@ public class StepTokenNode<T extends StepDescriptor> {
 	public T search(MeaningfulStepTokenIterator meaningfulStepTokenIterator) {
 		T result = null;
 		
-		if (this.stepToken.isParameter()) {
-			meaningfulStepTokenIterator.markCurrentAsParameter(depth);
+		if (this.stepToken.isDynamic()) {
+			meaningfulStepTokenIterator.markCurrentAsStepTokenValue(depth);
 		}
 		
 		if (! meaningfulStepTokenIterator.hasNext()) {
@@ -99,11 +99,11 @@ public class StepTokenNode<T extends StepDescriptor> {
 		}
 		if (result == null) {
 			StepTokenNode<T> lastStepTokenNode = nextNodes.get(nextNodes.size() - 1);
-			if (lastStepTokenNode.stepToken.isParameter()) {
+			if (lastStepTokenNode.stepToken.isDynamic()) {
 				result = lastStepTokenNode.search(meaningfulStepTokenIterator);
 			}
 		}
-		if (result == null && stepToken.isParameter()) {
+		if (result == null && stepToken.isDynamic()) {
 			result = this.search(meaningfulStepTokenIterator);
 		}
 		if (result == null) {
@@ -122,11 +122,11 @@ public class StepTokenNode<T extends StepDescriptor> {
 			StepToken nextStepToken2 = meaningfulStepTokenIterator.next();
 			nbNextCall++;
 			if (! nextStepToken.equals(nextStepToken2)) {
-				if (nextStepToken.isParameter()) {
-					meaningfulStepTokenIterator.markCurrentAsParameter(currentDepth);
+				if (nextStepToken.isDynamic()) {
+					meaningfulStepTokenIterator.markCurrentAsStepTokenValue(currentDepth);
 				}
-				else if (previousStepToken.isParameter()) {
-					meaningfulStepTokenIterator.markCurrentAsParameter(currentDepth - 1);
+				else if (previousStepToken.isDynamic()) {
+					meaningfulStepTokenIterator.markCurrentAsStepTokenValue(currentDepth - 1);
 					continue;
 				}
 				else {
@@ -143,10 +143,10 @@ public class StepTokenNode<T extends StepDescriptor> {
 				result = this.stepDescriptor;
 			}
 		}
-		else if (previousStepToken.isParameter()) {
+		else if (previousStepToken.isDynamic()) {
 			while (meaningfulStepTokenIterator.hasNext()) {
 				meaningfulStepTokenIterator.next();
-				meaningfulStepTokenIterator.markCurrentAsParameter(currentDepth - 1);
+				meaningfulStepTokenIterator.markCurrentAsStepTokenValue(currentDepth - 1);
 			}
 			result = this.stepDescriptor;
 		}
