@@ -6,6 +6,7 @@ import org.giweet.scenario.KeywordType;
 
 public interface ScenarioParserHandler {
 	
+	// TODO implement support for parse actions
 	enum ParseAction {CONTINUE, BREAK, SKIP};
 	
 	void setLocale(Locale locale);

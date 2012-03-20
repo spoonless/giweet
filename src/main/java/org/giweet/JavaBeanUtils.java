@@ -1,7 +1,6 @@
 package org.giweet;
 
 import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 
 public class JavaBeanUtils {
 	
@@ -57,8 +56,7 @@ public class JavaBeanUtils {
 	}
 
 	private static boolean isCandidateMethod(Method method, String property, int nbParam) {
-		return (method.getModifiers() & Modifier.PUBLIC) > 0
-				&& method.getParameterTypes().length == nbParam
+		return method.getParameterTypes().length == nbParam
 				&& method.getName().endsWith(property); 
 	}
 }

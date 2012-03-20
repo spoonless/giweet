@@ -63,4 +63,17 @@ public class MethodStepScannerTest {
 		assertEquals(2, instance.step3);
 	}
 
+	public static class InvalidStep {
+		@Step
+		protected void methodStep(){
+		}
+	}
+	
+	@Test(expected=InvalidMethodStepException.class)
+	public void cannotScanIfOneStepMethodIsNotPublic() throws Exception {
+		MethodStepScanner underTest = new MethodStepScanner();
+		
+		underTest.scan(new InvalidStep());
+		
+	}
 }
