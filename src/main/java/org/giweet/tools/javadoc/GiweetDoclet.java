@@ -1,7 +1,6 @@
 package org.giweet.tools.javadoc;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -12,21 +11,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-import javax.xml.transform.Source;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.URIResolver;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
-import javax.xml.transform.stream.StreamSource;
-
-import org.w3c.dom.Document;
-
-import com.sun.javadoc.AnnotationDesc;
 import com.sun.javadoc.ClassDoc;
 import com.sun.javadoc.LanguageVersion;
-import com.sun.javadoc.MethodDoc;
 import com.sun.javadoc.RootDoc;
 
 public class GiweetDoclet {
@@ -35,13 +21,6 @@ public class GiweetDoclet {
 	public static final String LOCALE_OPTION = "-locale";
 	public static final String OUTPUT_DIR_OPTION = "-d";
 	public static final String STYLESHEETFILE_OPTION = "-stylesheetfile";
-
-	private final class ClasspathURIResolver implements URIResolver {
-		public Source resolve(String href, String base) throws TransformerException {
-			String resourcePath = "/" + this.getClass().getPackage().getName().replace('.', '/') + "/" + href;
-			return new StreamSource(this.getClass().getResourceAsStream(resourcePath));
-		}
-	}
 
 	private final RootDoc rootDoc;
 	private final File outputDir;
@@ -67,10 +46,6 @@ public class GiweetDoclet {
 		return file;
 	}
 	
-	private String getOptionValue(String option) {
-		return getOptionValue(option, null);
-	}
-
 	private String getOptionValue(String option, String defaultValue) {
 		String[] optionValues = getOptionValues(option);
 		if (optionValues != null && optionValues.length > 0) {
@@ -90,24 +65,13 @@ public class GiweetDoclet {
 	}
 	
 	public void generate() throws Exception {
-		List<ClassDoc> classDocs = this.filterClassDocs();
-		rootDoc.printNotice("Step classes found: " + classDocs);
+		List<StepClassDoc> stepClassDocs = this.filterStepClassDocs();
+		GiweetDocumentGenerator giweetDocumentGenerator = new GiweetDocumentGenerator(rootDoc, locale);
+		giweetDocumentGenerator.setGenerationDate(getGenerationDate());
+		giweetDocumentGenerator.setStylesheet(getOptionValue(STYLESHEETFILE_OPTION, "giweet.css"));
 
-		GiweetDomBuilder giweetDomBuilder = new GiweetDomBuilder();
-		
-		InputStream xslstylsheetStream = getStylesheetStream();
-		
-		TransformerFactory transformerFactory = TransformerFactory.newInstance();
-		transformerFactory.setURIResolver(new ClasspathURIResolver());
-		Transformer transformerHtml = transformerFactory.newTransformer(new StreamSource(xslstylsheetStream));
-		
-		transformerHtml.setParameter("stylesheetfile", getOptionValue(STYLESHEETFILE_OPTION, "giweet.css"));
-		transformerHtml.setParameter("generationDate", getGenerationDate());
-		int classCounter = 0;
-		for (ClassDoc classDoc : classDocs) {
-			classCounter++;
-			Document document = giweetDomBuilder.createDocument(classCounter, classDoc);
-			transformerHtml.transform(new DOMSource(document), new StreamResult(new File(outputDir, "steps." + classDoc.qualifiedName() + ".html")));
+		for (StepClassDoc stepClassDoc : stepClassDocs) {
+			giweetDocumentGenerator.createDoc(outputDir, stepClassDoc);
 		}
 		extractFile("giweet.css");
 	}
@@ -147,66 +111,27 @@ public class GiweetDoclet {
 		}
 	}
 
-	private InputStream getStylesheetStream() throws IOException {
-		String stylesheetPath = getOptionValue(STYLESHEETFILE_OPTION);
-		if (stylesheetPath != null) {
-			File stylesheetFile = new File(stylesheetPath);
-			if (! stylesheetFile.exists() || ! stylesheetFile.isFile()) {
-				rootDoc.printWarning("Unable to find stylsheet file at \"" + stylesheetFile.getAbsolutePath() + "\"");
-			}
-			else {
-				return new FileInputStream(stylesheetFile);
-			}
-		}
-		InputStream xslstylsheetStream = this.getClass().getResourceAsStream("giweet2html_" + locale.getLanguage() + ".xsl");
-		if (xslstylsheetStream == null) {
-			rootDoc.printWarning("Unable to generate output for locale \"" + locale.getLanguage() + "\". Using default language...");			
-			xslstylsheetStream = this.getClass().getResourceAsStream("giweet2html.xsl");
-		}
-		return xslstylsheetStream;
-	}
-
-	
-	public List<ClassDoc> filterClassDocs() {
-		List<ClassDoc> stepClasses = new ArrayList<ClassDoc>();
+	public List<StepClassDoc> filterStepClassDocs() {
+		List<StepClassDoc> stepClassDocs = new ArrayList<StepClassDoc>();
+		int classId = 1;
 		for (ClassDoc classDoc : rootDoc.classes()) {
-			if (isStepClassDoc(classDoc)) {
-				stepClasses.add(classDoc);
-			}
-		}
-		return stepClasses;
-		
-	}
-
-	private boolean isStepClassDoc(ClassDoc classDoc) {
-		if (isCandidateClassDoc(classDoc)) {
-			for (MethodDoc methodDoc : classDoc.methods()) {
-				if (isCandidateMethodDoc(methodDoc) && containAnnotation(methodDoc.annotations(), "org.giweet.annotation.Step")) {
-					return true;
+			if (isCandidateClassDoc(classDoc)) {
+				StepClassDoc stepClassDoc = new StepClassDoc(classId, classDoc);
+				if (stepClassDoc.isStepClassDoc()) {
+					rootDoc.printNotice("Step class found: " + classDoc);
+					stepClassDocs.add(stepClassDoc);
+					classId++;
 				}
 			}
 		}
-		return false;
+		return stepClassDocs;
+		
 	}
 
 	private boolean isCandidateClassDoc(ClassDoc classDoc) {
 		return classDoc.isOrdinaryClass() && classDoc.isIncluded() && (classDoc.modifierSpecifier() & Modifier.ABSTRACT) == 0;
 	}
 	
-	private boolean isCandidateMethodDoc(MethodDoc methodDoc) {
-		return methodDoc.isPublic() && methodDoc.isIncluded();
-	}
-
-	private boolean containAnnotation (AnnotationDesc[] annotationDescs, String qName) {
-		for (AnnotationDesc annotationDesc : annotationDescs) {
-			boolean isStepAnnotation = annotationDesc.annotationType().asClassDoc().qualifiedName().equals(qName);
-			if (isStepAnnotation) {
-				return true;
-			}
-		}
-		return false;
-	}
-
 	public static LanguageVersion languageVersion() {
 		return LanguageVersion.JAVA_1_5;
 	}

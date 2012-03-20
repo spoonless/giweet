@@ -10,8 +10,9 @@ import org.giweet.annotation.Step;
  * @version 1.0
  * @since 2012
  */
-public class TestJavadocStep {
+public class TestJavadocStep extends ParentStep {
 	
+	@Override
 	@Step("test step without parameter")
 	public void testStepWithoutParameter() {
 		

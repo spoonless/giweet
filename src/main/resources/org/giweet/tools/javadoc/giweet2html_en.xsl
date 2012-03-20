@@ -59,7 +59,7 @@
 			<a name="{giweet:id}"/>
 			<h3><xsl:value-of select="$lang.step"/><span class="step"><xsl:value-of select="giweet:name"/></span></h3>
 			<div class="doc"><xsl:value-of select="giweet:doc" disable-output-escaping="yes" /></div>
-			<div class="generation-info"><xsl:value-of select="$lang.step.method"/><xsl:value-of select="concat(/giweet:stepClass/giweet:type, '#', giweet:method)" /></div>
+			<div class="generation-info"><xsl:value-of select="$lang.step.method"/><xsl:value-of select="concat(giweet:class, '#', giweet:method)" /></div>
 		</div>
 	</xsl:template>
 
