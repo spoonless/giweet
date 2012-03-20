@@ -40,7 +40,7 @@ public class GiweetDoclet {
 				throw new IOException("Cannot create output directory: \"" + outputDirPath + "\"");
 			}
 		}
-		else if (! file.isDirectory()) {
+		if (! file.isDirectory()) {
 			throw new IOException("Invalid output directory path: \"" + outputDirPath + "\" already exists and is not a directory");
 		}
 		return file;

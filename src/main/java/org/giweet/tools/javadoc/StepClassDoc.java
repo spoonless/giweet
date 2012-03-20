@@ -32,7 +32,7 @@ public class StepClassDoc {
 		do {
 			extractStepMethodDoc(currentClassDoc.methods(), overriddenMethodDocs);
 			currentClassDoc = currentClassDoc.superclass();
-		} while (currentClassDoc != null);
+		} while (! currentClassDoc.qualifiedName().equals("java.lang.Object"));
 	}
 	
 	private void extractStepMethodDoc(MethodDoc[] methodDocs, List<MethodDoc> overriddenMethodDocs) {
@@ -41,7 +41,7 @@ public class StepClassDoc {
 		// TODO check there is no collision on declared steps (two equivalent steps)
 		for (MethodDoc methodDoc : methodDocs) {
 			MethodDoc overriddenMethodDoc = methodDoc.overriddenMethod();
-			if (overriddenMethodDocs != null) {
+			if (overriddenMethodDoc != null) {
 				overriddenMethodDocs.add(overriddenMethodDoc);
 			}
 			if (! overriddenMethodDocs.contains(methodDoc)) {

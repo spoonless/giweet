@@ -38,9 +38,8 @@ public class TestJavadocStep extends ParentStep {
 
 	}
 
-	@SuppressWarnings("unused")
 	@Step()
-	private void ignorePrivateMethod() {
+	protected void ignorePrivateMethod() {
 
 	}
 }
