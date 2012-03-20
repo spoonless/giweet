@@ -36,6 +36,9 @@ public class StepClassDoc {
 	}
 	
 	private void extractStepMethodDoc(MethodDoc[] methodDocs, List<MethodDoc> overriddenMethodDocs) {
+		// TODO check that no step method is overridden by none step method
+		// TODO search for step method from parent classes
+		// TODO check there is no collision on declared steps (two equivalent steps)
 		for (MethodDoc methodDoc : methodDocs) {
 			MethodDoc overriddenMethodDoc = methodDoc.overriddenMethod();
 			if (overriddenMethodDocs != null) {

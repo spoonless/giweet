@@ -29,9 +29,6 @@ public class GiweetDomBuilder {
 		stepClassElement.appendChild(stepsElement);
 		
 		for (StepMethodDoc stepMethodDoc : stepClassDoc.getStepMethodDocs()) {
-			// TODO check that no step method is overridden by none step method
-			// TODO search for step method from parent classes
-			// TODO check there is no collision on declared steps (two equivalent steps)
 			Element stepElement = createElement("step");
 			stepsElement.appendChild(stepElement);
 			stepElement.appendChild(createElementWithText("id", Long.toString(stepMethodDoc.getId())));
