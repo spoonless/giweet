@@ -2,6 +2,7 @@ package org.giweet;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.regex.Pattern;
 
@@ -18,7 +19,7 @@ public class MethodStepInvoker {
 		this.paramStepConverter = paramStepConverter;
 	}
 	
-	public Object invoke(MethodStepDescriptor methodStepDescriptor, StepTokenValue[] stepTokenValues) throws CannotConvertException, IllegalArgumentException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+	public Object invoke(MethodStepDescriptor methodStepDescriptor, StepTokenValue[] stepTokenValues) throws CannotConvertException, IllegalArgumentException, IllegalAccessException, InvocationTargetException, NoSuchMethodException, InstantiationException {
 		Type[] genericParameterTypes = methodStepDescriptor.getGenericParameterTypes();
 		Annotation[][] parameterAnnotations = methodStepDescriptor.getParameterAnnotations();
 		Object[] params = new Object[genericParameterTypes.length];
@@ -28,15 +29,46 @@ public class MethodStepInvoker {
 			try {
 				int paramPosition = Integer.parseInt(stepTokenValue.getDynamicToken().toString());
 				Object paramValue = paramStepConverter.convert(genericParameterTypes[paramPosition], parameterAnnotations[paramPosition], stepTokenValue.getTokens());
-				params[i] = paramValue;
+				// FIXME checks i < params.length && i > 0
+				params[paramPosition] = paramValue;
 			} catch (NumberFormatException e) {
 				String[] path = SPLIT_PATTERN.split(stepTokenValue.getDynamicToken().toString());
-				InvocableMethod setterMethod = methodStepDescriptor.getInvocableSetterMethod(path);
+				InvocableMethod setterMethod = null;
+				try {
+					int paramPosition = Integer.parseInt(path[0]);
+					// FIXME checks i < params.length && i > 0
+					if (params[paramPosition] == null) {
+						Type paramType = genericParameterTypes[paramPosition];
+						Class<?> paramClass = getClassFromType(paramType);
+						params[i] = paramClass.newInstance();
+					}
+					String[] truncatedPath = new String[path.length - 1];
+					for(int j = 0 ; j < truncatedPath.length ; j++) {
+						truncatedPath[j] = path[j+1];
+					}
+					setterMethod = new InvocableSetterMethod(params[paramPosition], truncatedPath);
+				} catch (NumberFormatException e2) {
+					setterMethod = methodStepDescriptor.getInvocableSetterMethod(path);
+				}
 				Object paramValue = paramStepConverter.convert(setterMethod.getGenericParameterTypes()[0], setterMethod.getParameterAnnotations()[0], stepTokenValue.getTokens());
 				setterMethod.invoke(paramValue);
 			}
 		}
 		return methodStepDescriptor.invoke(params);
+	}
+
+	private Class<?> getClassFromType(Type paramType) {
+		Class<?> paramClass = null;
+		if (paramType instanceof ParameterizedType) {
+			paramType = ((ParameterizedType) paramType).getRawType();
+		}
+		if (paramType instanceof Class) {
+			paramClass = (Class<?>) paramType;
+		}
+		if (paramClass == null) {
+			// FIXME throw exception
+		}
+		return paramClass;
 	}
 	
 

@@ -20,7 +20,7 @@ public class JavaBeanUtils {
 			}
 		}
 		if (expectedMethod == null) {
-			throw new NoSuchMethodException("Cannot find public setter method for property \"" + property + "\" in class " + clazz);
+			throw new NoSuchMethodException("Cannot find public setter method for property \"" + property + "\" in " + clazz);
 		}
 		return expectedMethod;
 	}

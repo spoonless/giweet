@@ -19,19 +19,17 @@ public class QuestStep {
 	}
 	
 	@Step({
-		"$0 encountered a $1", 
-		"$0 encountered an $1", 
-		"$0 encountered $2", 
-		"$0 encountered a $1 named $2", 
-		"$0 encountered an $1 named $2"})
-	public void encounter(String subject, String creatureRace, String creatureName) {
-		Person creature = new Person();
-		creature.setRace(creatureRace);
-		persons.put(creatureRace, creature);
-		persons.put("the " + creatureRace, creature);
-		if (creatureName != null) {
-			creature.setName(creatureName);
-			persons.put(creatureName, creature);
+		"$0 encountered a $1.race", 
+		"$0 encountered an $1.race", 
+		"$0 encountered $1.name", 
+		"$0 encountered a $1.race named $1.name", 
+		"$0 encountered an $1.race named $1.name"})
+	public void encounter(String subject, Person creature) {
+		persons.put(creature.getRace(), creature);
+		persons.put("the " + creature.getRace(), creature);
+		if (creature.getName() != null) {
+			creature.setName(creature.getName());
+			persons.put(creature.getName(), creature);
 		}
 	}
 	
