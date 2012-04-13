@@ -9,7 +9,7 @@ import org.junit.Test;
 
 public class StepTokenArraySplitterTest {
 	
-	private StepTokenizer stepTokenizer = new StepTokenizer(TokenizerStrategy.TOKENIZE_SCENARIO);
+	private StepTokenizer stepTokenizer = new StepTokenizer(TokenizerStrategy.TOKENIZE_STEP_INSTANCE);
 
 	@Test
 	public void canSplit() {

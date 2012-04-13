@@ -17,8 +17,8 @@
     	<attribute name="strategy" use="required">
     		<simpleType>
     			<restriction base="string">
-    				<enumeration value="TOKENIZE_STEP_DESCRIPTOR"></enumeration>
-    				<enumeration value="TOKENIZE_SCENARIO"></enumeration>
+    				<enumeration value="TOKENIZE_STEP_DECLARATION"></enumeration>
+    				<enumeration value="TOKENIZE_STEP_INSTANCE"></enumeration>
     			</restriction>
     		</simpleType>
     	</attribute>

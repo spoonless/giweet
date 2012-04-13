@@ -19,9 +19,9 @@ public class MethodStepInvoker {
 		this.paramStepConverter = paramStepConverter;
 	}
 	
-	public Object invoke(MethodStepDescriptor methodStepDescriptor, StepTokenValue[] stepTokenValues) throws CannotConvertException, IllegalArgumentException, IllegalAccessException, InvocationTargetException, NoSuchMethodException, InstantiationException {
-		Type[] genericParameterTypes = methodStepDescriptor.getGenericParameterTypes();
-		Annotation[][] parameterAnnotations = methodStepDescriptor.getParameterAnnotations();
+	public Object invoke(MethodStepDeclaration methodStepDeclaration, StepTokenValue[] stepTokenValues) throws CannotConvertException, IllegalArgumentException, IllegalAccessException, InvocationTargetException, NoSuchMethodException, InstantiationException {
+		Type[] genericParameterTypes = methodStepDeclaration.getGenericParameterTypes();
+		Annotation[][] parameterAnnotations = methodStepDeclaration.getParameterAnnotations();
 		Object[] params = new Object[genericParameterTypes.length];
 		
 		for(int i = 0; i < stepTokenValues.length; i++) {
@@ -48,13 +48,13 @@ public class MethodStepInvoker {
 					}
 					setterMethod = new InvocableSetterMethod(params[paramPosition], truncatedPath);
 				} catch (NumberFormatException e2) {
-					setterMethod = methodStepDescriptor.getInvocableSetterMethod(path);
+					setterMethod = methodStepDeclaration.getInvocableSetterMethod(path);
 				}
 				Object paramValue = paramStepConverter.convert(setterMethod.getGenericParameterTypes()[0], setterMethod.getParameterAnnotations()[0], stepTokenValue.getTokens());
 				setterMethod.invoke(paramValue);
 			}
 		}
-		return methodStepDescriptor.invoke(params);
+		return methodStepDeclaration.invoke(params);
 	}
 
 	private Class<?> getClassFromType(Type paramType) {

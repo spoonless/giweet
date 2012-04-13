@@ -24,7 +24,7 @@ import org.junit.Test;
 
 public class ParamStepConverterTest {
 	
-	private StepTokenizer stepTokenizer = new StepTokenizer(TokenizerStrategy.TOKENIZE_SCENARIO);
+	private StepTokenizer stepTokenizer = new StepTokenizer(TokenizerStrategy.TOKENIZE_STEP_INSTANCE);
 	private Converter converter;
 	private final Annotation[] dummyAnnotations = new Annotation[0];
 	

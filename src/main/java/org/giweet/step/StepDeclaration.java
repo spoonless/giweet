@@ -4,27 +4,29 @@ import org.giweet.step.tokenizer.StepTokenizer;
 import org.giweet.step.tokenizer.TokenizerStrategy;
 
 
-public class StepDescriptor implements Comparable<StepDescriptor> {
+public abstract class StepDeclaration implements Comparable<StepDeclaration> {
 	
 	private final String value;
 	private final StepToken[] tokens;
 	
-	public StepDescriptor(String value) {
+	public StepDeclaration(String value) {
 		this.value = value;
 		// FIXME should be passed as argument
-		this.tokens = new StepTokenizer(TokenizerStrategy.TOKENIZE_STEP_DESCRIPTOR).tokenize(value);
+		this.tokens = new StepTokenizer(TokenizerStrategy.TOKENIZE_STEP_DECLARATION).tokenize(value);
 	}
 	
 	public String getValue() {
 		return value;
 	}
 	
+	public abstract boolean isOfType(StepType type);
+	
 	public StepToken[] getTokens() {
 		return tokens;
 	}
 	
-	public int compareTo(StepDescriptor stepDescriptor) {
-		StepToken [] otherStepTokens = stepDescriptor.getTokens();
+	public int compareTo(StepDeclaration stepDeclaration) {
+		StepToken [] otherStepTokens = stepDeclaration.getTokens();
 		int result = 0;
 		int nbTokens = Math.min(tokens.length, otherStepTokens.length);
 		for (int i = 0 ; i < nbTokens && result == 0 ; i++) {
@@ -36,6 +38,7 @@ public class StepDescriptor implements Comparable<StepDescriptor> {
 				result = -result;				
 			}
 		}
+		
 		if (result != 0) {
 			result = result < 0 ? -1 : 1;
 		}

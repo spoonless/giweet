@@ -3,7 +3,7 @@ package org.giweet.sample.adventure;
 import java.util.List;
 import java.util.Locale;
 
-import org.giweet.MethodStepDescriptor;
+import org.giweet.MethodStepDeclaration;
 import org.giweet.MethodStepInvoker;
 import org.giweet.MethodStepScanner;
 import org.giweet.ParamStepConverter;
@@ -16,9 +16,8 @@ import org.giweet.converter.DateConverter;
 import org.giweet.converter.EnumConverter;
 import org.giweet.converter.NumberConverter;
 import org.giweet.converter.SimpleStringConverter;
-import org.giweet.step.StepToken;
-import org.giweet.step.tokenizer.StepTokenizer;
-import org.giweet.step.tokenizer.TokenizerStrategy;
+import org.giweet.step.StepInstance;
+import org.giweet.step.StepType;
 import org.giweet.step.tree.SearchResult;
 import org.giweet.step.tree.StepTokenTree;
 import org.junit.Test;
@@ -56,19 +55,17 @@ public class AdventureRunner {
 		MethodStepScanner methodStepScanner = new MethodStepScanner();
 		MethodStepInvoker methodStepInvoker = createMethodStepInvoker();
 
-		List<MethodStepDescriptor> methodStepDescriptors = methodStepScanner.scan(step);
-		StepTokenTree<MethodStepDescriptor> tree = new StepTokenTree<MethodStepDescriptor>(methodStepDescriptors);
-		StepTokenizer stepTokenizer = new StepTokenizer(TokenizerStrategy.TOKENIZE_SCENARIO);
+		List<MethodStepDeclaration> methodStepDeclarations = methodStepScanner.scan(step);
+		StepTokenTree<MethodStepDeclaration> tree = new StepTokenTree<MethodStepDeclaration>(methodStepDeclarations);
 		
 		for (String scenarioStep : scenario) {
-			StepToken[] stepTokens = stepTokenizer.tokenize(scenarioStep);
-			SearchResult<MethodStepDescriptor> searchResult = tree.search(stepTokens);
-			System.out.println("invoke " + searchResult.getStepDescriptor().getValue());
-			Object result = methodStepInvoker.invoke(searchResult.getStepDescriptor(), searchResult.getStepTokenValues());
+			SearchResult<MethodStepDeclaration> searchResult = tree.search(new StepInstance(StepType.GIVEN, scenarioStep));
+			System.out.println("invoke " + searchResult.getStepDeclaration().getValue());
+			Object result = methodStepInvoker.invoke(searchResult.getStepDeclaration(), searchResult.getStepTokenValues());
 			if (result != null) {
-				methodStepDescriptors = methodStepScanner.scan(result);
-				if (!methodStepDescriptors.isEmpty()) {
-					tree = new StepTokenTree<MethodStepDescriptor>(methodStepDescriptors);
+				methodStepDeclarations = methodStepScanner.scan(result);
+				if (!methodStepDeclarations.isEmpty()) {
+					tree = new StepTokenTree<MethodStepDeclaration>(methodStepDeclarations);
 				}
 			}
 		}

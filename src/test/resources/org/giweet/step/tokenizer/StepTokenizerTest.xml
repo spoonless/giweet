@@ -6,24 +6,24 @@
 	<!-- 
 		Tokenizing step descriptors (without meaningless tokens and with dynamic tokens) 
 	-->
-	<test strategy="TOKENIZE_STEP_DESCRIPTOR">
+	<test strategy="TOKENIZE_STEP_DECLARATION">
 		<actual>       </actual>
 		<expected>
 		</expected>
 	</test>
-	<test strategy="TOKENIZE_STEP_DESCRIPTOR">
+	<test strategy="TOKENIZE_STEP_DECLARATION">
 		<actual>""</actual>
 		<expected>
 			<token></token>
 		</expected>
 	</test>
-	<test strategy="TOKENIZE_STEP_DESCRIPTOR">
+	<test strategy="TOKENIZE_STEP_DECLARATION">
 		<actual>"	"</actual>
 		<expected>
 			<token>	</token>
 		</expected>
 	</test>
-	<test strategy="TOKENIZE_STEP_DESCRIPTOR">
+	<test strategy="TOKENIZE_STEP_DECLARATION">
 		<actual>           hello         the world      </actual>
 		<expected>
 			<token>hello</token>
@@ -31,7 +31,7 @@
 			<token>world</token>
 		</expected>
 	</test>
-	<test strategy="TOKENIZE_STEP_DESCRIPTOR">
+	<test strategy="TOKENIZE_STEP_DECLARATION">
 		<actual>hello the world</actual>
 		<expected>
 			<token>hello</token>
@@ -39,7 +39,7 @@
 			<token>world</token>
 		</expected>
 	</test>
-	<test strategy="TOKENIZE_STEP_DESCRIPTOR">
+	<test strategy="TOKENIZE_STEP_DECLARATION">
 		<actual>100 € 100€</actual>
 		<expected>
 			<token>100</token>
@@ -47,13 +47,13 @@
 			<token>100€</token>
 		</expected>
 	</test>
-	<test strategy="TOKENIZE_STEP_DESCRIPTOR">
+	<test strategy="TOKENIZE_STEP_DECLARATION">
 		<actual>$</actual>
 		<expected>
 			<token>$</token>
 		</expected>
 	</test>
-	<test strategy="TOKENIZE_STEP_DESCRIPTOR">
+	<test strategy="TOKENIZE_STEP_DECLARATION">
 		<actual>hello the $world</actual>
 		<expected>
 			<token>hello</token>
@@ -61,7 +61,7 @@
 			<token dynamic="true">world</token>
 		</expected>
 	</test>
-	<test strategy="TOKENIZE_STEP_DESCRIPTOR">
+	<test strategy="TOKENIZE_STEP_DECLARATION">
 		<actual>hello $the $world</actual>
 		<expected>
 			<token>hello</token>
@@ -69,7 +69,7 @@
 			<token dynamic="true">world</token>
 		</expected>
 	</test>
-	<test strategy="TOKENIZE_STEP_DESCRIPTOR">
+	<test strategy="TOKENIZE_STEP_DECLARATION">
 		<actual>$hello $the $world</actual>
 		<expected>
 			<token dynamic="true">hello</token>
@@ -77,7 +77,7 @@
 			<token dynamic="true">world</token>
 		</expected>
 	</test>
-	<test strategy="TOKENIZE_STEP_DESCRIPTOR">
+	<test strategy="TOKENIZE_STEP_DECLARATION">
 		<actual>hello$ $the$ $worl$d</actual>
 		<expected>
 			<token>hello$</token>
@@ -85,7 +85,7 @@
 			<token dynamic="true">worl$d</token>
 		</expected>
 	</test>
-	<test strategy="TOKENIZE_STEP_DESCRIPTOR">
+	<test strategy="TOKENIZE_STEP_DECLARATION">
 		<actual>a b c d e</actual>
 		<expected>
 			<token>a</token>
@@ -95,7 +95,7 @@
 			<token>e</token>
 		</expected>
 	</test>
-	<test strategy="TOKENIZE_STEP_DESCRIPTOR">
+	<test strategy="TOKENIZE_STEP_DECLARATION">
 		<actual>1, 2: 3; 4! 5. 6? 7' 8	9
     10</actual>
 		<expected>
@@ -111,57 +111,57 @@
 			<token>10</token>
 		</expected>
 	</test>
-	<test strategy="TOKENIZE_STEP_DESCRIPTOR">
+	<test strategy="TOKENIZE_STEP_DECLARATION">
 		<actual>"hello the world"</actual>
 		<expected>
 			<token>hello the world</token>
 		</expected>
 	</test>
-	<test strategy="TOKENIZE_STEP_DESCRIPTOR">
+	<test strategy="TOKENIZE_STEP_DECLARATION">
 		<actual>«hello the world»</actual>
 		<expected>
 			<token>hello the world</token>
 		</expected>
 	</test>
-	<test strategy="TOKENIZE_STEP_DESCRIPTOR">
+	<test strategy="TOKENIZE_STEP_DECLARATION">
 		<actual>hello « the world »</actual>
 		<expected>
 			<token>hello</token>
 			<token> the world </token>
 		</expected>
 	</test>
-	<test strategy="TOKENIZE_STEP_DESCRIPTOR">
+	<test strategy="TOKENIZE_STEP_DECLARATION">
 		<actual>«hello the world» "   "</actual>
 		<expected>
 			<token>hello the world</token>
 			<token>   </token>
 		</expected>
 	</test>
-	<test strategy="TOKENIZE_STEP_DESCRIPTOR">
+	<test strategy="TOKENIZE_STEP_DECLARATION">
 		<actual>«hello the world</actual>
 		<expected>
 			<token>hello the world</token>
 		</expected>
 	</test>
-	<test strategy="TOKENIZE_STEP_DESCRIPTOR">
+	<test strategy="TOKENIZE_STEP_DECLARATION">
 		<actual>«"»</actual>
 		<expected>
 			<token>"</token>
 		</expected>
 	</test>
-	<test strategy="TOKENIZE_STEP_DESCRIPTOR">
+	<test strategy="TOKENIZE_STEP_DECLARATION">
 		<actual>@hello/the#world*</actual>
 		<expected>
 			<token>@hello/the#world*</token>
 		</expected>
 	</test>
-	<test strategy="TOKENIZE_STEP_DESCRIPTOR">
+	<test strategy="TOKENIZE_STEP_DECLARATION">
 		<actual> [hel{lo] </actual>
 		<expected>
 			<token>hel{lo</token>
 		</expected>
 	</test>
-	<test strategy="TOKENIZE_STEP_DESCRIPTOR">
+	<test strategy="TOKENIZE_STEP_DECLARATION">
 		<actual>it's ok</actual>
 		<expected>
 			<token>it</token>
@@ -169,13 +169,13 @@
 			<token>ok</token>
 		</expected>
 	</test>
-	<test strategy="TOKENIZE_STEP_DESCRIPTOR">
+	<test strategy="TOKENIZE_STEP_DECLARATION">
 		<actual>http://localhost:8080/mywebsite/</actual>
 		<expected>
 			<token>http://localhost:8080/mywebsite/</token>
 		</expected>
 	</test>
-	<test strategy="TOKENIZE_STEP_DESCRIPTOR">
+	<test strategy="TOKENIZE_STEP_DECLARATION">
 		<actual>(before ignorable block) hello(this must be ignored)the (and that also) world (after ignorable block)</actual>
 		<expected>
 			<token>hello</token>
@@ -183,7 +183,7 @@
 			<token>world</token>
 		</expected>
 	</test>
-	<test strategy="TOKENIZE_STEP_DESCRIPTOR">
+	<test strategy="TOKENIZE_STEP_DECLARATION">
 		<actual>(((test) test) test) hello )))))))) the world (ignore even if no end parenthesis is specified</actual>
 		<expected>
 			<token>hello</token>
@@ -195,7 +195,7 @@
 	<!-- 
 		Tokenizing scenario (with meaningless tokens and without dynamic tokens) 
 	-->
-	<test strategy="TOKENIZE_SCENARIO">
+	<test strategy="TOKENIZE_STEP_INSTANCE">
 		<actual>hello the world</actual>
 		<expected>
 			<token>hello</token>
@@ -205,7 +205,7 @@
 			<token>world</token>
 		</expected>
 	</test>
-	<test strategy="TOKENIZE_SCENARIO">
+	<test strategy="TOKENIZE_STEP_INSTANCE">
 		<actual>	hello, the world</actual>
 		<expected>
 			<token meaningful="false">	</token>
@@ -216,7 +216,7 @@
 			<token>world</token>
 		</expected>
 	</test>
-	<test strategy="TOKENIZE_SCENARIO">
+	<test strategy="TOKENIZE_STEP_INSTANCE">
 		<actual>hello the (beautiful) world</actual>
 		<expected>
 			<token>hello</token>
@@ -226,7 +226,7 @@
 			<token>world</token>
 		</expected>
 	</test>
-	<test strategy="TOKENIZE_SCENARIO">
+	<test strategy="TOKENIZE_STEP_INSTANCE">
 		<actual>hello(the)world</actual>
 		<expected>
 			<token>hello</token>
@@ -234,7 +234,7 @@
 			<token>world</token>
 		</expected>
 	</test>
-	<test strategy="TOKENIZE_SCENARIO">
+	<test strategy="TOKENIZE_STEP_INSTANCE">
 		<actual>hello : world</actual>
 		<expected>
 			<token>hello</token>
@@ -242,7 +242,7 @@
 			<token>world</token>
 		</expected>
 	</test>
-	<test strategy="TOKENIZE_SCENARIO">
+	<test strategy="TOKENIZE_STEP_INSTANCE">
 		<actual>hello the $world</actual>
 		<expected>
 			<token>hello</token>
@@ -252,7 +252,7 @@
 			<token>$world</token>
 		</expected>
 	</test>
-	<test strategy="TOKENIZE_SCENARIO">
+	<test strategy="TOKENIZE_STEP_INSTANCE">
 		<actual>hello the world (   </actual>
 		<expected>
 			<token>hello</token>
@@ -263,7 +263,7 @@
 			<token meaningful="false"> (   </token>
 		</expected>
 	</test>
-	<test strategy="TOKENIZE_SCENARIO">
+	<test strategy="TOKENIZE_STEP_INSTANCE">
 		<actual>hello the "sunny, shiny and brightly", world</actual>
 		<expected>
 			<token>hello</token>
@@ -275,7 +275,7 @@
 			<token>world</token>
 		</expected>
 	</test>
-	<test strategy="TOKENIZE_SCENARIO">
+	<test strategy="TOKENIZE_STEP_INSTANCE">
 		<actual>hello the sunny"shiny"world</actual>
 		<expected>
 			<token>hello</token>

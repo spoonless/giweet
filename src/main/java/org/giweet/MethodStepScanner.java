@@ -10,8 +10,8 @@ import org.giweet.step.StepUtils;
 
 public class MethodStepScanner {
 	
-	public List<MethodStepDescriptor> scan (Object instance) throws InvalidMethodStepException {
-		List<MethodStepDescriptor> methoStepDescriptors = new ArrayList<MethodStepDescriptor>();
+	public List<MethodStepDeclaration> scan (Object instance) throws InvalidMethodStepException {
+		List<MethodStepDeclaration> methoStepDeclarations = new ArrayList<MethodStepDeclaration>();
 		
 		for (Method method : instance.getClass().getDeclaredMethods()) {
 			Step stepAnnotation = method.getAnnotation(Step.class);
@@ -21,15 +21,15 @@ public class MethodStepScanner {
 				}
 				if (stepAnnotation.value().length != 0) {
 					for (String value : stepAnnotation.value()) {
-						methoStepDescriptors.add(new MethodStepDescriptor(method, instance, value));
+						methoStepDeclarations.add(new MethodStepDeclaration(method, instance, value));
 					}
 				}
 				else {
-					methoStepDescriptors.add(new MethodStepDescriptor(method, instance, StepUtils.getStepFromJavaIdentifier(method.getName())));
+					methoStepDeclarations.add(new MethodStepDeclaration(method, instance, StepUtils.getStepFromJavaIdentifier(method.getName())));
 				}
 			}
 		}
 		
-		return methoStepDescriptors;
+		return methoStepDeclarations;
 	}
 }

@@ -27,12 +27,12 @@ public class StepTokenizerTest {
 	
 	@Test(expected=IllegalArgumentException.class)
 	public void cannotCreateTokenizerWithBufferSize0() throws Exception {
-		new StepTokenizer(TokenizerStrategy.TOKENIZE_SCENARIO, 0);
+		new StepTokenizer(TokenizerStrategy.TOKENIZE_STEP_INSTANCE, 0);
 	}
 
 	@Test
 	public void canProvideAlternateCharacterAnalyzer() throws Exception {
-		StepTokenizer underTest = new StepTokenizer(TokenizerStrategy.TOKENIZE_SCENARIO, new WeirdCharacterAnalyzer());
+		StepTokenizer underTest = new StepTokenizer(TokenizerStrategy.TOKENIZE_STEP_INSTANCE, new WeirdCharacterAnalyzer());
 		
 		StepToken[] stepTokens = underTest.tokenize("abaaabab b");
 		

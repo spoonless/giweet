@@ -38,11 +38,11 @@ public class MethodStepScannerTest {
 		MethodStepScanner underTest = new MethodStepScanner();
 		DummyStep instance = new DummyStep();
 		
-		List<MethodStepDescriptor> result = underTest.scan(instance);
+		List<MethodStepDeclaration> result = underTest.scan(instance);
 		
 		assertEquals(4, result.size());
 		
-		MethodStepDescriptor desc = result.get(0);
+		MethodStepDeclaration desc = result.get(0);
 		assertEquals("method step 1", desc.getValue());
 		desc.invoke();
 		assertEquals(1, instance.step1);

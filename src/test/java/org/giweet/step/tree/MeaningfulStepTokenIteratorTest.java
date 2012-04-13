@@ -18,7 +18,7 @@ public class MeaningfulStepTokenIteratorTest {
 
 	@Before
 	public void init() {
-		StepTokenizer stepTokenizer = new StepTokenizer(TokenizerStrategy.TOKENIZE_SCENARIO);
+		StepTokenizer stepTokenizer = new StepTokenizer(TokenizerStrategy.TOKENIZE_STEP_INSTANCE);
 		StepToken[] stepTokens = stepTokenizer.tokenize("hello the world!");
 		assertEquals(6, stepTokens.length);
 		underTest = new MeaningfulStepTokenIterator(stepTokens);

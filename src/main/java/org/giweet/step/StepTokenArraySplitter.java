@@ -14,7 +14,7 @@ public class StepTokenArraySplitter {
 	
 	public StepTokenArraySplitter(String... separators) {
 		// FIXME should be passed as argument
-		StepTokenizer stepTokenizer = new StepTokenizer(TokenizerStrategy.TOKENIZE_SCENARIO);
+		StepTokenizer stepTokenizer = new StepTokenizer(TokenizerStrategy.TOKENIZE_STEP_INSTANCE);
 		listSeparators = new StepToken[separators.length][];
 		for (int i = 0; i < separators.length; i++) {
 			listSeparators[i] = stepTokenizer.tokenize(separators[i]);
