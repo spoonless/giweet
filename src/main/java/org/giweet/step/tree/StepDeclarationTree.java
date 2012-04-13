@@ -10,11 +10,11 @@ import org.giweet.step.StepDeclaration;
 import org.giweet.step.StepToken;
 import org.giweet.step.StepType;
 
-public class StepTokenTree<T extends StepDeclaration> {
+public class StepDeclarationTree<T extends StepDeclaration> {
 	
 	private final List<StepTokenNode<T>> stepTokenNodes = new ArrayList<StepTokenNode<T>>();
 	
-	public StepTokenTree(List<T> stepDeclarations) {
+	public StepDeclarationTree(List<T> stepDeclarations) {
 		Object[] array = stepDeclarations.toArray();
 		Arrays.sort(array);
 		

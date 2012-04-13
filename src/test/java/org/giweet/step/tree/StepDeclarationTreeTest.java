@@ -17,7 +17,7 @@ import org.giweet.step.tokenizer.StepTokenizer;
 import org.giweet.step.tokenizer.TokenizerStrategy;
 import org.junit.Test;
 
-public class StepTokenTreeTest {
+public class StepDeclarationTreeTest {
 	
 	private StepTokenizer stepTokenizer = new StepTokenizer(TokenizerStrategy.TOKENIZE_STEP_INSTANCE);
 
@@ -27,10 +27,10 @@ public class StepTokenTreeTest {
 		StepDeclaration stepDeclaration = new StepDeclarationImpl("hello $the world");
 		stepDeclarations.add(stepDeclaration);
 
-		StepTokenTree<StepDeclaration> underTest = new StepTokenTree<StepDeclaration>(stepDeclarations);
+		StepDeclarationTree<StepDeclaration> underTest = new StepDeclarationTree<StepDeclaration>(stepDeclarations);
 		
-		assertStepDeclarationNotFoundInStepTokenTree(underTest, "hello");
-		assertStepDeclarationFoundInStepTokenTree(underTest, "hello $the world", "hello le petit world");
+		assertStepDeclarationNotFoundInStepDeclarationTree(underTest, "hello");
+		assertStepDeclarationFoundInStepDeclarationTree(underTest, "hello $the world", "hello le petit world");
 	}
 
 	@Test
@@ -59,22 +59,22 @@ public class StepTokenTreeTest {
 		stepDeclaration = new StepDeclarationImpl("foo $bar");
 		stepDeclarations.add(stepDeclaration);
 
-		StepTokenTree<StepDeclaration> underTest = new StepTokenTree<StepDeclaration>(stepDeclarations);
+		StepDeclarationTree<StepDeclaration> underTest = new StepDeclarationTree<StepDeclaration>(stepDeclarations);
 		
-		assertStepDeclarationNotFoundInStepTokenTree(underTest, "NotExisting");
+		assertStepDeclarationNotFoundInStepDeclarationTree(underTest, "NotExisting");
 
-		assertStepDeclarationFoundInStepTokenTree(underTest, "hello", "hello");
-		assertStepDeclarationFoundInStepTokenTree(underTest, "hello the world", "hello the world");
-		assertStepDeclarationFoundInStepTokenTree(underTest, "$hello the world", "Bonjour the world");
-		assertStepDeclarationFoundInStepTokenTree(underTest, "$hello $the world", "Bonjour le world");
-		assertStepDeclarationFoundInStepTokenTree(underTest, "hello $the world", "hello le world");
-		assertStepDeclarationFoundInStepTokenTree(underTest, "hello the $world", "Hello the monde");
-		assertStepDeclarationFoundInStepTokenTree(underTest, "$hello $the $world", "this is correct");
-		assertStepDeclarationFoundInStepTokenTree(underTest, "$hello $the $world", "this is also correct");
-		assertStepDeclarationFoundInStepTokenTree(underTest, "hello $the world", "hello le petit world");
-		assertStepDeclarationFoundInStepTokenTree(underTest, "hello the $world", "hello the petit world");
-		assertStepDeclarationFoundInStepTokenTree(underTest, "$hello $the world", "bonjour le world");
-		assertStepDeclarationFoundInStepTokenTree(underTest, "foo $bar", "foo foo and foo bar");
+		assertStepDeclarationFoundInStepDeclarationTree(underTest, "hello", "hello");
+		assertStepDeclarationFoundInStepDeclarationTree(underTest, "hello the world", "hello the world");
+		assertStepDeclarationFoundInStepDeclarationTree(underTest, "$hello the world", "Bonjour the world");
+		assertStepDeclarationFoundInStepDeclarationTree(underTest, "$hello $the world", "Bonjour le world");
+		assertStepDeclarationFoundInStepDeclarationTree(underTest, "hello $the world", "hello le world");
+		assertStepDeclarationFoundInStepDeclarationTree(underTest, "hello the $world", "Hello the monde");
+		assertStepDeclarationFoundInStepDeclarationTree(underTest, "$hello $the $world", "this is correct");
+		assertStepDeclarationFoundInStepDeclarationTree(underTest, "$hello $the $world", "this is also correct");
+		assertStepDeclarationFoundInStepDeclarationTree(underTest, "hello $the world", "hello le petit world");
+		assertStepDeclarationFoundInStepDeclarationTree(underTest, "hello the $world", "hello the petit world");
+		assertStepDeclarationFoundInStepDeclarationTree(underTest, "$hello $the world", "bonjour le world");
+		assertStepDeclarationFoundInStepDeclarationTree(underTest, "foo $bar", "foo foo and foo bar");
 	}
 	
 	@Test
@@ -89,10 +89,10 @@ public class StepTokenTreeTest {
 		stepDeclaration = new StepDeclarationImpl("$1 through $2 right branch");
 		stepDeclarations.add(stepDeclaration);
 
-		StepTokenTree<StepDeclaration> underTest = new StepTokenTree<StepDeclaration>(stepDeclarations);
+		StepDeclarationTree<StepDeclaration> underTest = new StepDeclarationTree<StepDeclaration>(stepDeclarations);
 		
-		assertStepDeclarationFoundInStepTokenTree(underTest, "$1 through $2 right branch", "test searching through the right branch");
-		assertStepDeclarationFoundInStepTokenTree(underTest, "test $1 through another branch", "test searching through the right branch through another branch");
+		assertStepDeclarationFoundInStepDeclarationTree(underTest, "$1 through $2 right branch", "test searching through the right branch");
+		assertStepDeclarationFoundInStepDeclarationTree(underTest, "test $1 through another branch", "test searching through the right branch through another branch");
 	}
 
 	@Test
@@ -101,12 +101,12 @@ public class StepTokenTreeTest {
 		StepDeclaration stepDeclaration = new StepDeclarationImpl("$any");
 		stepDeclarations.add(stepDeclaration);
 		
-		StepTokenTree<StepDeclaration> underTest = new StepTokenTree<StepDeclaration>(stepDeclarations);
+		StepDeclarationTree<StepDeclaration> underTest = new StepDeclarationTree<StepDeclaration>(stepDeclarations);
 
-		assertStepDeclarationNotFoundInStepTokenTree(underTest, "");
-		assertStepDeclarationFoundInStepTokenTree(underTest, "$any", "hello");
-		assertStepDeclarationFoundInStepTokenTree(underTest, "$any", "hello the");
-		assertStepDeclarationFoundInStepTokenTree(underTest, "$any", "hello the world");
+		assertStepDeclarationNotFoundInStepDeclarationTree(underTest, "");
+		assertStepDeclarationFoundInStepDeclarationTree(underTest, "$any", "hello");
+		assertStepDeclarationFoundInStepDeclarationTree(underTest, "$any", "hello the");
+		assertStepDeclarationFoundInStepDeclarationTree(underTest, "$any", "hello the world");
 	}
 
 	@Test
@@ -115,9 +115,9 @@ public class StepTokenTreeTest {
 		StepDeclaration stepDeclaration = new StepDeclarationImpl("hello the world");
 		stepDeclarations.add(stepDeclaration);
 		
-		StepTokenTree<StepDeclaration> underTest = new StepTokenTree<StepDeclaration>(stepDeclarations);
+		StepDeclarationTree<StepDeclaration> underTest = new StepDeclarationTree<StepDeclaration>(stepDeclarations);
 		
-		assertStepDeclarationFoundInStepTokenTree(underTest, "hello the world", "hello, the world!");
+		assertStepDeclarationFoundInStepDeclarationTree(underTest, "hello the world", "hello, the world!");
 	}
 
 	@Test
@@ -130,7 +130,7 @@ public class StepTokenTreeTest {
 		stepDeclaration = new StepDeclarationImpl("$1 $2");
 		stepDeclarations.add(stepDeclaration);
 		
-		StepTokenTree<StepDeclaration> underTest = new StepTokenTree<StepDeclaration>(stepDeclarations);
+		StepDeclarationTree<StepDeclaration> underTest = new StepDeclarationTree<StepDeclaration>(stepDeclarations);
 		
 		SearchResult<StepDeclaration> searchResult = underTest.search(new StepInstance(StepType.GIVEN, "hello the world"));
 
@@ -176,18 +176,18 @@ public class StepTokenTreeTest {
 		StepDeclaration stepDeclaration = new StepDeclarationImpl("");
 		stepDeclarations.add(stepDeclaration);
 		
-		StepTokenTree<StepDeclaration> underTest = new StepTokenTree<StepDeclaration>(stepDeclarations);
+		StepDeclarationTree<StepDeclaration> underTest = new StepDeclarationTree<StepDeclaration>(stepDeclarations);
 
-		assertStepDeclarationNotFoundInStepTokenTree(underTest, "");
+		assertStepDeclarationNotFoundInStepDeclarationTree(underTest, "");
 	}
 
-	private <T extends StepDeclaration> void assertStepDeclarationFoundInStepTokenTree(StepTokenTree<T> tree, String expectedStepDeclarationValue, String actualRawStep) {
+	private <T extends StepDeclaration> void assertStepDeclarationFoundInStepDeclarationTree(StepDeclarationTree<T> tree, String expectedStepDeclarationValue, String actualRawStep) {
 		SearchResult<T> searchResult = tree.search(new StepInstance(StepType.GIVEN, actualRawStep));
 		assertNotNull(searchResult);
 		assertEquals(expectedStepDeclarationValue, searchResult.getStepDeclaration().getValue());
 	}
 
-	private <T extends StepDeclaration> void assertStepDeclarationNotFoundInStepTokenTree(StepTokenTree<T> tree, String actualRawStep) {
+	private <T extends StepDeclaration> void assertStepDeclarationNotFoundInStepDeclarationTree(StepDeclarationTree<T> tree, String actualRawStep) {
 		SearchResult<T> searchResult = tree.search(new StepInstance(StepType.GIVEN, actualRawStep));
 		assertNull(searchResult);
 	}

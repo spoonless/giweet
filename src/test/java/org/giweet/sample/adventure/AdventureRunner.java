@@ -19,7 +19,7 @@ import org.giweet.converter.SimpleStringConverter;
 import org.giweet.step.StepInstance;
 import org.giweet.step.StepType;
 import org.giweet.step.tree.SearchResult;
-import org.giweet.step.tree.StepTokenTree;
+import org.giweet.step.tree.StepDeclarationTree;
 import org.junit.Test;
 
 public class AdventureRunner {
@@ -56,7 +56,7 @@ public class AdventureRunner {
 		MethodStepInvoker methodStepInvoker = createMethodStepInvoker();
 
 		List<MethodStepDeclaration> methodStepDeclarations = methodStepScanner.scan(step);
-		StepTokenTree<MethodStepDeclaration> tree = new StepTokenTree<MethodStepDeclaration>(methodStepDeclarations);
+		StepDeclarationTree<MethodStepDeclaration> tree = new StepDeclarationTree<MethodStepDeclaration>(methodStepDeclarations);
 		
 		for (String scenarioStep : scenario) {
 			SearchResult<MethodStepDeclaration> searchResult = tree.search(new StepInstance(StepType.GIVEN, scenarioStep));
@@ -65,7 +65,7 @@ public class AdventureRunner {
 			if (result != null) {
 				methodStepDeclarations = methodStepScanner.scan(result);
 				if (!methodStepDeclarations.isEmpty()) {
-					tree = new StepTokenTree<MethodStepDeclaration>(methodStepDeclarations);
+					tree = new StepDeclarationTree<MethodStepDeclaration>(methodStepDeclarations);
 				}
 			}
 		}
