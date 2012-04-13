@@ -121,6 +121,95 @@ public class StepDeclarationTreeTest {
 	}
 
 	@Test
+	public void canSearchStepDeclarationWithSpecificType() {
+		List<StepDeclaration> stepDeclarations = new ArrayList<StepDeclaration>();
+		StepDeclaration givenStepDeclaration = new StepDeclarationImpl("test", StepType.GIVEN);
+		stepDeclarations.add(givenStepDeclaration);
+		
+		StepDeclarationTree<StepDeclaration> underTest = new StepDeclarationTree<StepDeclaration>(stepDeclarations);
+		
+		SearchResult<StepDeclaration> searchResult = underTest.search(new StepInstance(StepType.GIVEN, "test"));
+		assertEquals(givenStepDeclaration, searchResult.getStepDeclaration());
+
+		searchResult = underTest.search(new StepInstance(StepType.WHEN, "test"));
+		assertNull(searchResult);
+
+		searchResult = underTest.search(new StepInstance(StepType.THEN, "test"));
+		assertNull(searchResult);
+	}
+
+	@Test
+	public void canSearchStepDeclarationWithMultipleTypes() {
+		List<StepDeclaration> stepDeclarations = new ArrayList<StepDeclaration>();
+		StepDeclaration givenThenStepDeclaration = new StepDeclarationImpl("test", StepType.GIVEN, StepType.THEN);
+		stepDeclarations.add(givenThenStepDeclaration);
+		
+		StepDeclarationTree<StepDeclaration> underTest = new StepDeclarationTree<StepDeclaration>(stepDeclarations);
+		
+		SearchResult<StepDeclaration> searchResult = underTest.search(new StepInstance(StepType.GIVEN, "test"));
+		assertEquals(givenThenStepDeclaration, searchResult.getStepDeclaration());
+
+		searchResult = underTest.search(new StepInstance(StepType.THEN, "test"));
+		assertEquals(givenThenStepDeclaration, searchResult.getStepDeclaration());
+
+		searchResult = underTest.search(new StepInstance(StepType.WHEN, "test"));
+		assertNull(searchResult);
+	}
+
+	@Test
+	public void canSearchStepDeclarationsWithSameValueButDifferentTypes() {
+		List<StepDeclaration> stepDeclarations = new ArrayList<StepDeclaration>();
+		StepDeclaration givenStepDeclaration = new StepDeclarationImpl("test test", StepType.GIVEN);
+		stepDeclarations.add(givenStepDeclaration);
+		StepDeclaration whenStepDeclaration = new StepDeclarationImpl("test test", StepType.WHEN);
+		stepDeclarations.add(whenStepDeclaration);
+		StepDeclaration thenStepDeclaration = new StepDeclarationImpl("test test", StepType.THEN);
+		stepDeclarations.add(thenStepDeclaration);
+		
+		StepDeclarationTree<StepDeclaration> underTest = new StepDeclarationTree<StepDeclaration>(stepDeclarations);
+		
+		SearchResult<StepDeclaration> searchResult = underTest.search(new StepInstance(StepType.GIVEN, "test test"));
+		assertEquals(givenStepDeclaration, searchResult.getStepDeclaration());
+
+		searchResult = underTest.search(new StepInstance(StepType.WHEN, "test test"));
+		assertEquals(whenStepDeclaration, searchResult.getStepDeclaration());
+
+		searchResult = underTest.search(new StepInstance(StepType.THEN, "test test"));
+		assertEquals(thenStepDeclaration, searchResult.getStepDeclaration());
+	}
+
+	@Test
+	public void canSearchStepDeclarationsWithDifferentValuesAndDifferentTypes() {
+		List<StepDeclaration> stepDeclarations = new ArrayList<StepDeclaration>();
+		StepDeclaration givenStepDeclaration = new StepDeclarationImpl("test test", StepType.GIVEN);
+		stepDeclarations.add(givenStepDeclaration);
+		StepDeclaration whenStepDeclaration = new StepDeclarationImpl("test test test", StepType.WHEN);
+		stepDeclarations.add(whenStepDeclaration);
+		StepDeclaration thenStepDeclaration = new StepDeclarationImpl("test test test test", StepType.THEN);
+		stepDeclarations.add(thenStepDeclaration);
+		
+		StepDeclarationTree<StepDeclaration> underTest = new StepDeclarationTree<StepDeclaration>(stepDeclarations);
+		
+		SearchResult<StepDeclaration> searchResult = underTest.search(new StepInstance(StepType.GIVEN, "test test"));
+		assertEquals(givenStepDeclaration, searchResult.getStepDeclaration());
+
+		searchResult = underTest.search(new StepInstance(StepType.WHEN, "test test"));
+		assertNull(searchResult);
+
+		searchResult = underTest.search(new StepInstance(StepType.WHEN, "test test test"));
+		assertEquals(whenStepDeclaration, searchResult.getStepDeclaration());
+
+		searchResult = underTest.search(new StepInstance(StepType.THEN, "test test test"));
+		assertNull(searchResult);
+
+		searchResult = underTest.search(new StepInstance(StepType.THEN, "test test test test"));
+		assertEquals(thenStepDeclaration, searchResult.getStepDeclaration());
+
+		searchResult = underTest.search(new StepInstance(StepType.GIVEN, "test test test test"));
+		assertNull(searchResult);
+	}
+
+	@Test
 	public void canSearchAndReturnStepTokenValue() {
 		List<StepDeclaration> stepDeclarations = new ArrayList<StepDeclaration>();
 		StepDeclaration stepDeclaration = new StepDeclarationImpl("hello the world");
