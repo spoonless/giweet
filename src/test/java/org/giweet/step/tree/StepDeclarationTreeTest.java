@@ -207,6 +207,9 @@ public class StepDeclarationTreeTest {
 
 		searchResult = underTest.search(new StepInstance(StepType.GIVEN, "test test test test"));
 		assertNull(searchResult);
+
+		searchResult = underTest.search(new StepInstance(StepType.GIVEN, "test test test test test"));
+		assertNull(searchResult);
 	}
 
 	@Test

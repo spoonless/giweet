@@ -33,8 +33,9 @@ public class StepTokenNode<T extends StepDeclaration> {
 	private void setStepDeclaration(T stepDeclaration) {
 		for (int i = 0; i < STEP_TYPE_COUNT; i++) {
 			if (stepDeclaration.isOfType(StepType.values()[i])) {
-				if (this.stepDeclarations[i] != null && this.stepDeclarations[i] != stepDeclaration) {
+				if (this.stepDeclarations[i] != null) {
 					// FIXME big problem here!
+					throw new IllegalArgumentException();
 				}
 				this.stepDeclarations[i] = stepDeclaration;
 			}
@@ -76,24 +77,19 @@ public class StepTokenNode<T extends StepDeclaration> {
 
 	@SuppressWarnings("unchecked")
 	private void createNextNodeIfNecessary() {
-		StepTokenNode<T> newStepTokenNode = null;
-		T stepDeclaration = null;
+		if (nextNodes != null) {
+			return;
+		}
 		for (int i = 0; i < STEP_TYPE_COUNT; i++) {
-			// light optimization
-			if (stepDeclaration == this.stepDeclarations[i]) {
-				this.stepDeclarations[i] = null;
-				continue;
-			}
-			stepDeclaration = (T) this.stepDeclarations[i];
-			if (stepDeclaration != null && stepDeclaration.getTokens().length > depth + 1) {
-				if (newStepTokenNode == null) {
+			T stepDeclaration = (T) this.stepDeclarations[i];
+			if (stepDeclaration != null) {
+				if (stepDeclaration.getTokens().length > depth + 1) {
 					this.nextNodes = new ArrayList<StepTokenNode<T>>();
-					newStepTokenNode = new StepTokenNode<T>(stepDeclaration, depth+1);
+					StepTokenNode<T> newStepTokenNode = new StepTokenNode<T>(stepDeclaration, depth+1);
 					this.nextNodes.add(newStepTokenNode);
-				} else {
-					newStepTokenNode.setStepDeclaration(stepDeclaration);
+					this.stepDeclarations = new StepDeclaration[STEP_TYPE_COUNT];
 				}
-				this.stepDeclarations[i] = null;
+				break;
 			}
 		}
 	}
