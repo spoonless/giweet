@@ -96,18 +96,18 @@ public class StepTokenizer {
 		}
 		
 		public boolean isQuoteEnd(char currentChar) {
-			if (currentChar != expectedEndQuote) {
-				letterCount++;
-				return false;
-			}
-			else {
+			if (currentChar == expectedEndQuote) {
 				expectedEndQuote = 0;
+				return true;
 			}
-			return true;
+			return false;
 		}
 		
 		public void createMeaningfulToken(char[] characters, boolean allowEmpty) {
 			if (letterCount > 0 || allowEmpty) {
+				if (letterCount == 0) {
+					createMeaninglessToken(characters);
+				}
 				letterCount -= trailingCharCount;
 
 				String token = new String (characters, tokenStartPosition, letterCount);
@@ -132,15 +132,19 @@ public class StepTokenizer {
 	
 	private void tokenize (char[] characters, TokenizerContext ctx) {
 		int lastPosition = ctx.bufferOffset + ctx.bufferLength;
+		boolean allowEmptyMeaningfulToken = false;
 		for (int i = ctx.bufferOffset ; i < lastPosition ; i++) {
 			char c = characters[i];
 			int characterType = 0;
 			
 			if (ctx.isQuote()) {
 				if (! ctx.isQuoteEnd(c)) {
-					continue;
+					characterType = CharacterAnalyzer.LETTER;
 				}
-				characterType = CharacterAnalyzer.QUOTE_TAIL;
+				else {
+					characterType = CharacterAnalyzer.SEPARATOR;
+					allowEmptyMeaningfulToken = true;
+				}
 			}
 			else {
 				characterType = characterAnalyzer.getCharacterType(c);
@@ -159,7 +163,8 @@ public class StepTokenizer {
 			}
 			
 			if ((characterType & CharacterAnalyzer.SEPARATOR) != 0) {
-				ctx.createMeaningfulToken(characters, characterType == CharacterAnalyzer.QUOTE_TAIL);
+				ctx.createMeaningfulToken(characters, allowEmptyMeaningfulToken);
+				allowEmptyMeaningfulToken = false;
 				ctx.separatorCount++;
 			}
 
@@ -192,18 +197,14 @@ public class StepTokenizer {
 				ctx.commentCharCount++;
 				break;
 			case CharacterAnalyzer.QUOTE_HEAD:
+				// TODO must be refactored because QUOTE_HEAD is nearly identical with SEPARATOR_IF_LEADING
 				if (ctx.letterCount == 0) {
-					ctx.createMeaninglessToken(characters);
-					ctx.tokenStartPosition ++;
+					ctx.separatorCount++;
 					ctx.expectedEndQuote = characterAnalyzer.getExpectedEndQuote(c);
 				}
 				else {
 					ctx.letterCount++;
 				}
-				break;
-			case CharacterAnalyzer.QUOTE_TAIL:
-				ctx.tokenStartPosition++;
-				ctx.separatorCount--;
 				break;
 			}
 		}

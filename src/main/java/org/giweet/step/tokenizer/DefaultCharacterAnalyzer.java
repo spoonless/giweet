@@ -54,6 +54,7 @@ public class DefaultCharacterAnalyzer implements CharacterAnalyzer {
 		case Character.OTHER_LETTER:
 		case Character.OTHER_NUMBER:
 		case Character.OTHER_SYMBOL:
+			// FIXME Strange to consider final quote punctuation as letter!
 		case Character.FINAL_QUOTE_PUNCTUATION:
 			characterType = LETTER;
 			break;

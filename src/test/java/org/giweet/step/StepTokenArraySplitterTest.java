@@ -45,8 +45,11 @@ public class StepTokenArraySplitterTest {
 		result = underTest.split(stepTokenizer.tokenize(","));
 		assertSplitEquals(result);
 
-		result = underTest.split(stepTokenizer.tokenize("\"\",\"\""));
+		result = underTest.split(stepTokenizer.tokenize("\"\", \"\""));
 		assertSplitEquals(result, "", "");
+
+		result = underTest.split(stepTokenizer.tokenize("\",\""));
+		assertSplitEquals(result, ",");
 
 		result = underTest.split(stepTokenizer.tokenize("a,b"));
 		assertSplitEquals(result, "a,b");
@@ -80,6 +83,9 @@ public class StepTokenArraySplitterTest {
 		assertSplitEquals(result, "a", "b", "c", "d");
 
 		result = underTest.split(stepTokenizer.tokenize("a between b and c \"and also\" d"));
+		assertSplitEquals(result, "a", "b", "c \"and also\" d");
+
+		result = underTest.split(stepTokenizer.tokenize("a between b and \"c and also d\""));
 		assertSplitEquals(result, "a", "b", "c and also d");
 	}
 
