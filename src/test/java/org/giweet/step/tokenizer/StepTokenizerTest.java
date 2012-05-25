@@ -23,10 +23,6 @@ public class StepTokenizerTest {
 		public char getExpectedQuoteTail(char quoteTail) {
 			return 0;
 		}
-
-		public char getExpectedCommentTail(char commentHead) {
-			return 0;
-		}
 	}
 	
 	@Test(expected=IllegalArgumentException.class)

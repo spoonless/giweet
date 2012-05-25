@@ -111,7 +111,6 @@ public class StepTokenizer {
 		private boolean nextTokenIsMeaningful = false;
 		private StepTokenizerListener listener;
 		private char expectedQuoteTail;
-		private char expectedCommentTail;
 		
 		private boolean isNextCharTokenDelimiter (int characterType, char character) {
 			boolean isTokenDelimiter = false;
@@ -132,10 +131,6 @@ public class StepTokenizer {
 			}
 			else if (CharacterAnalyzer.QUOTE_HEAD == characterType) {
 				expectedQuoteTail = characterAnalyzer.getExpectedQuoteTail(character);
-			}
-			
-			if (CharacterAnalyzer.COMMENT_HEAD == characterType) {
-				expectedCommentTail = characterAnalyzer.getExpectedCommentTail(character);
 			}
 			return isTokenDelimiter;
 		}
@@ -202,14 +197,6 @@ public class StepTokenizer {
 				}
 				else {
 					characterType = CharacterAnalyzer.LETTER;
-				}
-			}
-			else if (expectedCommentTail != 0) {
-				if (c != expectedCommentTail) {
-					characterType = CharacterAnalyzer.SEPARATOR;
-				}
-				else {
-					expectedCommentTail = 0;
 				}
 			}
 			return characterType;

@@ -174,22 +174,6 @@
 			<token>http://localhost:8080/mywebsite/</token>
 		</expected>
 	</test>
-	<test strategy="TOKENIZE_STEP_DECLARATION">
-		<actual>(before ignorable block) hello(this must be ignored)the (and that also) world (after ignorable block)</actual>
-		<expected>
-			<token>hello</token>
-			<token>the</token>
-			<token>world</token>
-		</expected>
-	</test>
-<!-- 	<test strategy="TOKENIZE_STEP_DECLARATION"> -->
-<!-- 		<actual>(((test) test) test) hello )))))))) the world (ignore even if no end parenthesis is specified</actual> -->
-<!-- 		<expected> -->
-<!-- 			<token>hello</token> -->
-<!-- 			<token>the</token> -->
-<!-- 			<token>world</token> -->
-<!-- 		</expected> -->
-<!-- 	</test> -->
 
 	<!-- 
 		Tokenizing scenario (with meaningless tokens and without dynamic tokens) 
@@ -221,16 +205,16 @@
 			<token>hello</token>
 			<token meaningful="false"> </token>
 			<token>the</token>
-			<token meaningful="false"> (beautiful) </token>
+			<token meaningful="false"> (</token>
+			<token>beautiful</token>
+			<token meaningful="false">) </token>
 			<token>world</token>
 		</expected>
 	</test>
 	<test strategy="TOKENIZE_STEP_INSTANCE">
 		<actual>hello(the)world</actual>
 		<expected>
-			<token>hello</token>
-			<token meaningful="false">(the)</token>
-			<token>world</token>
+			<token>hello(the)world</token>
 		</expected>
 	</test>
 	<test strategy="TOKENIZE_STEP_INSTANCE">

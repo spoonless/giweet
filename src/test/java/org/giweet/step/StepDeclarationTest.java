@@ -13,9 +13,9 @@ public class StepDeclarationTest {
 		assertStepDeclarationComparison(0, "HELLO THE WORLD", "hello the world");
 		assertStepDeclarationComparison(0, "hello the world", "    hello   the    world   ");
 		assertStepDeclarationComparison(0, "hello $the world", "hello $a world");
-		assertStepDeclarationComparison(0, "$1, $2, $3", "$a $b $c (don't forget we ignore some characters)");
+		assertStepDeclarationComparison(0, "$1, $2, $3", "$aa $bb $c.c");
 		assertStepDeclarationComparison(0, "", "");
-		assertStepDeclarationComparison(0, "$", "$ ($ sign is regarded as an argument if alone)");
+		assertStepDeclarationComparison(0, "$", "$");
 		assertStepDeclarationComparison(-1, "a", "hello the world");
 		assertStepDeclarationComparison(-1, "hello", "hello the world");
 		assertStepDeclarationComparison(-1, "hello the world", "hello $the world");

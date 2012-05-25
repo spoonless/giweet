@@ -26,10 +26,6 @@ public class DefaultCharacterAnalyzer implements CharacterAnalyzer {
 		return expectedQuoteTail;
 	}
 
-	public char getExpectedCommentTail(char commentHead) {
-		return commentHead == '(' ? ')' : 0;
-	}
-
 	public int getCharacterType(char c) {
 		int characterType = SEPARATOR;
 		switch (Character.getType(c)) {
@@ -69,7 +65,7 @@ public class DefaultCharacterAnalyzer implements CharacterAnalyzer {
 
 		// character that can be dropped under special circumstances
 		case Character.START_PUNCTUATION:
-			characterType = c == '(' ? COMMENT_HEAD : SEPARATOR_IF_LEADING;
+			characterType = SEPARATOR_IF_LEADING;
 			break;
 		case Character.END_PUNCTUATION:
 			characterType = SEPARATOR_IF_TRAILING;
