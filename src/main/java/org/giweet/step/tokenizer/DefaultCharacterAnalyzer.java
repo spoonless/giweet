@@ -3,23 +3,31 @@ package org.giweet.step.tokenizer;
 
 public class DefaultCharacterAnalyzer implements CharacterAnalyzer {
 
-	public char getExpectedEndQuote(char startQuoteCharacter) {
-		char expectedEndQuote = startQuoteCharacter;
-		switch (startQuoteCharacter) {
+	public char getExpectedQuoteTail(char quoteHead) {
+		// FIXME many QUOTE_HEAD characters have no tail
+		char expectedQuoteTail = 0;
+		switch (quoteHead) {
+		case '"':
+			expectedQuoteTail = '"';
+			break;
 		case '\u00AB':
-			expectedEndQuote = '\u00BB';
+			expectedQuoteTail = '\u00BB';
 			break;
 		case '\u2018':
-			expectedEndQuote = '\u2019';
+			expectedQuoteTail = '\u2019';
 			break;
 		case '\u201C':
-			expectedEndQuote = '\u201D';
+			expectedQuoteTail = '\u201D';
 			break;
 		case '\u2039':
-			expectedEndQuote = '\u203A';
+			expectedQuoteTail = '\u203A';
 			break;
 		}
-		return expectedEndQuote;
+		return expectedQuoteTail;
+	}
+
+	public char getExpectedCommentTail(char commentHead) {
+		return commentHead == '(' ? ')' : 0;
 	}
 
 	public int getCharacterType(char c) {
@@ -64,7 +72,7 @@ public class DefaultCharacterAnalyzer implements CharacterAnalyzer {
 			characterType = c == '(' ? COMMENT_HEAD : SEPARATOR_IF_LEADING;
 			break;
 		case Character.END_PUNCTUATION:
-			characterType = c == ')' ? COMMENT_TAIL : SEPARATOR_IF_TRAILING;
+			characterType = SEPARATOR_IF_TRAILING;
 			break;
 		case Character.INITIAL_QUOTE_PUNCTUATION:
 			characterType = QUOTE_HEAD;

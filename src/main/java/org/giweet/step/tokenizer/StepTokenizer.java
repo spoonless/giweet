@@ -6,7 +6,7 @@ import java.io.Reader;
 import org.giweet.step.StepToken;
 
 public class StepTokenizer {
-	private static final int DEFAULT_BUFFER_SIZE = 10;
+	private static final int DEFAULT_BUFFER_SIZE = 255;
 	private final CharacterAnalyzer characterAnalyzer;
 	private final TokenizerStrategy strategy;
 	private final int bufferSize;
@@ -37,12 +37,9 @@ public class StepTokenizer {
 		DefaultStepTokenizerListener listener = new DefaultStepTokenizerListener(strategy);
 		TokenizerContext ctx = new TokenizerContext();
 		ctx.listener = listener;
-		ctx.bufferLength = buffer.length;
 
-		tokenize(buffer, ctx);
+		ctx.tokenize(buffer, 0, buffer.length, true);
 
-		ctx.createMeaningfulToken(buffer, false);
-		ctx.createMeaninglessToken(buffer);
 		return listener.getStepTokens();
 	}
 
@@ -56,157 +53,139 @@ public class StepTokenizer {
 		TokenizerContext ctx = new TokenizerContext();
 		ctx.listener = listener;
 		char[] buffer = new char[bufferSize];
+		int bufferOffset = 0;
+		int bufferLength = 0;
 		
-		while ((ctx.bufferLength = reader.read(buffer, ctx.bufferOffset, buffer.length - ctx.bufferOffset)) > 0) {
-			tokenize(buffer, ctx);
-			buffer = updateBuffer(ctx, buffer);
+		while ((bufferLength = reader.read(buffer, bufferOffset, buffer.length - bufferOffset)) > 0) {
+			int remainingCharCount = ctx.tokenize(buffer, bufferOffset, bufferLength, false);
+			bufferOffset = bufferOffset + bufferLength - remainingCharCount;
+			buffer = updateBuffer(buffer, bufferOffset, remainingCharCount);
+			bufferOffset = remainingCharCount;
 		}
-		
-		ctx.createMeaningfulToken(buffer, false);
-		ctx.createMeaninglessToken(buffer);
+		ctx.tokenize(buffer, bufferOffset, 0, true);
 	}
 
-	private char[] updateBuffer(TokenizerContext ctx, char[] buffer) {
+	private char[] updateBuffer(char[] buffer, int offset, int nbReadable) {
 		char[] newBuffer = buffer;
-		int remainingCharCount = ctx.bufferLength + ctx.bufferOffset - ctx.tokenStartPosition;
-		if (remainingCharCount > 0) {
-			if (remainingCharCount >= newBuffer.length) {
-				newBuffer = new char[newBuffer.length + remainingCharCount];
+		if (nbReadable > 0) {
+			if (nbReadable >= newBuffer.length) {
+				newBuffer = new char[newBuffer.length + nbReadable];
 			}
-			System.arraycopy(buffer, ctx.tokenStartPosition, newBuffer, 0, remainingCharCount);
+			System.arraycopy(buffer, offset, newBuffer, 0, nbReadable);
 		}
-		ctx.bufferOffset = remainingCharCount;
-		ctx.tokenStartPosition = 0;
 		return newBuffer;
 	}
 	
 	private class TokenizerContext {
-		public int bufferOffset;
-		public int bufferLength;
-		public int tokenStartPosition;
-		public int letterCount;
-		public int separatorCount;
-		public int trailingCharCount;
-		public int commentCharCount;
-		public char expectedEndQuote;
-		public StepTokenizerListener listener;
+		private int tokenStartPosition;
+		private int tokenLength;
+		private int trailingCharCount;
+		private boolean nextTokenIsMeaningful = false;
+		private StepTokenizerListener listener;
+		private char expectedQuoteTail;
+		private char expectedCommentTail;
 		
-		public boolean isQuote() {
-			return this.expectedEndQuote != 0;
-		}
-		
-		public boolean isQuoteEnd(char currentChar) {
-			if (currentChar == expectedEndQuote) {
-				expectedEndQuote = 0;
-				return true;
-			}
-			return false;
-		}
-		
-		public void createMeaningfulToken(char[] characters, boolean allowEmpty) {
-			if (letterCount > 0 || allowEmpty) {
-				if (letterCount == 0) {
-					createMeaninglessToken(characters);
-				}
-				letterCount -= trailingCharCount;
-
-				String token = new String (characters, tokenStartPosition, letterCount);
-				listener.newToken(token, true);
-
-				tokenStartPosition += letterCount;
-				separatorCount += trailingCharCount;
-				letterCount = 0;
-				trailingCharCount = 0;
-			}
-		}
-		
-		public void createMeaninglessToken(char[] characters) {
-			if (separatorCount > 0) {
-				String token = new String (characters, tokenStartPosition, separatorCount);
-				listener.newToken(token, false);
-			}
-			tokenStartPosition += separatorCount;
-			separatorCount = 0;
-		}
-	}
-	
-	private void tokenize (char[] characters, TokenizerContext ctx) {
-		int lastPosition = ctx.bufferOffset + ctx.bufferLength;
-		boolean allowEmptyMeaningfulToken = false;
-		for (int i = ctx.bufferOffset ; i < lastPosition ; i++) {
-			char c = characters[i];
-			int characterType = 0;
+		private boolean isNextCharTokenDelimiter (int characterType, char character) {
+			boolean isTokenDelimiter = false;
 			
-			if (ctx.isQuote()) {
-				if (! ctx.isQuoteEnd(c)) {
-					characterType = CharacterAnalyzer.LETTER;
+			if (nextTokenIsMeaningful) {
+				if ((CharacterAnalyzer.SEPARATOR & characterType) > 0) {
+					isTokenDelimiter = true;
+				}
+				else if ((CharacterAnalyzer.SEPARATOR_IF_TRAILING & characterType) > 0) {
+					trailingCharCount++;
 				}
 				else {
-					characterType = CharacterAnalyzer.SEPARATOR;
-					allowEmptyMeaningfulToken = true;
+					trailingCharCount = 0;
 				}
+			}
+			else if ((CharacterAnalyzer.LETTER & characterType) > 0) {
+				isTokenDelimiter = true;
+			}
+			else if (CharacterAnalyzer.QUOTE_HEAD == characterType) {
+				expectedQuoteTail = characterAnalyzer.getExpectedQuoteTail(character);
+			}
+			
+			if (CharacterAnalyzer.COMMENT_HEAD == characterType) {
+				expectedCommentTail = characterAnalyzer.getExpectedCommentTail(character);
+			}
+			return isTokenDelimiter;
+		}
+		
+		private void createToken(char[] characters) {
+			if (nextTokenIsMeaningful) {
+				createMeaningfulToken(characters);
 			}
 			else {
-				characterType = characterAnalyzer.getCharacterType(c);
+				createMeaninglessToken(characters);
 			}
-			
-			if (ctx.commentCharCount > 0) {
-				switch (characterType) {
-				case CharacterAnalyzer.COMMENT_HEAD:
-					ctx.commentCharCount++;
-					break;
-				case CharacterAnalyzer.COMMENT_TAIL:
-					ctx.commentCharCount--;
-					break;
-				}
-				characterType = CharacterAnalyzer.SEPARATOR;
-			}
-			
-			if ((characterType & CharacterAnalyzer.SEPARATOR) != 0) {
-				ctx.createMeaningfulToken(characters, allowEmptyMeaningfulToken);
-				allowEmptyMeaningfulToken = false;
-				ctx.separatorCount++;
-			}
+			nextTokenIsMeaningful = ! nextTokenIsMeaningful;
+		}
+		
+		private void createMeaningfulToken(char[] characters) {
+			int meaningfulTokenLength = tokenLength - trailingCharCount;
+			String token = new String (characters, tokenStartPosition, meaningfulTokenLength);
+			listener.newToken(token, true);
 
-			switch (characterType) {
-			case CharacterAnalyzer.LETTER:
-				ctx.createMeaninglessToken(characters);
-				ctx.letterCount++;
-				ctx.trailingCharCount = 0;
-				break;
-			case CharacterAnalyzer.SEPARATOR_IF_LEADING:
-				if (ctx.letterCount != 0) {
-					ctx.letterCount++;
-				}
-				else {
-					ctx.separatorCount++;
-				}
-				break;
-			case CharacterAnalyzer.SEPARATOR_IF_TRAILING:
-			case CharacterAnalyzer.SEPARATOR_IF_LEADING_OR_TRAILING:
-				if (ctx.letterCount != 0) {
-					ctx.letterCount++;
-					ctx.trailingCharCount++;
-				}
-				else {
-					// FIXME unappropriate behavior for SEPARATOR_IF_TRAILING
-					ctx.separatorCount++;
-				}
-				break;
-			case CharacterAnalyzer.COMMENT_HEAD:
-				ctx.commentCharCount++;
-				break;
-			case CharacterAnalyzer.QUOTE_HEAD:
-				// TODO must be refactored because QUOTE_HEAD is nearly identical with SEPARATOR_IF_LEADING
-				if (ctx.letterCount == 0) {
-					ctx.separatorCount++;
-					ctx.expectedEndQuote = characterAnalyzer.getExpectedEndQuote(c);
-				}
-				else {
-					ctx.letterCount++;
-				}
-				break;
+			tokenStartPosition += meaningfulTokenLength;
+			tokenLength = trailingCharCount;
+			trailingCharCount = 0;
+		}
+		
+		private void createMeaninglessToken(char[] characters) {
+			if (tokenLength > 0) {
+				String token = new String (characters, tokenStartPosition, tokenLength);
+				listener.newToken(token, false);
+				tokenStartPosition += tokenLength;
+				tokenLength = 0;
 			}
+		}
+
+		public int tokenize (char[] characters, int offset, int nbReadable, boolean isLastChunk) {
+			int lastPosition = offset + nbReadable;
+			tokenStartPosition = offset - tokenLength;
+			
+			for (int i = offset ; i < lastPosition ; i++) {
+				int characterType = getCharacterType(characters, i);
+				
+				if (this.isNextCharTokenDelimiter(characterType, characters[i])) {
+					this.createToken(characters);
+				}
+				tokenLength++;
+			}
+			if (isLastChunk) {
+				while (tokenLength > 0) {
+					this.createToken(characters);
+				}
+			}
+			return tokenLength;
+		}
+
+		private int getCharacterType(char[] characters, int i) {
+			char c = characters[i];
+			int characterType = characterAnalyzer.getCharacterType(c);
+			
+			if (expectedQuoteTail != 0) {
+				if (c == expectedQuoteTail) {
+					characterType = CharacterAnalyzer.SEPARATOR;
+					if (! nextTokenIsMeaningful) {
+						this.createToken(characters);
+					}
+					expectedQuoteTail = 0;
+				}
+				else {
+					characterType = CharacterAnalyzer.LETTER;
+				}
+			}
+			else if (expectedCommentTail != 0) {
+				if (c != expectedCommentTail) {
+					characterType = CharacterAnalyzer.SEPARATOR;
+				}
+				else {
+					expectedCommentTail = 0;
+				}
+			}
+			return characterType;
 		}
 	}
 }

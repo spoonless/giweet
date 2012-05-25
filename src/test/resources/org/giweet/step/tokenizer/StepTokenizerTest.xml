@@ -2,10 +2,17 @@
 <suite xmlns="http://www.giweet.org/test/StepTokenizerTest"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.giweet.org/test/StepTokenizerTest StepTokenizerTest.xsd ">
-
 	<!-- 
 		Tokenizing step descriptors (without meaningless tokens and with dynamic tokens) 
 	-->
+	<test strategy="TOKENIZE_STEP_DECLARATION">
+		<actual>           hello         the world      </actual>
+		<expected>
+			<token>hello</token>
+			<token>the</token>
+			<token>world</token>
+		</expected>
+	</test>
 	<test strategy="TOKENIZE_STEP_DECLARATION">
 		<actual>       </actual>
 		<expected>
@@ -21,14 +28,6 @@
 		<actual>"	"</actual>
 		<expected>
 			<token>	</token>
-		</expected>
-	</test>
-	<test strategy="TOKENIZE_STEP_DECLARATION">
-		<actual>           hello         the world      </actual>
-		<expected>
-			<token>hello</token>
-			<token>the</token>
-			<token>world</token>
 		</expected>
 	</test>
 	<test strategy="TOKENIZE_STEP_DECLARATION">
@@ -183,14 +182,14 @@
 			<token>world</token>
 		</expected>
 	</test>
-	<test strategy="TOKENIZE_STEP_DECLARATION">
-		<actual>(((test) test) test) hello )))))))) the world (ignore even if no end parenthesis is specified</actual>
-		<expected>
-			<token>hello</token>
-			<token>the</token>
-			<token>world</token>
-		</expected>
-	</test>
+<!-- 	<test strategy="TOKENIZE_STEP_DECLARATION"> -->
+<!-- 		<actual>(((test) test) test) hello )))))))) the world (ignore even if no end parenthesis is specified</actual> -->
+<!-- 		<expected> -->
+<!-- 			<token>hello</token> -->
+<!-- 			<token>the</token> -->
+<!-- 			<token>world</token> -->
+<!-- 		</expected> -->
+<!-- 	</test> -->
 
 	<!-- 
 		Tokenizing scenario (with meaningless tokens and without dynamic tokens) 
@@ -264,6 +263,17 @@
 		</expected>
 	</test>
 	<test strategy="TOKENIZE_STEP_INSTANCE">
+		<actual>hello the world!</actual>
+		<expected>
+			<token>hello</token>
+			<token meaningful="false"> </token>
+			<token>the</token>
+			<token meaningful="false"> </token>
+			<token>world</token>
+			<token meaningful="false">!</token>
+		</expected>
+	</test>
+	<test strategy="TOKENIZE_STEP_INSTANCE">
 		<actual>hello the "sunny, shiny and brightly", world</actual>
 		<expected>
 			<token>hello</token>
@@ -292,6 +302,26 @@
 			<token meaningful="false"> «</token>
 			<token> the world </token>
 			<token meaningful="false">»</token>
+		</expected>
+	</test>
+<!-- 	<test strategy="TOKENIZE_STEP_INSTANCE"> -->
+<!-- 		<actual>hello « «the world» »</actual> -->
+<!-- 		<expected> -->
+<!-- 			<token>hello</token> -->
+<!-- 			<token meaningful="false"> «</token> -->
+<!-- 			<token> «the world» </token> -->
+<!-- 			<token meaningful="false">»</token> -->
+<!-- 		</expected> -->
+<!-- 	</test> -->
+	<test strategy="TOKENIZE_STEP_INSTANCE">
+		<actual>hello the world «</actual>
+		<expected>
+			<token>hello</token>
+			<token meaningful="false"> </token>
+			<token>the</token>
+			<token meaningful="false"> </token>
+			<token>world</token>
+			<token meaningful="false"> «</token>
 		</expected>
 	</test>
 	<test strategy="TOKENIZE_STEP_INSTANCE">
