@@ -9,38 +9,39 @@ public class StepTokenizer {
 	private static final int DEFAULT_BUFFER_SIZE = 255;
 	private final CharacterAnalyzer characterAnalyzer;
 	private final TokenizerStrategy strategy;
-	private final int bufferSize;
+	private final int bufferInitialCapacity;
 
 	public StepTokenizer(TokenizerStrategy strategy) {
 		this(strategy, new DefaultCharacterAnalyzer(), DEFAULT_BUFFER_SIZE);
 	}
 
-	public StepTokenizer(TokenizerStrategy strategy, int bufferSize) {
-		this(strategy, new DefaultCharacterAnalyzer(), bufferSize);
+	public StepTokenizer(TokenizerStrategy strategy, int bufferInitialCapacity) {
+		this(strategy, new DefaultCharacterAnalyzer(), bufferInitialCapacity);
 	}
 
 	public StepTokenizer(TokenizerStrategy strategy, CharacterAnalyzer characterAnalyzer) {
 		this(strategy, characterAnalyzer, DEFAULT_BUFFER_SIZE);
 	}
 
-	public StepTokenizer(TokenizerStrategy strategy, CharacterAnalyzer characterAnalyzer, int bufferSize) {
-		if (bufferSize == 0) {
+	public StepTokenizer(TokenizerStrategy strategy, CharacterAnalyzer characterAnalyzer, int bufferInitialCapacity) {
+		if (bufferInitialCapacity == 0) {
 			throw new IllegalArgumentException("buffer size must be greater than 0");
 		}
 		this.strategy = strategy;
 		this.characterAnalyzer = characterAnalyzer;
-		this.bufferSize = bufferSize;
+		this.bufferInitialCapacity = bufferInitialCapacity;
 	}
 	
 	public StepToken[] tokenize(String value) {
-		char[] buffer = value.toCharArray();
 		DefaultStepTokenizerListener listener = new DefaultStepTokenizerListener(strategy);
+		tokenize(value, listener);
+		return listener.getStepTokens();
+	}
+
+	public void tokenize(String value, StepTokenizerListener listener) {
 		TokenizerContext ctx = new TokenizerContext();
 		ctx.listener = listener;
-
-		ctx.tokenize(buffer, 0, buffer.length, true);
-
-		return listener.getStepTokens();
+		ctx.tokenize(value, true);
 	}
 
 	public StepToken[] tokenize(Reader reader) throws IOException {
@@ -52,28 +53,55 @@ public class StepTokenizer {
 	public void tokenize(Reader reader, StepTokenizerListener listener) throws IOException {
 		TokenizerContext ctx = new TokenizerContext();
 		ctx.listener = listener;
-		char[] buffer = new char[bufferSize];
-		int bufferOffset = 0;
-		int bufferLength = 0;
+		CharSequenceBuffer charSequenceBuffer = new CharSequenceBuffer(bufferInitialCapacity);
 		
-		while ((bufferLength = reader.read(buffer, bufferOffset, buffer.length - bufferOffset)) > 0) {
-			int remainingCharCount = ctx.tokenize(buffer, bufferOffset, bufferLength, false);
-			bufferOffset = bufferOffset + bufferLength - remainingCharCount;
-			buffer = updateBuffer(buffer, bufferOffset, remainingCharCount);
-			bufferOffset = remainingCharCount;
+		while (charSequenceBuffer.load(reader)) {
+			int remainingCharCount = ctx.tokenize(charSequenceBuffer, false);
+			charSequenceBuffer.updateBuffer(remainingCharCount);
 		}
-		ctx.tokenize(buffer, bufferOffset, 0, true);
+		ctx.tokenize(charSequenceBuffer, true);
 	}
 
-	private char[] updateBuffer(char[] buffer, int offset, int nbReadable) {
-		char[] newBuffer = buffer;
-		if (nbReadable > 0) {
-			if (nbReadable >= newBuffer.length) {
-				newBuffer = new char[newBuffer.length + nbReadable];
-			}
-			System.arraycopy(buffer, offset, newBuffer, 0, nbReadable);
+	private static class CharSequenceBuffer implements CharSequence {
+		
+		private char [] buffer;
+		private int length;
+		
+		public CharSequenceBuffer(int initialCapacity) {
+			buffer = new char[initialCapacity];
 		}
-		return newBuffer;
+		
+		public int length() {
+			return length;
+		}
+
+		public char charAt(int index) {
+			return buffer[index];
+		}
+
+		public CharSequence subSequence(int start, int end) {
+			return new String(buffer, start, end - start);
+		}
+		
+		public boolean load(Reader reader) throws IOException {
+			int nbRead = reader.read(buffer, length, buffer.length - length);
+			if (nbRead > 0) {
+				length += nbRead;
+			}
+			return nbRead > -1;
+		}
+		
+		public void updateBuffer(int nbReadable) {
+			if (nbReadable > 0) {
+				char[] newBuffer = buffer;
+				if (nbReadable == buffer.length) {
+					newBuffer = new char[buffer.length + nbReadable];
+				}
+				System.arraycopy(buffer, length - nbReadable, newBuffer, 0, nbReadable);
+				buffer = newBuffer;
+			}
+			length = nbReadable;
+		}
 	}
 	
 	private class TokenizerContext {
@@ -112,19 +140,19 @@ public class StepTokenizer {
 			return isTokenDelimiter;
 		}
 		
-		private void createToken(char[] characters) {
+		private void createToken(CharSequence charSequence) {
 			if (nextTokenIsMeaningful) {
-				createMeaningfulToken(characters);
+				createMeaningfulToken(charSequence);
 			}
 			else {
-				createMeaninglessToken(characters);
+				createMeaninglessToken(charSequence);
 			}
 			nextTokenIsMeaningful = ! nextTokenIsMeaningful;
 		}
 		
-		private void createMeaningfulToken(char[] characters) {
+		private void createMeaningfulToken(CharSequence charSequence) {
 			int meaningfulTokenLength = tokenLength - trailingCharCount;
-			String token = new String (characters, tokenStartPosition, meaningfulTokenLength);
+			String token = charSequence.subSequence(tokenStartPosition, tokenStartPosition + meaningfulTokenLength).toString();
 			listener.newToken(token, true);
 
 			tokenStartPosition += meaningfulTokenLength;
@@ -132,44 +160,43 @@ public class StepTokenizer {
 			trailingCharCount = 0;
 		}
 		
-		private void createMeaninglessToken(char[] characters) {
+		private void createMeaninglessToken(CharSequence charSequence) {
 			if (tokenLength > 0) {
-				String token = new String (characters, tokenStartPosition, tokenLength);
+				String token = charSequence.subSequence(tokenStartPosition, tokenStartPosition + tokenLength).toString();
 				listener.newToken(token, false);
 				tokenStartPosition += tokenLength;
 				tokenLength = 0;
 			}
 		}
 
-		public int tokenize (char[] characters, int offset, int nbReadable, boolean isLastChunk) {
-			int lastPosition = offset + nbReadable;
-			tokenStartPosition = offset - tokenLength;
+		public int tokenize (CharSequence charSequence, boolean isLastChunk) {
+			tokenStartPosition = 0;
 			
-			for (int i = offset ; i < lastPosition ; i++) {
-				int characterType = getCharacterType(characters, i);
+			for (int i = tokenLength ; i < charSequence.length() ; i++) {
+				int characterType = getCharacterType(charSequence, i);
 				
-				if (this.isNextCharTokenDelimiter(characterType, characters[i])) {
-					this.createToken(characters);
+				if (this.isNextCharTokenDelimiter(characterType, charSequence.charAt(i))) {
+					this.createToken(charSequence);
 				}
 				tokenLength++;
 			}
 			if (isLastChunk) {
 				while (tokenLength > 0) {
-					this.createToken(characters);
+					this.createToken(charSequence);
 				}
 			}
 			return tokenLength;
 		}
 
-		private int getCharacterType(char[] characters, int i) {
-			char c = characters[i];
+		private int getCharacterType(CharSequence charSequence, int i) {
+			char c = charSequence.charAt(i);
 			int characterType = characterAnalyzer.getCharacterType(c);
 			
 			if (expectedQuoteTail != 0) {
 				if (c == expectedQuoteTail) {
 					characterType = CharacterAnalyzer.SEPARATOR;
 					if (! nextTokenIsMeaningful) {
-						this.createToken(characters);
+						this.createToken(charSequence);
 					}
 					expectedQuoteTail = 0;
 				}
