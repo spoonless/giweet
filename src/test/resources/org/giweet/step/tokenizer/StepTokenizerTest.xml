@@ -14,6 +14,11 @@
 		</expected>
 	</test>
 	<test strategy="TOKENIZE_STEP_DECLARATION">
+		<actual></actual>
+		<expected>
+		</expected>
+	</test>
+	<test strategy="TOKENIZE_STEP_DECLARATION">
 		<actual>       </actual>
 		<expected>
 		</expected>
@@ -288,15 +293,24 @@
 			<token meaningful="false">»</token>
 		</expected>
 	</test>
-<!-- 	<test strategy="TOKENIZE_STEP_INSTANCE"> -->
-<!-- 		<actual>hello « «the world» »</actual> -->
-<!-- 		<expected> -->
-<!-- 			<token>hello</token> -->
-<!-- 			<token meaningful="false"> «</token> -->
-<!-- 			<token> «the world» </token> -->
-<!-- 			<token meaningful="false">»</token> -->
-<!-- 		</expected> -->
-<!-- 	</test> -->
+	<test strategy="TOKENIZE_STEP_INSTANCE">
+		<actual>hello « «the world» »</actual>
+		<expected>
+			<token>hello</token>
+			<token meaningful="false"> «</token>
+			<token> «the world» </token>
+			<token meaningful="false">»</token>
+		</expected>
+	</test>
+	<test strategy="TOKENIZE_STEP_INSTANCE">
+		<actual>hello «««world»»»</actual>
+		<expected>
+			<token>hello</token>
+			<token meaningful="false"> «</token>
+			<token>««world»»</token>
+			<token meaningful="false">»</token>
+		</expected>
+	</test>
 	<test strategy="TOKENIZE_STEP_INSTANCE">
 		<actual>hello the world «</actual>
 		<expected>
@@ -306,6 +320,23 @@
 			<token meaningful="false"> </token>
 			<token>world</token>
 			<token meaningful="false"> «</token>
+		</expected>
+	</test>
+	<test strategy="TOKENIZE_STEP_INSTANCE">
+		<actual>hello the «world </actual>
+		<expected>
+			<token>hello</token>
+			<token meaningful="false"> </token>
+			<token>the</token>
+			<token meaningful="false"> «</token>
+			<token>world </token>
+		</expected>
+	</test>
+	<test strategy="TOKENIZE_STEP_INSTANCE">
+		<actual>"«</actual>
+		<expected>
+			<token meaningful="false">"</token>
+			<token>«</token>
 		</expected>
 	</test>
 	<test strategy="TOKENIZE_STEP_INSTANCE">

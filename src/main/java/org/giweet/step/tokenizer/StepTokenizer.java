@@ -39,7 +39,7 @@ public class StepTokenizer {
 	}
 
 	public void tokenize(String value, StepTokenizerListener listener) {
-		TokenizerContext ctx = new TokenizerContext();
+		TokenizerContext ctx = new TokenizerContext(characterAnalyzer);
 		ctx.listener = listener;
 		ctx.tokenize(value, true);
 	}
@@ -51,7 +51,7 @@ public class StepTokenizer {
 	}
 
 	public void tokenize(Reader reader, StepTokenizerListener listener) throws IOException {
-		TokenizerContext ctx = new TokenizerContext();
+		TokenizerContext ctx = new TokenizerContext(characterAnalyzer);
 		ctx.listener = listener;
 		CharSequenceBuffer charSequenceBuffer = new CharSequenceBuffer(bufferInitialCapacity);
 		
@@ -63,7 +63,6 @@ public class StepTokenizer {
 	}
 
 	private static class CharSequenceBuffer implements CharSequence {
-		
 		private char [] buffer;
 		private int length;
 		
@@ -104,14 +103,83 @@ public class StepTokenizer {
 		}
 	}
 	
-	private class TokenizerContext {
+	private static class QuotationBoundary {
+		private char quoteHead;
+		private char quoteTail;
+		private int quoteTailCount;
+		
+		public QuotationBoundary(char quoteHead, char quoteTail) {
+			this.quoteHead = quoteHead;
+			this.quoteTail = quoteTail;
+			this.quoteTailCount = 1;
+		}
+		
+		public boolean isQuoteTail(char character) {
+			if (character == quoteTail) {
+				quoteTailCount--;
+			}
+			else if (character == quoteHead) {
+				quoteTailCount++;
+			}
+			return quoteTailCount == 0;
+		}
+	}
+	
+	private static class TokenizerContext {
+		private final CharacterAnalyzer characterAnalyzer;
 		private int tokenStartPosition;
 		private int tokenLength;
-		private int trailingCharCount;
+		private int trailingSeparatorCount;
 		private boolean nextTokenIsMeaningful = false;
 		private StepTokenizerListener listener;
-		private char expectedQuoteTail;
+		private QuotationBoundary quotationBoundary;
 		
+		public TokenizerContext (CharacterAnalyzer characterAnalyzer) {
+			this.characterAnalyzer = characterAnalyzer;
+		}
+		
+		public int tokenize(CharSequence charSequence, boolean isLastChunk) {
+			tokenStartPosition = 0;
+			
+			for (int i = tokenLength ; i < charSequence.length() ; i++) {
+				char character = charSequence.charAt(i);
+				int characterType = getCharacterType(charSequence, character);
+				if (this.isNextCharTokenDelimiter(characterType, character)) {
+					this.createToken(charSequence);
+				}
+				tokenLength++;
+			}
+			if (isLastChunk) {
+				if (quotationBoundary != null) {
+					// TODO What are we suppose to do here? 
+					// It means that the sequence is completely parsed but no
+					// quote tail found
+				}
+				while (tokenLength > 0) {
+					this.createToken(charSequence);
+				}
+			}
+			return tokenLength;
+		}
+
+		private int getCharacterType(CharSequence charSequence, char currentChar) {
+			int characterType = characterAnalyzer.getCharacterType(currentChar);
+			
+			if (quotationBoundary != null) {
+				if (quotationBoundary.isQuoteTail(currentChar)) {
+					characterType = CharacterAnalyzer.SEPARATOR;
+					if (! nextTokenIsMeaningful) {
+						this.createToken(charSequence);
+					}
+					quotationBoundary = null;
+				}
+				else {
+					characterType = CharacterAnalyzer.LETTER;
+				}
+			}
+			return characterType;
+		}
+
 		private boolean isNextCharTokenDelimiter (int characterType, char character) {
 			boolean isTokenDelimiter = false;
 			
@@ -120,17 +188,20 @@ public class StepTokenizer {
 					isTokenDelimiter = true;
 				}
 				else if ((CharacterAnalyzer.SEPARATOR_IF_TRAILING & characterType) > 0) {
-					trailingCharCount++;
+					trailingSeparatorCount++;
 				}
 				else {
-					trailingCharCount = 0;
+					trailingSeparatorCount = 0;
 				}
 			}
 			else if ((CharacterAnalyzer.LETTER & characterType) > 0) {
 				isTokenDelimiter = true;
 			}
 			else if (CharacterAnalyzer.QUOTE_HEAD == characterType) {
-				expectedQuoteTail = characterAnalyzer.getExpectedQuoteTail(character);
+				char expectedQuoteTail = characterAnalyzer.getExpectedQuoteTail(character);
+				if (expectedQuoteTail != 0) {
+					quotationBoundary = new QuotationBoundary(character, expectedQuoteTail);
+				}
 			}
 			return isTokenDelimiter;
 		}
@@ -146,13 +217,13 @@ public class StepTokenizer {
 		}
 		
 		private void createMeaningfulToken(CharSequence charSequence) {
-			int meaningfulTokenLength = tokenLength - trailingCharCount;
+			int meaningfulTokenLength = tokenLength - trailingSeparatorCount;
 			String token = charSequence.subSequence(tokenStartPosition, tokenStartPosition + meaningfulTokenLength).toString();
 			listener.newToken(token, true);
 
 			tokenStartPosition += meaningfulTokenLength;
-			tokenLength = trailingCharCount;
-			trailingCharCount = 0;
+			tokenLength = trailingSeparatorCount;
+			trailingSeparatorCount = 0;
 		}
 		
 		private void createMeaninglessToken(CharSequence charSequence) {
@@ -162,44 +233,6 @@ public class StepTokenizer {
 				tokenStartPosition += tokenLength;
 				tokenLength = 0;
 			}
-		}
-
-		public int tokenize (CharSequence charSequence, boolean isLastChunk) {
-			tokenStartPosition = 0;
-			
-			for (int i = tokenLength ; i < charSequence.length() ; i++) {
-				int characterType = getCharacterType(charSequence, i);
-				
-				if (this.isNextCharTokenDelimiter(characterType, charSequence.charAt(i))) {
-					this.createToken(charSequence);
-				}
-				tokenLength++;
-			}
-			if (isLastChunk) {
-				while (tokenLength > 0) {
-					this.createToken(charSequence);
-				}
-			}
-			return tokenLength;
-		}
-
-		private int getCharacterType(CharSequence charSequence, int i) {
-			char c = charSequence.charAt(i);
-			int characterType = characterAnalyzer.getCharacterType(c);
-			
-			if (expectedQuoteTail != 0) {
-				if (c == expectedQuoteTail) {
-					characterType = CharacterAnalyzer.SEPARATOR;
-					if (! nextTokenIsMeaningful) {
-						this.createToken(charSequence);
-					}
-					expectedQuoteTail = 0;
-				}
-				else {
-					characterType = CharacterAnalyzer.LETTER;
-				}
-			}
-			return characterType;
 		}
 	}
 }
