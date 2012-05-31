@@ -11,7 +11,7 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.Locale;
 
-import org.giweet.tools.javadoc.test.TestJavadocStep;
+import org.giweet.tools.javadoc.test.JavadocTestStep;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -57,21 +57,21 @@ public class GiweetDocletTest {
 	public void canGenerateDocumentation() throws IOException {
 		assertEquals(0, runJavadoc("org.giweet.tools.javadoc.test"));
 		assertFileEquals(new File("src/main/resources/org/giweet/tools/javadoc/giweet.css"), new File(OUPUT_DIR + "/giweet.css"));
-		assertFileEquals(new File("src/test/resources/org/giweet/tools/javadoc/expected/steps." + TestJavadocStep.class.getCanonicalName() + ".html"), new File(OUPUT_DIR + "/steps." + TestJavadocStep.class.getCanonicalName() + ".html"));
+		assertFileEquals(new File("src/test/resources/org/giweet/tools/javadoc/expected/steps." + JavadocTestStep.class.getCanonicalName() + ".html"), new File(OUPUT_DIR + "/steps." + JavadocTestStep.class.getCanonicalName() + ".html"));
 	}
 
 	@Test
 	public void canGenerateDocumentationInFrench() throws IOException {
 		assertEquals(0, runJavadoc(Locale.FRENCH, OUPUT_DIR, "org.giweet.tools.javadoc.test"));
 		assertFileEquals(new File("src/main/resources/org/giweet/tools/javadoc/giweet.css"), new File(OUPUT_DIR + "/giweet.css"));
-		assertFileEquals(new File("src/test/resources/org/giweet/tools/javadoc/expected/steps." + TestJavadocStep.class.getCanonicalName() + "_fr.html"), new File(OUPUT_DIR + "/steps." + TestJavadocStep.class.getCanonicalName() + ".html"));
+		assertFileEquals(new File("src/test/resources/org/giweet/tools/javadoc/expected/steps." + JavadocTestStep.class.getCanonicalName() + "_fr.html"), new File(OUPUT_DIR + "/steps." + JavadocTestStep.class.getCanonicalName() + ".html"));
 	}
 
 	@Test
 	public void canGenerateEnglishDocumentationForUnknownLocale() throws IOException {
 		assertEquals(0, runJavadoc(Locale.PRC, OUPUT_DIR, "org.giweet.tools.javadoc.test"));
 		assertFileEquals(new File("src/main/resources/org/giweet/tools/javadoc/giweet.css"), new File(OUPUT_DIR + "/giweet.css"));
-		assertFileEquals(new File("src/test/resources/org/giweet/tools/javadoc/expected/steps." + TestJavadocStep.class.getCanonicalName() + ".html"), new File(OUPUT_DIR + "/steps." + TestJavadocStep.class.getCanonicalName() + ".html"));
+		assertFileEquals(new File("src/test/resources/org/giweet/tools/javadoc/expected/steps." + JavadocTestStep.class.getCanonicalName() + ".html"), new File(OUPUT_DIR + "/steps." + JavadocTestStep.class.getCanonicalName() + ".html"));
 	}
 
 	private int runJavadoc(String subpackages) {
