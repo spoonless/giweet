@@ -13,6 +13,9 @@ public class MethodStepScanner {
 	public List<MethodStepDeclaration> scan (Object instance) throws InvalidMethodStepException {
 		List<MethodStepDeclaration> methoStepDeclarations = new ArrayList<MethodStepDeclaration>();
 		
+		// FIXME Be careful we scan only declared methods (not inherited ones).
+		// There is no doubt that getMethods() is much more appropriate. But
+		// it means that we cannot detect erroneous usage of @Step annotation.
 		for (Method method : instance.getClass().getDeclaredMethods()) {
 			Step stepAnnotation = method.getAnnotation(Step.class);
 			if (stepAnnotation != null) {

@@ -47,26 +47,26 @@ public class MethodStepScannerTest {
 		
 		assertEquals(4, result.size());
 		
-		MethodStepDeclaration methodStepDeclaration = result.get(0);
-		assertEquals("method step 1", methodStepDeclaration.getValue());
+		MethodStepDeclaration methodStepDeclaration = find(result, "method step 1");
+		assertNotNull(methodStepDeclaration);
 		assertIsOfTypes(methodStepDeclaration, StepType.GIVEN, StepType.WHEN, StepType.THEN);
 		methodStepDeclaration.invoke();
 		assertEquals(1, instance.step1);
 
-		methodStepDeclaration = result.get(1);
-		assertEquals("method step 2", methodStepDeclaration.getValue());
+		methodStepDeclaration = find(result, "method step 2");
+		assertNotNull(methodStepDeclaration);
 		assertIsOfTypes(methodStepDeclaration, StepType.GIVEN, StepType.WHEN, StepType.THEN);
 		methodStepDeclaration.invoke();
 		assertEquals(1, instance.step2);
 
-		methodStepDeclaration = result.get(2);
-		assertEquals("method step 3", methodStepDeclaration.getValue());
+		methodStepDeclaration = find(result, "method step 3");
+		assertNotNull(methodStepDeclaration);
 		assertIsOfTypes(methodStepDeclaration, StepType.GIVEN, StepType.WHEN, StepType.THEN);
 		methodStepDeclaration.invoke();
 		assertEquals(1, instance.step3);
 
-		methodStepDeclaration = result.get(3);
-		assertEquals("other method step 3", methodStepDeclaration.getValue());
+		methodStepDeclaration = find(result, "other method step 3");
+		assertNotNull(methodStepDeclaration);
 		assertIsOfTypes(methodStepDeclaration, StepType.GIVEN, StepType.WHEN, StepType.THEN);
 		methodStepDeclaration.invoke();
 		assertEquals(2, instance.step3);
@@ -94,32 +94,32 @@ public class MethodStepScannerTest {
 		public int givenThenStep;
 		public int givenWhenThenStep;
 		
-		@Step("step")
+		@Step
 		@Given
 		public void givenStep(){
 			givenStep++;
 		}
 		
-		@Step("step")
+		@Step
 		@When
 		public void whenStep(){
 			whenStep++;
 		}
 
-		@Step("step")
+		@Step
 		@Then
 		public void thenStep(){
 			thenStep++;
 		}
 
-		@Step("step")
+		@Step
 		@Given
 		@Then
 		public void givenThenStep(){
 			givenThenStep++;
 		}
 
-		@Step("step")
+		@Step
 		@Given
 		@When
 		@Then
@@ -137,31 +137,31 @@ public class MethodStepScannerTest {
 		
 		assertEquals(5, result.size());
 		
-		MethodStepDeclaration methodStepDeclaration = result.get(0);
+		MethodStepDeclaration methodStepDeclaration = find(result, "given step");
 		methodStepDeclaration.invoke();
 		assertEquals(1, instance.givenStep);
 		assertIsOfTypes(methodStepDeclaration, StepType.GIVEN);
 		assertIsNotOfTypes(methodStepDeclaration, StepType.WHEN, StepType.THEN);
 
-		methodStepDeclaration = result.get(1);
+		methodStepDeclaration = find(result, "when step");
 		methodStepDeclaration.invoke();
 		assertEquals(1, instance.whenStep);
 		assertIsOfTypes(methodStepDeclaration, StepType.WHEN);
 		assertIsNotOfTypes(methodStepDeclaration, StepType.GIVEN, StepType.THEN);
 
-		methodStepDeclaration = result.get(2);
+		methodStepDeclaration = find(result, "then step");
 		methodStepDeclaration.invoke();
 		assertEquals(1, instance.thenStep);
 		assertIsOfTypes(methodStepDeclaration, StepType.THEN);
 		assertIsNotOfTypes(methodStepDeclaration, StepType.GIVEN, StepType.WHEN);
 
-		methodStepDeclaration = result.get(3);
+		methodStepDeclaration = find(result, "given then step");
 		methodStepDeclaration.invoke();
 		assertEquals(1, instance.givenThenStep);
 		assertIsOfTypes(methodStepDeclaration, StepType.GIVEN, StepType.THEN);
 		assertIsNotOfTypes(methodStepDeclaration, StepType.WHEN);
 
-		methodStepDeclaration = result.get(4);
+		methodStepDeclaration = find(result, "given when then step");
 		methodStepDeclaration.invoke();
 		assertEquals(1, instance.givenWhenThenStep);
 		assertIsOfTypes(methodStepDeclaration, StepType.GIVEN, StepType.WHEN, StepType.THEN);
@@ -177,5 +177,14 @@ public class MethodStepScannerTest {
 		for (StepType stepType : types) {
 			assertFalse("Expected is not of type " + stepType, stepDeclaration.isOfType(stepType));
 		}
+	}
+	
+	private MethodStepDeclaration find(List<MethodStepDeclaration> methodStepDeclarations, String name) {
+		for (MethodStepDeclaration methodStepDeclaration : methodStepDeclarations) {
+			if (name.equals(methodStepDeclaration.getValue())) {
+				return methodStepDeclaration;
+			}
+		}
+		return null;
 	}
 }
