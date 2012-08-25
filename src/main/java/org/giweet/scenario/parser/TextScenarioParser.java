@@ -21,7 +21,7 @@ public class TextScenarioParser {
 		this.keywordParser = keywordParser;
 		this.reader = new BufferedReader(reader);
 		currentStory = new Story();
-		currentStory.setTitle(new Sentence(new Keyword(KeywordType.STORY, ""), ""));
+		currentStory.setTitle(createAnonymousSentence(KeywordType.STORY));
 	}
 
 	public Scenario nextScenario() throws IOException {
@@ -56,7 +56,7 @@ public class TextScenarioParser {
 			else if (scenario == null) {
 				if (sentence.isProcessable()) {
 					scenario = new Scenario();
-					Sentence anonymousTitle = new Sentence(new Keyword(KeywordType.SCENARIO, ""), "");
+					Sentence anonymousTitle = createAnonymousSentence(KeywordType.SCENARIO);
 					scenario.setTitle(anonymousTitle);
 					scenario.add(sentence);
 					scenario.setStory(currentStory);
@@ -70,6 +70,10 @@ public class TextScenarioParser {
 			}
 		}
 		return scenario;
+	}
+
+	private static Sentence createAnonymousSentence(KeywordType keywordType) {
+		return new Sentence(new Keyword(keywordType, ""), "");
 	}
 
 }
