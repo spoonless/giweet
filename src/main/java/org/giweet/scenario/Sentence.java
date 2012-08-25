@@ -1,29 +1,48 @@
 package org.giweet.scenario;
 
+import org.giweet.StringUtils;
+
 public class Sentence {
 	
-	private Keyword keyword;
-	private String step;
+	private final Keyword keyword;
+	private String text;
+	private boolean isParagraphSeparator;
+	
+	public Sentence(Keyword keyword, String line) {
+		this.keyword = keyword;
+		this.text = keyword != null ? keyword.extractText(line) : line;
+		this.isParagraphSeparator = keyword == null && StringUtils.isWhitespace(text);
+	}
 	
 	public Keyword getKeyword() {
 		return keyword;
 	}
 	
-	public void setKeyword(Keyword keyword) {
-		this.keyword = keyword;
-	}
-	
-	public String getStep() {
-		return step;
-	}
-	
-	public void setStep(String step) {
-		this.step = step;
+	public String getText() {
+		return text;
 	}
 	
 	@Override
 	public String toString() {
-		return getKeyword() + getStep();
+		return isProcessable() ? keyword + text : text;
+	}
+
+	public boolean isProcessable() {
+		return keyword != null;
+	}
+	
+	public boolean concat(Sentence sentence) {
+		if (this.isProcessable() && ! sentence.isProcessable() && ! sentence.isParagraphSeparator) {
+			text = text + "\n" + sentence.toString();
+			isParagraphSeparator = false;
+			return true;
+		}
+		if (! this.isProcessable() && (! this.isParagraphSeparator || ! sentence.isProcessable())) {
+			text = text + "\n" + sentence.toString();
+			isParagraphSeparator = sentence.isParagraphSeparator;
+			return true;
+		}
+		return false;
 	}
 
 }

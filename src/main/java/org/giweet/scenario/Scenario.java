@@ -6,17 +6,9 @@ import java.util.Locale;
 
 public class Scenario {
 	
-	private String title;
+	private Sentence title;
 	private Locale locale;
 	private List<Sentence> sentences = new ArrayList<Sentence>();
-
-	public String getTitle() {
-		return title;
-	}
-
-	public void setTitle(String title) {
-		this.title = title;
-	}
 
 	public List<Sentence> getSentences() {
 		return sentences;
@@ -28,5 +20,25 @@ public class Scenario {
 
 	public void setLocale(Locale locale) {
 		this.locale = locale;
+	}
+
+	public Sentence getTitle() {
+		return title;
+	}
+
+	public void setTitle(Sentence title) {
+		this.title = title;
+	}
+	
+	public void add(Sentence sentence) {
+		if (sentences.isEmpty()) {
+			sentences.add(sentence);
+		}
+		else {
+			Sentence previousSentence = sentences.get(sentences.size() - 1);
+			if (! previousSentence.concat(sentence)) {
+				sentences.add(sentence);
+			}
+		}
 	}
 }

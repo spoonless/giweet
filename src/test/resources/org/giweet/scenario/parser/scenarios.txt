@@ -1,0 +1,56 @@
+Scenario: a simple scenario
+
+given a given statement
+when a when statement
+then a then statement
+
+ScEnArIo: a scenario mixing cases
+
+GIVEN a given statement
+aNd a second given statement
+And a third given statement
+wheN a when statement
+aNd a second when statement
+Then a then statement
+
+     scenario : a scenario mixing indentation and formatting
+Given a given statement
+     And an incremented given statement
+and an non incremented given statement
+when a when statement
+then			a then statement
+and a multiline
+statement
+without any
+empty line
+
+this line is ignored because it is preceding by an empty line (even with the words given when then written
+And this line is also ignored even if And is a valid keyword
+then the final line but also ignored even if then is a valid keyword
+
+Then the final then statement
+
++=======================================+
+   Scenario: a simple pretty scenario
++=======================================+
+
+Some comment before the scenario
+To explain more thoroughly the purpose of this test
+
+	Given a given statement
+	And a second given statement
+	And a third given statement
+	And a fourth given statement
+
+	When a when statement
+	And a second when statement
+	When a third when statement
+	And a fourth when statement
+	
+	Then a then statement
+	And a second then statement
+	And a third then statement
+	And a fourth then statement
+
+	When an additional when statement
+	Then the final then statement

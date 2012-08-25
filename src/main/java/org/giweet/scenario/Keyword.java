@@ -15,6 +15,10 @@ public class Keyword {
 		return keywordType;
 	}
 	
+	public String extractText(String line) {
+		return line.substring(this.keywordAsString.length());
+	}
+	
 	@Override
 	public String toString() {
 		return keywordAsString;
