@@ -24,6 +24,6 @@ public class StringUtils {
 	}
 	
 	public static boolean isWhitespace(String string) {
-		return string.matches("^[\\p{Z}\t]*$");
+		return string.matches("^[\\p{Space}\\p{Z}]*$");
 	}
 }

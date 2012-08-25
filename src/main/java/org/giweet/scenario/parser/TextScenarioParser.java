@@ -26,6 +26,7 @@ public class TextScenarioParser {
 		String line = null;
 		
 		while ((line = reader.readLine()) != null) {
+			line += '\n';
 			Sentence sentence = new Sentence(keywordParser.getStartingKeyword(line), line);
 			
 			if (sentence.isProcessable() && sentence.getKeyword().getType() == KeywordType.SCENARIO) {

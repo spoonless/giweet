@@ -33,12 +33,12 @@ public class Sentence {
 	
 	public boolean concat(Sentence sentence) {
 		if (this.isProcessable() && ! sentence.isProcessable() && ! sentence.isParagraphSeparator) {
-			text = text + "\n" + sentence.toString();
+			text += sentence.toString();
 			isParagraphSeparator = false;
 			return true;
 		}
 		if (! this.isProcessable() && (! this.isParagraphSeparator || ! sentence.isProcessable())) {
-			text = text + "\n" + sentence.toString();
+			text += sentence.toString();
 			isParagraphSeparator = sentence.isParagraphSeparator;
 			return true;
 		}

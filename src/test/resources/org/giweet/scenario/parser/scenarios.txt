@@ -17,7 +17,8 @@ Then a then statement
 Given a given statement
      And an incremented given statement
 and an non incremented given statement
-when a when statement
+when
+a when statement
 then			a then statement
 and a multiline
 statement

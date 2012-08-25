@@ -16,7 +16,7 @@ public class Keyword {
 	}
 	
 	public String extractText(String line) {
-		return line.substring(this.keywordAsString.length());
+		return keywordAsString.length() < line.length() ? line.substring(this.keywordAsString.length()) : "";
 	}
 	
 	@Override
