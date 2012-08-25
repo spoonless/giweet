@@ -11,6 +11,7 @@ import java.util.Locale;
 import org.giweet.scenario.KeywordType;
 import org.giweet.scenario.Scenario;
 import org.giweet.scenario.Sentence;
+import org.giweet.scenario.Story;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -123,6 +124,71 @@ public class TextScenarioParserTest {
 		assertSentenceIsNotProcessable("\n+=======================================+\n", scenario.getSentences().get(8));
 	}
 
+	@Test
+	public void canGetStoryAssociatedWithAScenario() throws Exception {
+		Reader reader = createScenarioReader("scenarios.txt");
+		TextScenarioParser underTest = new TextScenarioParser(keywordParser, reader);
+		
+		Scenario scenario = underTest.nextScenario() ;
+		Story story = scenario.getStory();
+
+		assertNotNull(story);
+		assertSentenceIsProcessable(KeywordType.STORY, "Story: ", "a simple test story\n", story.getTitle());
+		assertSentenceIsNotProcessable("\nAs a tester\nI test the text parser\nIn order to check that sentences are correctly parsed\n\n", story.getSentences().get(0));
+	}
+	
+	@Test
+	public void canGetEmptyStoryWhenNoStoryDeclaredInFile() throws Exception {
+		Reader reader = createScenarioReader("simple.scenario.txt");
+		TextScenarioParser underTest = new TextScenarioParser(keywordParser, reader);
+		
+		Scenario scenario = underTest.nextScenario() ;
+		Story story = scenario.getStory();
+
+		assertNotNull(story);
+		assertSentenceIsProcessable(KeywordType.STORY, "", "", story.getTitle());
+	}
+
+	@Test
+	public void canParseScenarioFileContainingSeveralStories() throws Exception {
+		Reader reader = createScenarioReader("multi.stories.txt");
+		TextScenarioParser underTest = new TextScenarioParser(keywordParser, reader);
+		
+		Scenario scenario = underTest.nextScenario() ;
+
+		assertSentenceIsProcessable(KeywordType.SCENARIO, "scenario: ", "first scenario of first story\n", scenario.getTitle());
+		assertSentenceIsProcessable(KeywordType.STORY, "story: ", "first story\n", scenario.getStory().getTitle());
+
+		scenario = underTest.nextScenario() ;
+
+		assertSentenceIsProcessable(KeywordType.SCENARIO, "scenario: ", "second scenario of first story\n", scenario.getTitle());
+		assertSentenceIsProcessable(KeywordType.STORY, "story: ", "first story\n", scenario.getStory().getTitle());
+
+		scenario = underTest.nextScenario() ;
+
+		assertSentenceIsProcessable(KeywordType.SCENARIO, "scenario: ", "first scenario of second story\n", scenario.getTitle());
+		assertSentenceIsProcessable(KeywordType.STORY, "story: ", "second story\n", scenario.getStory().getTitle());
+
+		scenario = underTest.nextScenario() ;
+
+		assertSentenceIsProcessable(KeywordType.SCENARIO, "scenario: ", "first scenario of third story\n", scenario.getTitle());
+		assertSentenceIsProcessable(KeywordType.STORY, "story: ", "third story\n", scenario.getStory().getTitle());
+
+		scenario = underTest.nextScenario() ;
+
+		assertSentenceIsProcessable(KeywordType.SCENARIO, "scenario: ", "second scenario of third story\n", scenario.getTitle());
+		assertSentenceIsProcessable(KeywordType.STORY, "story: ", "third story\n", scenario.getStory().getTitle());
+
+		scenario = underTest.nextScenario() ;
+
+		assertSentenceIsProcessable(KeywordType.SCENARIO, "", "", scenario.getTitle());
+		assertSentenceIsProcessable(KeywordType.GIVEN, "given ", "an empty scenario\n", scenario.getSentences().get(0));
+		assertSentenceIsProcessable(KeywordType.STORY, "story: ", "fourth story\n", scenario.getStory().getTitle());
+		
+		scenario = underTest.nextScenario() ;
+		assertNull(scenario);
+	}
+	
 	private void assertSentenceIsProcessable (KeywordType expectedKeywordType, String expectedKeyword, String expectedText, Sentence sentence) {
 		assertTrue(sentence.isProcessable());
 		assertEquals(expectedKeywordType, sentence.getKeyword().getType());

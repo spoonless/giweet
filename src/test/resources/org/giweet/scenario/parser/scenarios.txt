@@ -1,3 +1,9 @@
+Story: a simple test story
+
+As a tester
+I test the text parser
+In order to check that sentences are correctly parsed
+
 Scenario: a simple scenario
 
 given a given statement
