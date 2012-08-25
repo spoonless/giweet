@@ -7,4 +7,4 @@ story: third story
 scenario: first scenario of third story
 scenario: second scenario of third story
 story: fourth story
-given an empty scenario
+given an anonymous scenario

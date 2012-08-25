@@ -182,7 +182,7 @@ public class TextScenarioParserTest {
 		scenario = underTest.nextScenario() ;
 
 		assertSentenceIsProcessable(KeywordType.SCENARIO, "", "", scenario.getTitle());
-		assertSentenceIsProcessable(KeywordType.GIVEN, "given ", "an empty scenario\n", scenario.getSentences().get(0));
+		assertSentenceIsProcessable(KeywordType.GIVEN, "given ", "an anonymous scenario\n", scenario.getSentences().get(0));
 		assertSentenceIsProcessable(KeywordType.STORY, "story: ", "fourth story\n", scenario.getStory().getTitle());
 		
 		scenario = underTest.nextScenario() ;
