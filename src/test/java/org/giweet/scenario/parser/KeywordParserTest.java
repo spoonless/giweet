@@ -95,6 +95,9 @@ public class KeywordParserTest {
 		keyword = keywordParser.getStartingKeyword("Etant donné ");
 		assertKeyword(KeywordType.GIVEN, "Etant donné ", keyword);
 
+		keyword = keywordParser.getStartingKeyword("Etant donnés ");
+		assertKeyword(KeywordType.GIVEN, "Etant donnés ", keyword);
+
 		keyword = keywordParser.getStartingKeyword("\t\t\t\tétant  donné  que\t");
 		assertKeyword(KeywordType.GIVEN, "\t\t\t\tétant  donné  que\t", keyword);
 
