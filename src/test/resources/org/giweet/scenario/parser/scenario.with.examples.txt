@@ -1,0 +1,7 @@
+given the number <number>
+when 1 is added to this number
+then the result is <result>
+
+examples:
+|number|result|
+|1     |2     |

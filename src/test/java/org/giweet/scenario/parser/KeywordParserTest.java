@@ -66,6 +66,9 @@ public class KeywordParserTest {
 
 		keyword = keywordParser.getStartingKeyword("\u00a0and test");
 		assertKeyword(KeywordType.AND, "\u00a0and ", keyword);
+
+		keyword = keywordParser.getStartingKeyword("examples:\nexample here");
+		assertKeyword(KeywordType.EXAMPLES, "examples:\n", keyword);
 	}
 	
 	@Test
@@ -142,6 +145,9 @@ public class KeywordParserTest {
 
 		keyword = keywordParser.getStartingKeyword("et qu'il");
 		assertKeyword(KeywordType.AND, "et qu'", keyword);
+
+		keyword = keywordParser.getStartingKeyword("exemples:\nmettre les exemples ici");
+		assertKeyword(KeywordType.EXAMPLES, "exemples:\n", keyword);
 	}
 
 	private void assertKeyword(KeywordType expectedType, String expectedStringValue, Keyword keyword) {

@@ -189,6 +189,20 @@ public class TextScenarioParserTest {
 		assertNull(scenario);
 	}
 	
+	@Test
+	public void canParseScenarioWithExamples() throws Exception {
+		Reader reader = createScenarioReader("scenario.with.examples.txt");
+		TextScenarioParser underTest = new TextScenarioParser(keywordParser, reader);
+		
+		Scenario scenario = underTest.nextScenario();
+		
+		assertSentenceIsProcessable(KeywordType.GIVEN, "given ", "the number <number>\n", scenario.getSentences().get(0));
+		assertSentenceIsProcessable(KeywordType.WHEN, "when ", "1 is added to this number\n", scenario.getSentences().get(1));
+		assertSentenceIsProcessable(KeywordType.THEN, "then ", "the result is <result>\n", scenario.getSentences().get(2));
+		assertSentenceIsNotProcessable("\n", scenario.getSentences().get(3));
+		assertSentenceIsProcessable(KeywordType.EXAMPLES, "examples:\n", "|number|result|\n|1     |2     |\n", scenario.getSentences().get(4));
+	}
+	
 	private void assertSentenceIsProcessable (KeywordType expectedKeywordType, String expectedKeyword, String expectedText, Sentence sentence) {
 		assertTrue(sentence.isProcessable());
 		assertEquals(expectedKeywordType, sentence.getKeyword().getType());
