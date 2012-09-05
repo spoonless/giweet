@@ -68,12 +68,11 @@ public class TextScenarioParserTest {
 		
 		Scenario scenario = underTest.nextScenario() ;
 
-		assertEquals(5, scenario.getSentences().size());
+		assertEquals(4, scenario.getSentences().size());
 		assertSentenceIsNotProcessable("\n", scenario.getSentences().get(0));
 		assertSentenceIsProcessable(KeywordType.GIVEN, "given ", "a given statement\n", scenario.getSentences().get(1));
 		assertSentenceIsProcessable(KeywordType.WHEN, "when ", "a when statement\n", scenario.getSentences().get(2));
-		assertSentenceIsProcessable(KeywordType.THEN, "then ", "a then statement\n", scenario.getSentences().get(3));
-		assertSentenceIsNotProcessable("\n", scenario.getSentences().get(4));
+		assertSentenceIsProcessable(KeywordType.THEN, "then ", "a then statement\n\n", scenario.getSentences().get(3));
 	}
 
 	@Test
@@ -84,7 +83,7 @@ public class TextScenarioParserTest {
 		underTest.nextScenario();
 		Scenario scenario = underTest.nextScenario();
 
-		assertEquals(8, scenario.getSentences().size());
+		assertEquals(7, scenario.getSentences().size());
 
 		assertSentenceIsNotProcessable("\n", scenario.getSentences().get(0));
 		assertSentenceIsProcessable(KeywordType.GIVEN, "GIVEN ", "a given statement\n", scenario.getSentences().get(1));
@@ -94,8 +93,7 @@ public class TextScenarioParserTest {
 		assertSentenceIsProcessable(KeywordType.WHEN, "wheN ", "a when statement\n", scenario.getSentences().get(4));
 		assertSentenceIsProcessable(KeywordType.AND, "aNd ", "a second when statement\n", scenario.getSentences().get(5));
 
-		assertSentenceIsProcessable(KeywordType.THEN, "Then ", "a then statement\n", scenario.getSentences().get(6));
-		assertSentenceIsNotProcessable("\n", scenario.getSentences().get(7));
+		assertSentenceIsProcessable(KeywordType.THEN, "Then ", "a then statement\n\n", scenario.getSentences().get(6));
 	}
 	
 	@Test
@@ -107,21 +105,15 @@ public class TextScenarioParserTest {
 		underTest.nextScenario();
 		Scenario scenario = underTest.nextScenario();
 
-		assertEquals(9, scenario.getSentences().size());
+		assertEquals(7, scenario.getSentences().size());
 
 		assertSentenceIsProcessable(KeywordType.GIVEN, "Given ", "a given statement\n", scenario.getSentences().get(0));
 		assertSentenceIsProcessable(KeywordType.AND, "     And ", "an incremented given statement\n", scenario.getSentences().get(1));
 		assertSentenceIsProcessable(KeywordType.AND, "and ", "an non incremented given statement\n", scenario.getSentences().get(2));
 		assertSentenceIsProcessable(KeywordType.WHEN, "when\n", "a when statement\n", scenario.getSentences().get(3));
 		assertSentenceIsProcessable(KeywordType.THEN, "then\t\t\t", "a then statement\n", scenario.getSentences().get(4));
-		assertSentenceIsProcessable(KeywordType.AND, "and ", "a multiline\nstatement\nwithout any\nempty line\n", scenario.getSentences().get(5));
-		assertSentenceIsNotProcessable(
-				"\nthis line is ignored because it is preceding by an empty line (even with the words given when then written\n" +
-				"And this line is also ignored even if And is a valid keyword\n" +
-				"then the final line but also ignored even if then is a valid keyword\n\n", scenario.getSentences().get(6));
-
-		assertSentenceIsProcessable(KeywordType.THEN, "Then ", "the final then statement\n", scenario.getSentences().get(7));
-		assertSentenceIsNotProcessable("\n+=======================================+\n", scenario.getSentences().get(8));
+		assertSentenceIsProcessable(KeywordType.AND, "and ", "a multiline\nstatement\nwithout any\nempty line\n\n", scenario.getSentences().get(5));
+		assertSentenceIsProcessable(KeywordType.THEN, "Then ", "the final then statement\n\n", scenario.getSentences().get(6));
 	}
 
 	@Test
@@ -198,9 +190,8 @@ public class TextScenarioParserTest {
 		
 		assertSentenceIsProcessable(KeywordType.GIVEN, "given ", "the number <number>\n", scenario.getSentences().get(0));
 		assertSentenceIsProcessable(KeywordType.WHEN, "when ", "1 is added to this number\n", scenario.getSentences().get(1));
-		assertSentenceIsProcessable(KeywordType.THEN, "then ", "the result is <result>\n", scenario.getSentences().get(2));
-		assertSentenceIsNotProcessable("\n", scenario.getSentences().get(3));
-		assertSentenceIsProcessable(KeywordType.EXAMPLES, "examples:\n", "|number|result|\n|1     |2     |\n", scenario.getSentences().get(4));
+		assertSentenceIsProcessable(KeywordType.THEN, "then ", "the result is <result>\n\n", scenario.getSentences().get(2));
+		assertSentenceIsProcessable(KeywordType.EXAMPLES, "examples:\n", "|number|result|\n|1     |2     |\n", scenario.getSentences().get(3));
 	}
 	
 	private void assertSentenceIsProcessable (KeywordType expectedKeywordType, String expectedKeyword, String expectedText, Sentence sentence) {

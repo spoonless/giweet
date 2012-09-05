@@ -31,13 +31,8 @@ statement
 without any
 empty line
 
-this line is ignored because it is preceding by an empty line (even with the words given when then written
-And this line is also ignored even if And is a valid keyword
-then the final line but also ignored even if then is a valid keyword
-
 Then the final then statement
 
-+=======================================+
    Scenario: a simple pretty scenario
 +=======================================+
 
