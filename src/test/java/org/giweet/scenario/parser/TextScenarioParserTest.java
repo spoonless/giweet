@@ -194,8 +194,32 @@ public class TextScenarioParserTest {
 		assertSentenceIsProcessable(KeywordType.EXAMPLES, "examples:\n", "|number|result|\n|1     |2     |\n", scenario.getSentences().get(3));
 	}
 	
+	@Test
+	public void canParseStoryAndScenarioWithMeta() throws Exception {
+		Reader reader = createScenarioReader("scenario.with.meta.txt");
+		TextScenarioParser underTest = new TextScenarioParser(keywordParser, reader);
+		
+		Scenario scenario = underTest.nextScenario();
+		
+		assertEquals(1, scenario.getMeta().size());
+		assertSentenceIsProcessable(KeywordType.META, "@", "scenarioMeta\n", scenario.getMeta().get(0));
+		assertEquals(1, scenario.getStory().getMeta().size());
+		assertSentenceIsProcessable(KeywordType.META, "@", "storyMeta\n", scenario.getStory().getMeta().get(0));
+
+		assertSentenceIsProcessable(KeywordType.GIVEN, "given ", "something\n", scenario.getSentences().get(0));
+		assertSentenceIsProcessable(KeywordType.WHEN, "when ", "an action occurred\n", scenario.getSentences().get(1));
+		assertSentenceIsProcessable(KeywordType.THEN, "then ", "something has changed\n\n", scenario.getSentences().get(2));
+
+		scenario = underTest.nextScenario();
+
+		assertEquals(1, scenario.getMeta().size());
+		assertSentenceIsProcessable(KeywordType.META, "@", "anotherScenarioMeta\n", scenario.getMeta().get(0));
+		assertEquals(1, scenario.getStory().getMeta().size());
+		assertSentenceIsProcessable(KeywordType.META, "@", "storyMeta\n", scenario.getStory().getMeta().get(0));
+	}
+
 	private void assertSentenceIsProcessable (KeywordType expectedKeywordType, String expectedKeyword, String expectedText, Sentence sentence) {
-		assertTrue(sentence.isProcessable());
+		assertTrue("sentence '" + sentence + "' is not processable!", sentence.isProcessable());
 		assertEquals(expectedKeywordType, sentence.getKeyword().getType());
 		assertEquals(expectedKeyword, sentence.getKeyword().toString());
 		assertEquals(expectedText, sentence.getText());
@@ -203,7 +227,7 @@ public class TextScenarioParserTest {
 	}
 
 	private void assertSentenceIsNotProcessable (String expectedText, Sentence sentence) {
-		assertFalse(sentence.isProcessable());
+		assertFalse("sentence '" + sentence + "' is processable!", sentence.isProcessable());
 		assertNull(sentence.getKeyword());
 		assertEquals(expectedText, sentence.getText());
 		assertEquals(expectedText, sentence.toString());

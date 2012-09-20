@@ -3,6 +3,8 @@ package org.giweet.scenario.parser;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Reader;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.giweet.scenario.Keyword;
 import org.giweet.scenario.KeywordType;
@@ -16,12 +18,14 @@ public class TextScenarioParser {
 	private final BufferedReader reader;
 	private Scenario nextPartiallyParsedScenario;
 	private Story currentStory;
+	private final List<Sentence> meta;
 
 	public TextScenarioParser(KeywordParser keywordParser, Reader reader) {
 		this.keywordParser = keywordParser;
 		this.reader = new BufferedReader(reader);
 		currentStory = new Story();
 		currentStory.setTitle(createAnonymousSentence(KeywordType.STORY));
+		meta = new ArrayList<Sentence>();
 	}
 
 	public Scenario nextScenario() throws IOException {
@@ -33,42 +37,51 @@ public class TextScenarioParser {
 			line += '\n';
 			Sentence sentence = new Sentence(keywordParser.getStartingKeyword(line), line);
 			
-			if (sentence.isProcessable() && sentence.getKeyword().getType() == KeywordType.STORY) {
+			if (sentence.isProcessable() && sentence.getKeyword().getType() == KeywordType.META) {
+				meta.add(sentence);
+			}
+			else if (sentence.isProcessable() && sentence.getKeyword().getType() == KeywordType.STORY) {
 				currentStory = new Story();
 				currentStory.setTitle(sentence);
+				currentStory.getMeta().addAll(meta);
+				meta.clear();
 				if (scenario != null) {
 					break;
 				}
 			}
 			else if (sentence.isProcessable() && sentence.getKeyword().getType() == KeywordType.SCENARIO) {
 				if (scenario != null) {
-					nextPartiallyParsedScenario = new Scenario();
-					nextPartiallyParsedScenario.setTitle(sentence);
-					nextPartiallyParsedScenario.setStory(currentStory);
+					nextPartiallyParsedScenario = createScenario(sentence);
 					break;
 				}
 				else {
-					scenario = new Scenario();
-					scenario.setTitle(sentence);
-					scenario.setStory(currentStory);
+					scenario = createScenario(sentence);
 				}
 			}
 			else if (scenario == null) {
 				if (sentence.isProcessable()) {
-					scenario = new Scenario();
-					Sentence anonymousTitle = createAnonymousSentence(KeywordType.SCENARIO);
-					scenario.setTitle(anonymousTitle);
+					scenario = createScenario(createAnonymousSentence(KeywordType.SCENARIO));
 					scenario.add(sentence);
-					scenario.setStory(currentStory);
 				}
 				else {
+					meta.clear();
 					currentStory.add(sentence);
 				}
 			}
 			else {
+				meta.clear();
 				scenario.add(sentence);
 			}
 		}
+		return scenario;
+	}
+
+	private Scenario createScenario(Sentence title) {
+		Scenario scenario = new Scenario();
+		scenario.setTitle(title);
+		scenario.setStory(currentStory);
+		scenario.getMeta().addAll(meta);
+		meta.clear();
 		return scenario;
 	}
 

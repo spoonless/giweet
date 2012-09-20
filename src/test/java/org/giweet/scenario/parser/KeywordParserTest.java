@@ -69,6 +69,12 @@ public class KeywordParserTest {
 
 		keyword = keywordParser.getStartingKeyword("examples:\nexample here");
 		assertKeyword(KeywordType.EXAMPLES, "examples:\n", keyword);
+
+		keyword = keywordParser.getStartingKeyword("@test");
+		assertKeyword(KeywordType.META, "@", keyword);
+
+		keyword = keywordParser.getStartingKeyword("meta: test");
+		assertKeyword(KeywordType.META, "meta: ", keyword);
 	}
 	
 	@Test
@@ -148,6 +154,12 @@ public class KeywordParserTest {
 
 		keyword = keywordParser.getStartingKeyword("exemples:\nmettre les exemples ici");
 		assertKeyword(KeywordType.EXAMPLES, "exemples:\n", keyword);
+
+		keyword = keywordParser.getStartingKeyword("@test");
+		assertKeyword(KeywordType.META, "@", keyword);
+
+		keyword = keywordParser.getStartingKeyword("meta: test");
+		assertKeyword(KeywordType.META, "meta: ", keyword);
 	}
 
 	private void assertKeyword(KeywordType expectedType, String expectedStringValue, Keyword keyword) {

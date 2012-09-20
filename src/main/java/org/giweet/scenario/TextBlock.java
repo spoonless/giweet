@@ -5,6 +5,7 @@ import java.util.List;
 
 public abstract class TextBlock {
 	private Sentence title;
+	private List<Sentence> meta = new ArrayList<Sentence>();
 	private List<Sentence> sentences = new ArrayList<Sentence>();
 
 	public List<Sentence> getSentences() {
@@ -29,5 +30,13 @@ public abstract class TextBlock {
 				sentences.add(sentence);
 			}
 		}
+	}
+
+	public List<Sentence> getMeta() {
+		return meta;
+	}
+
+	public void setMeta(List<Sentence> meta) {
+		this.meta = meta;
 	}
 }
