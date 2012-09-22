@@ -27,6 +27,9 @@ public class Sentence {
 		if (sentence.isProcessable()) {
 			return false;
 		}
+		if (this.isProcessable() && ! this.keyword.getType().isSentenceConcatAllowed()) {
+			return false;
+		}
 		text += sentence.toString();
 		return true;
 	}

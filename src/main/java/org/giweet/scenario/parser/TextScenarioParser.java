@@ -6,7 +6,6 @@ import java.io.Reader;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.giweet.scenario.Keyword;
 import org.giweet.scenario.KeywordType;
 import org.giweet.scenario.Scenario;
 import org.giweet.scenario.Sentence;
@@ -24,7 +23,6 @@ public class TextScenarioParser {
 		this.keywordParser = keywordParser;
 		this.reader = new BufferedReader(reader);
 		currentStory = new Story();
-		currentStory.setTitle(createAnonymousSentence(KeywordType.STORY));
 		meta = new ArrayList<Sentence>();
 	}
 
@@ -42,7 +40,7 @@ public class TextScenarioParser {
 			}
 			else if (sentence.isProcessable() && sentence.getKeyword().getType() == KeywordType.STORY) {
 				currentStory = new Story();
-				currentStory.setTitle(sentence);
+				currentStory.add(sentence);
 				currentStory.getMeta().addAll(meta);
 				meta.clear();
 				if (scenario != null) {
@@ -51,16 +49,18 @@ public class TextScenarioParser {
 			}
 			else if (sentence.isProcessable() && sentence.getKeyword().getType() == KeywordType.SCENARIO) {
 				if (scenario != null) {
-					nextPartiallyParsedScenario = createScenario(sentence);
+					nextPartiallyParsedScenario = createScenario();
+					nextPartiallyParsedScenario.add(sentence);
 					break;
 				}
 				else {
-					scenario = createScenario(sentence);
+					scenario = createScenario();
+					scenario.add(sentence);
 				}
 			}
 			else if (scenario == null) {
 				if (sentence.isProcessable()) {
-					scenario = createScenario(createAnonymousSentence(KeywordType.SCENARIO));
+					scenario = createScenario();
 					scenario.add(sentence);
 				}
 				else {
@@ -76,17 +76,12 @@ public class TextScenarioParser {
 		return scenario;
 	}
 
-	private Scenario createScenario(Sentence title) {
+	private Scenario createScenario() {
 		Scenario scenario = new Scenario();
-		scenario.setTitle(title);
 		scenario.setStory(currentStory);
 		scenario.getMeta().addAll(meta);
 		meta.clear();
 		return scenario;
-	}
-
-	private static Sentence createAnonymousSentence(KeywordType keywordType) {
-		return new Sentence(new Keyword(keywordType, ""), "");
 	}
 
 }

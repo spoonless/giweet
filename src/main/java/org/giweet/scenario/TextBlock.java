@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public abstract class TextBlock {
-	private Sentence title;
 	private List<Sentence> meta = new ArrayList<Sentence>();
 	private List<Sentence> sentences = new ArrayList<Sentence>();
 
@@ -12,14 +11,8 @@ public abstract class TextBlock {
 		return sentences;
 	}
 
-	public Sentence getTitle() {
-		return title;
-	}
+	public abstract Sentence getTitle();
 
-	public void setTitle(Sentence title) {
-		this.title = title;
-	}
-	
 	public void add(Sentence sentence) {
 		if (sentences.isEmpty()) {
 			sentences.add(sentence);
@@ -38,5 +31,14 @@ public abstract class TextBlock {
 
 	public void setMeta(List<Sentence> meta) {
 		this.meta = meta;
+	}
+	
+	protected Sentence getFirstSentenceByKeywordType(KeywordType keywordType) {
+		for (Sentence sentence : sentences) {
+			if (sentence.isProcessable() && sentence.getKeyword().getType() == keywordType) {
+				return sentence;
+			}
+		}
+		return null;
 	}
 }
