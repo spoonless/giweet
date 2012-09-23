@@ -1,10 +1,10 @@
 package org.giweet.scenario;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 public abstract class TextBlock {
-	private List<Sentence> meta = new ArrayList<Sentence>();
 	private List<Sentence> sentences = new ArrayList<Sentence>();
 
 	public List<Sentence> getSentences() {
@@ -24,13 +24,15 @@ public abstract class TextBlock {
 			}
 		}
 	}
-
-	public List<Sentence> getMeta() {
-		return meta;
+	
+	public void addAll(Collection<Sentence> sentences) {
+		for (Sentence sentence : sentences) {
+			this.add(sentence);
+		}
 	}
 
-	public void setMeta(List<Sentence> meta) {
-		this.meta = meta;
+	public List<Sentence> getMeta() {
+		return getSentencesByKeywordType(KeywordType.META);
 	}
 	
 	protected Sentence getFirstSentenceByKeywordType(KeywordType keywordType) {
@@ -40,5 +42,15 @@ public abstract class TextBlock {
 			}
 		}
 		return null;
+	}
+
+	protected List<Sentence> getSentencesByKeywordType(KeywordType keywordType) {
+		List<Sentence> result = new ArrayList<Sentence>();
+		for (Sentence sentence : sentences) {
+			if (sentence.isProcessable() && sentence.getKeyword().getType() == keywordType) {
+				result.add(sentence);
+			}
+		}
+		return result;
 	}
 }

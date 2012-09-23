@@ -6,6 +6,10 @@ public class Sentence {
 	private final Keyword keyword;
 	private String text;
 	
+	public Sentence(String line) {
+		this(null, line);
+	}
+
 	public Sentence(Keyword keyword, String line) {
 		this.keyword = keyword;
 		this.text = keyword != null ? keyword.extractText(line) : line;
