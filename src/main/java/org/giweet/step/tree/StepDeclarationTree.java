@@ -2,6 +2,7 @@ package org.giweet.step.tree;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 import org.giweet.step.StepInstance;
@@ -14,7 +15,7 @@ public class StepDeclarationTree<T extends StepDeclaration> {
 	
 	private final List<StepTokenNode<T>> stepTokenNodes = new ArrayList<StepTokenNode<T>>();
 	
-	public StepDeclarationTree(List<T> stepDeclarations) {
+	public StepDeclarationTree(Collection<T> stepDeclarations) {
 		Object[] array = stepDeclarations.toArray();
 		Arrays.sort(array);
 		
@@ -54,7 +55,7 @@ public class StepDeclarationTree<T extends StepDeclaration> {
 			if (stepTokenNode != null) {
 				stepDeclarationFound = stepTokenNode.search(stepType, meaningfulStepTokenIterator);
 			}
-			if (stepDeclarationFound == null) {
+			if (stepDeclarationFound == null && ! stepTokenNodes.isEmpty()) {
 				StepTokenNode<T> lastStepTokenNode = stepTokenNodes.get(stepTokenNodes.size() - 1);
 				if (lastStepTokenNode.getStepToken().isDynamic()) {
 					stepDeclarationFound = lastStepTokenNode.search(stepType, meaningfulStepTokenIterator);

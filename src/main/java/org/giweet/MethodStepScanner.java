@@ -10,7 +10,7 @@ import org.giweet.step.StepUtils;
 
 public class MethodStepScanner {
 	
-	public List<MethodStepDeclaration> scan (Object instance) throws InvalidMethodStepException {
+	public List<MethodStepDeclaration> scan (Object instance) throws InvalidStepException {
 		List<MethodStepDeclaration> methoStepDeclarations = new ArrayList<MethodStepDeclaration>();
 		
 		// FIXME Be careful we scan only declared methods (not inherited ones).
@@ -20,7 +20,7 @@ public class MethodStepScanner {
 			Step stepAnnotation = method.getAnnotation(Step.class);
 			if (stepAnnotation != null) {
 				if ((method.getModifiers() & Modifier.PUBLIC) == 0) {
-					throw new InvalidMethodStepException("Found non public method with @Step annotation: " + method.toString());
+					throw new InvalidStepException("Found non public method with @Step annotation: " + method.toString());
 				}
 				if (stepAnnotation.value().length != 0) {
 					for (String value : stepAnnotation.value()) {

@@ -78,7 +78,7 @@ public class MethodStepScannerTest {
 		}
 	}
 	
-	@Test(expected=InvalidMethodStepException.class)
+	@Test(expected=InvalidStepException.class)
 	public void cannotScanIfOneStepMethodIsNotPublic() throws Exception {
 		MethodStepScanner underTest = new MethodStepScanner();
 		
