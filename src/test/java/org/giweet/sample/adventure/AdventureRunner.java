@@ -1,12 +1,12 @@
 package org.giweet.sample.adventure;
 
-import java.util.List;
+import java.util.Collection;
 import java.util.Locale;
 
 import org.giweet.MethodStepDeclaration;
 import org.giweet.MethodStepInvoker;
-import org.giweet.MethodStepScanner;
 import org.giweet.ParamStepConverter;
+import org.giweet.StepObjectHandler;
 import org.giweet.converter.BooleanConverter;
 import org.giweet.converter.CalendarConverter;
 import org.giweet.converter.CharacterConverter;
@@ -52,18 +52,21 @@ public class AdventureRunner {
 	}
 
 	private void runScenario(Object step, String...scenario) throws Exception {
-		MethodStepScanner methodStepScanner = new MethodStepScanner();
 		MethodStepInvoker methodStepInvoker = createMethodStepInvoker();
+		StepObjectHandler stepObjectHandler = new StepObjectHandler(step);
+		
+		stepObjectHandler.check();
 
-		List<MethodStepDeclaration> methodStepDeclarations = methodStepScanner.scan(step);
+		Collection<MethodStepDeclaration> methodStepDeclarations = stepObjectHandler.getMethodStepDeclarations();
 		StepDeclarationTree<MethodStepDeclaration> tree = new StepDeclarationTree<MethodStepDeclaration>(methodStepDeclarations);
 		
 		for (String scenarioStep : scenario) {
 			SearchResult<MethodStepDeclaration> searchResult = tree.search(new StepInstance(StepType.GIVEN, scenarioStep));
-			System.out.println("invoke " + searchResult.getStepDeclaration().getValue());
 			Object result = methodStepInvoker.invoke(searchResult.getStepDeclaration(), searchResult.getStepTokenValues());
 			if (result != null) {
-				methodStepDeclarations = methodStepScanner.scan(result);
+				stepObjectHandler = new StepObjectHandler(result);
+				stepObjectHandler.check();
+				methodStepDeclarations = stepObjectHandler.getMethodStepDeclarations();
 				if (!methodStepDeclarations.isEmpty()) {
 					tree = new StepDeclarationTree<MethodStepDeclaration>(methodStepDeclarations);
 				}

@@ -87,25 +87,37 @@ public class StepObjectHandlerTest {
 		}
 	}
 
-	public static class InvalidMethodScopeStep {
+	public static class InvalidStepMethodScope {
 		@Step
 		private void methodStep() {
 		}
 	}
 
-	public static class InvalidMethodScopeSetup {
+	public static class InvalidSetupMethodScope {
 		@Setup
 		private void setup() {
 		}
 	}
 
-	public static class InvalidMethodScopeTeardown {
+	public static class InvalidSetupMethodWithParameter {
+		@Setup
+		public void setup(int param) {
+		}
+	}
+
+	public static class InvalidTeardownMethodScope {
 		@Teardown
 		private void teardown() {
 		}
 	}
 
-	public static class InheritedInvalidMethodScopeStep extends InvalidMethodScopeStep {
+	public static class InvalidTeardownMethodWithParameter {
+		@Teardown
+		public void teardown(int param) {
+		}
+	}
+	
+	public static class InheritedInvalidMethodScopeStep extends InvalidStepMethodScope {
 	}
 
 	public static class GivenAnnotationUsedWithoutStepAnnotation {
@@ -162,7 +174,7 @@ public class StepObjectHandlerTest {
 
 	@Test
 	public void canGetMethodStepDeclarationsByIgnoringNonPublicMethod() throws Exception {
-		InvalidMethodScopeStep instance = new InvalidMethodScopeStep();
+		InvalidStepMethodScope instance = new InvalidStepMethodScope();
 		StepObjectHandler underTest = new StepObjectHandler(instance);
 
 		Collection<MethodStepDeclaration> result = underTest.getMethodStepDeclarations();
@@ -211,11 +223,11 @@ public class StepObjectHandlerTest {
 
 	@Test
 	public void canCheckANonPublicStep() throws Exception {
-		InvalidMethodScopeStep instance = new InvalidMethodScopeStep();
+		InvalidStepMethodScope instance = new InvalidStepMethodScope();
 		StepObjectHandler underTest = new StepObjectHandler(instance);
 
 		thrown.expect(InvalidStepException.class);
-		thrown.expectMessage("Method with @Step annotation must be declared public! Found non public method: private void org.giweet.StepObjectHandlerTest$InvalidMethodScopeStep.methodStep()");
+		thrown.expectMessage("Method with @Step annotation must be declared public! Found non public method: private void org.giweet.StepObjectHandlerTest$InvalidStepMethodScope.methodStep()");
 
 		underTest.check();
 	}
@@ -226,7 +238,7 @@ public class StepObjectHandlerTest {
 		StepObjectHandler underTest = new StepObjectHandler(instance);
 
 		thrown.expect(InvalidStepException.class);
-		thrown.expectMessage("Method with @Step annotation must be declared public! Found non public method: private void org.giweet.StepObjectHandlerTest$InvalidMethodScopeStep.methodStep()");
+		thrown.expectMessage("Method with @Step annotation must be declared public! Found non public method: private void org.giweet.StepObjectHandlerTest$InvalidStepMethodScope.methodStep()");
 
 		underTest.check();
 	}
@@ -266,22 +278,44 @@ public class StepObjectHandlerTest {
 
 	@Test
 	public void canCheckSetupMehodIsNotPublic() throws Exception {
-		InvalidMethodScopeSetup instance = new InvalidMethodScopeSetup();
+		InvalidSetupMethodScope instance = new InvalidSetupMethodScope();
 		StepObjectHandler underTest = new StepObjectHandler(instance);
 
 		thrown.expect(InvalidStepException.class);
-		thrown.expectMessage("Method with @Setup annotation must be declared public! Found non public method: private void org.giweet.StepObjectHandlerTest$InvalidMethodScopeSetup.setup()");
+		thrown.expectMessage("Method with @Setup annotation must be declared public! Found non public method: private void org.giweet.StepObjectHandlerTest$InvalidSetupMethodScope.setup()");
+
+		underTest.check();
+	}
+
+	@Test
+	public void canCheckSetupMehodHasParameter() throws Exception {
+		InvalidSetupMethodWithParameter instance = new InvalidSetupMethodWithParameter();
+		StepObjectHandler underTest = new StepObjectHandler(instance);
+
+		thrown.expect(InvalidStepException.class);
+		thrown.expectMessage("Method with @Setup annotation must have no argument! Found method with arguments: public void org.giweet.StepObjectHandlerTest$InvalidSetupMethodWithParameter.setup(int)");
 
 		underTest.check();
 	}
 
 	@Test
 	public void canCheckTeardownMehodIsNotPublic() throws Exception {
-		InvalidMethodScopeTeardown instance = new InvalidMethodScopeTeardown();
+		InvalidTeardownMethodScope instance = new InvalidTeardownMethodScope();
 		StepObjectHandler underTest = new StepObjectHandler(instance);
 
 		thrown.expect(InvalidStepException.class);
-		thrown.expectMessage("Method with @Teardown annotation must be declared public! Found non public method: private void org.giweet.StepObjectHandlerTest$InvalidMethodScopeTeardown.teardown()");
+		thrown.expectMessage("Method with @Teardown annotation must be declared public! Found non public method: private void org.giweet.StepObjectHandlerTest$InvalidTeardownMethodScope.teardown()");
+
+		underTest.check();
+	}
+
+	@Test
+	public void canCheckTeardownMehodHasParameter() throws Exception {
+		InvalidTeardownMethodWithParameter instance = new InvalidTeardownMethodWithParameter();
+		StepObjectHandler underTest = new StepObjectHandler(instance);
+
+		thrown.expect(InvalidStepException.class);
+		thrown.expectMessage("Method with @Teardown annotation must have no argument! Found method with arguments: public void org.giweet.StepObjectHandlerTest$InvalidTeardownMethodWithParameter.teardown(int)");
 
 		underTest.check();
 	}
