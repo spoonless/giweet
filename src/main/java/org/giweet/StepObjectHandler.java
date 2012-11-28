@@ -1,6 +1,7 @@
 package org.giweet;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
@@ -24,33 +25,51 @@ public class StepObjectHandler {
 	}
 	
 	public void check() throws InvalidStepException {
+		int nbStepMethods = 0;
 		Class<?> classToCheck = instance.getClass();
 		do {
-			check(classToCheck);
+			nbStepMethods += check(classToCheck);
 			classToCheck = classToCheck.getSuperclass();
 		} while (classToCheck != null);
+
+		if (nbStepMethods == 0) {
+			throw new InvalidStepException("Class must declare or inherit at least one public method with @Step annotation ! Found class instance without step of type: " + instance.getClass().getName());
+		}
 	}
 	
-	private void check(Class<?> classToCheck) throws InvalidStepException {
+	private int check(Class<?> classToCheck) throws InvalidStepException {
+		int nbStepMethods = 0;
 		for (Method method : classToCheck.getDeclaredMethods()) {
-			if ((method.getModifiers() & Modifier.PUBLIC) == 0) {
-				checkAnnotationOnNonPublicMethod(Step.class, method);
-				checkAnnotationOnNonPublicMethod(Setup.class, method);
-				checkAnnotationOnNonPublicMethod(Teardown.class, method);
-				checkAnnotationOnNonPublicMethod(Given.class, method);
-				checkAnnotationOnNonPublicMethod(When.class, method);
-				checkAnnotationOnNonPublicMethod(Then.class, method);
-			}
-			else {
-				checkAnnotatedMethodHasNoParameter(Setup.class, method);
-				checkAnnotatedMethodHasNoParameter(Teardown.class, method);
-				if (! method.isAnnotationPresent(Step.class)) {
-					checkGivenWhenThenNotUse(Given.class, method);
-					checkGivenWhenThenNotUse(When.class, method);
-					checkGivenWhenThenNotUse(Then.class, method);
-				}
+			if (check(method)) {
+				nbStepMethods++;
 			}
 		}
+		return nbStepMethods;
+	}
+
+	private boolean check(Method method) throws InvalidStepException {
+		boolean isValidStep = false;
+		if ((method.getModifiers() & Modifier.PUBLIC) == 0) {
+			checkAnnotationOnNonPublicMethod(Step.class, method);
+			checkAnnotationOnNonPublicMethod(Setup.class, method);
+			checkAnnotationOnNonPublicMethod(Teardown.class, method);
+			checkAnnotationOnNonPublicMethod(Given.class, method);
+			checkAnnotationOnNonPublicMethod(When.class, method);
+			checkAnnotationOnNonPublicMethod(Then.class, method);
+		}
+		else {
+			checkAnnotatedMethodHasNoParameter(Setup.class, method);
+			checkAnnotatedMethodHasNoParameter(Teardown.class, method);
+			if (method.isAnnotationPresent(Step.class)) {
+				isValidStep = true;
+			}
+			else {
+				checkGivenWhenThenNotUse(Given.class, method);
+				checkGivenWhenThenNotUse(When.class, method);
+				checkGivenWhenThenNotUse(Then.class, method);
+			}
+		}
+		return isValidStep;
 	}
 	
 	private void checkAnnotationOnNonPublicMethod(Class<? extends Annotation> annotation, Method method) throws InvalidStepException {
@@ -66,10 +85,8 @@ public class StepObjectHandler {
 	}
 
 	private void checkAnnotatedMethodHasNoParameter(Class<? extends Annotation> annotation, Method method) throws InvalidStepException {
-		if (method.isAnnotationPresent(annotation)) {
-			if (method.getParameterTypes().length > 0) {
-				throw new InvalidStepException("Method with @" + annotation.getSimpleName() + " annotation must have no argument! Found method with arguments: " + method.toString());
-			}
+		if (method.isAnnotationPresent(annotation) && method.getParameterTypes().length > 0) {
+			throw new InvalidStepException("Method with @" + annotation.getSimpleName() + " annotation must have no argument! Found method with arguments: " + method.toString());
 		}
 	}
 	
@@ -96,11 +113,19 @@ public class StepObjectHandler {
 		}
 	}
 	
-	public void setup() {
-		throw new UnsupportedOperationException("not yet implemented!");
+	public void setup() throws IllegalArgumentException, IllegalAccessException, InvocationTargetException {
+		invokeAnnotatedMethods(Setup.class);
+	}
+	
+	public void teardown() throws IllegalArgumentException, IllegalAccessException, InvocationTargetException {
+		invokeAnnotatedMethods(Teardown.class);
 	}
 
-	public void teardown() {
-		throw new UnsupportedOperationException("not yet implemented!");
+	private void invokeAnnotatedMethods(Class<? extends Annotation> annotation) throws IllegalArgumentException, IllegalAccessException, InvocationTargetException {
+		for (Method method : instance.getClass().getMethods()) {
+			if(method.isAnnotationPresent(annotation)) {
+				method.invoke(instance);
+			}
+		}
 	}
 }

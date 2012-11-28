@@ -22,11 +22,35 @@ public class StepObjectHandlerTest {
 	public ExpectedException thrown = ExpectedException.none();
 
 	public static class DummyStep {
+		public int setup1;
+		public int setup2;
+		public int teardown1;
+		public int teardown2;
 		public int step1;
 		public int step2;
 		public int step3;
 
 		public void methodNotStep() {
+		}
+
+		@Setup
+		public void setup1() {
+			setup1++;
+		}
+
+		@Setup
+		public void setup2() {
+			setup2++;
+		}
+
+		@Teardown
+		public void teardown1() {
+			teardown1++;
+		}
+
+		@Teardown
+		public void teardown2() {
+			teardown2++;
 		}
 
 		@Step
@@ -84,6 +108,11 @@ public class StepObjectHandlerTest {
 		@Then
 		public void givenWhenThenStep() {
 			givenWhenThenStep++;
+		}
+	}
+	
+	public class InvalidNoStep {
+		public void notStep(){
 		}
 	}
 
@@ -222,6 +251,17 @@ public class StepObjectHandlerTest {
 	}
 
 	@Test
+	public void canCheckNoStep() throws Exception {
+		InvalidNoStep instance = new InvalidNoStep();
+		StepObjectHandler underTest = new StepObjectHandler(instance);
+
+		thrown.expect(InvalidStepException.class);
+		thrown.expectMessage("Class must declare or inherit at least one public method with @Step annotation ! Found class instance without step of type: org.giweet.StepObjectHandlerTest$InvalidNoStep");
+
+		underTest.check();
+	}
+
+	@Test
 	public void canCheckANonPublicStep() throws Exception {
 		InvalidStepMethodScope instance = new InvalidStepMethodScope();
 		StepObjectHandler underTest = new StepObjectHandler(instance);
@@ -318,6 +358,28 @@ public class StepObjectHandlerTest {
 		thrown.expectMessage("Method with @Teardown annotation must have no argument! Found method with arguments: public void org.giweet.StepObjectHandlerTest$InvalidTeardownMethodWithParameter.teardown(int)");
 
 		underTest.check();
+	}
+
+	@Test
+	public void canExecuteSetup() throws Exception {
+		DummyStep instance = new DummyStep();
+		StepObjectHandler underTest = new StepObjectHandler(instance);
+
+		underTest.setup();
+		
+		assertEquals(1, instance.setup1);
+		assertEquals(1, instance.setup2);
+	}
+
+	@Test
+	public void canExecuteTeardown() throws Exception {
+		DummyStep instance = new DummyStep();
+		StepObjectHandler underTest = new StepObjectHandler(instance);
+
+		underTest.teardown();
+		
+		assertEquals(1, instance.teardown1);
+		assertEquals(1, instance.teardown2);
 	}
 
 	private void assertIsOfTypes(StepDeclaration stepDeclaration, StepType... types) {
