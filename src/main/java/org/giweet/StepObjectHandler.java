@@ -27,10 +27,10 @@ public class StepObjectHandler {
 	public void check() throws InvalidStepException {
 		int nbStepMethods = 0;
 		Class<?> classToCheck = instance.getClass();
-		do {
+		while (classToCheck != Object.class) {
 			nbStepMethods += check(classToCheck);
 			classToCheck = classToCheck.getSuperclass();
-		} while (classToCheck != null);
+		}
 
 		if (nbStepMethods == 0) {
 			throw new InvalidStepException("Class must declare or inherit at least one public method with @Step annotation ! Found class instance without step of type: " + instance.getClass().getName());
@@ -114,18 +114,24 @@ public class StepObjectHandler {
 	}
 	
 	public void setup() throws IllegalArgumentException, IllegalAccessException, InvocationTargetException {
-		invokeAnnotatedMethods(Setup.class);
+		invokeAnnotatedMethods(Setup.class, instance.getClass().getMethods(), instance.getClass(), true);
 	}
 	
 	public void teardown() throws IllegalArgumentException, IllegalAccessException, InvocationTargetException {
-		invokeAnnotatedMethods(Teardown.class);
+		invokeAnnotatedMethods(Teardown.class, instance.getClass().getMethods(), instance.getClass(), false);
 	}
 
-	private void invokeAnnotatedMethods(Class<? extends Annotation> annotation) throws IllegalArgumentException, IllegalAccessException, InvocationTargetException {
-		for (Method method : instance.getClass().getMethods()) {
-			if(method.isAnnotationPresent(annotation)) {
+	private void invokeAnnotatedMethods(Class<? extends Annotation> annotation, Method[] methods, Class<?> currentClass, boolean isSuperClassFirst) throws IllegalArgumentException, IllegalAccessException, InvocationTargetException {
+		if (isSuperClassFirst && currentClass.getSuperclass() != Object.class) {
+			invokeAnnotatedMethods(annotation, methods, currentClass.getSuperclass(), isSuperClassFirst);
+		}
+		for (Method method : methods) {
+			if (method.getDeclaringClass() == currentClass && method.isAnnotationPresent(annotation)) {
 				method.invoke(instance);
 			}
+		}
+		if (! isSuperClassFirst && currentClass.getSuperclass() != Object.class) {
+			invokeAnnotatedMethods(annotation, methods, currentClass.getSuperclass(), isSuperClassFirst);
 		}
 	}
 }

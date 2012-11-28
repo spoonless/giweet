@@ -35,22 +35,22 @@ public class StepObjectHandlerTest {
 
 		@Setup
 		public void setup1() {
-			setup1++;
+			setup1 = 1;
 		}
 
 		@Setup
 		public void setup2() {
-			setup2++;
+			setup2 = 1;
 		}
 
 		@Teardown
 		public void teardown1() {
-			teardown1++;
+			teardown1 = 1;
 		}
 
 		@Teardown
 		public void teardown2() {
-			teardown2++;
+			teardown2 = 1;
 		}
 
 		@Step
@@ -372,12 +372,44 @@ public class StepObjectHandlerTest {
 	}
 
 	@Test
+	public void canExecuteInheritedSetupMethodFirst() throws Exception {
+		DummyStep instance = new DummyStep() {
+			@Setup
+			public void setup1FromChildClass() {
+				this.setup1 = 2;
+			}
+		};
+		
+		StepObjectHandler underTest = new StepObjectHandler(instance);
+
+		underTest.setup();
+		assertEquals(2, instance.setup1);
+		assertEquals(1, instance.setup2);
+	}
+
+	@Test
 	public void canExecuteTeardown() throws Exception {
 		DummyStep instance = new DummyStep();
 		StepObjectHandler underTest = new StepObjectHandler(instance);
 
 		underTest.teardown();
 		
+		assertEquals(1, instance.teardown1);
+		assertEquals(1, instance.teardown2);
+	}
+
+	@Test
+	public void canExecuteInheritedTeardownMethodLast() throws Exception {
+		DummyStep instance = new DummyStep() {
+			@Teardown
+			public void teardown1FromChildClass() {
+				this.teardown1 = 2;
+			}
+		};
+		
+		StepObjectHandler underTest = new StepObjectHandler(instance);
+
+		underTest.teardown();
 		assertEquals(1, instance.teardown1);
 		assertEquals(1, instance.teardown2);
 	}
