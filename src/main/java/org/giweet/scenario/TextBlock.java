@@ -1,25 +1,18 @@
 package org.giweet.scenario;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 public abstract class TextBlock {
-	private Sentence title;
-	private List<Sentence> meta = new ArrayList<Sentence>();
 	private List<Sentence> sentences = new ArrayList<Sentence>();
 
 	public List<Sentence> getSentences() {
 		return sentences;
 	}
 
-	public Sentence getTitle() {
-		return title;
-	}
+	public abstract Sentence getTitle();
 
-	public void setTitle(Sentence title) {
-		this.title = title;
-	}
-	
 	public void add(Sentence sentence) {
 		if (sentences.isEmpty()) {
 			sentences.add(sentence);
@@ -31,12 +24,33 @@ public abstract class TextBlock {
 			}
 		}
 	}
-
-	public List<Sentence> getMeta() {
-		return meta;
+	
+	public void addAll(Collection<Sentence> sentences) {
+		for (Sentence sentence : sentences) {
+			this.add(sentence);
+		}
 	}
 
-	public void setMeta(List<Sentence> meta) {
-		this.meta = meta;
+	public List<Sentence> getMeta() {
+		return getSentencesByKeywordType(KeywordType.META);
+	}
+	
+	protected Sentence getFirstSentenceByKeywordType(KeywordType keywordType) {
+		for (Sentence sentence : sentences) {
+			if (sentence.isProcessable() && sentence.getKeyword().getType() == keywordType) {
+				return sentence;
+			}
+		}
+		return null;
+	}
+
+	protected List<Sentence> getSentencesByKeywordType(KeywordType keywordType) {
+		List<Sentence> result = new ArrayList<Sentence>();
+		for (Sentence sentence : sentences) {
+			if (sentence.isProcessable() && sentence.getKeyword().getType() == keywordType) {
+				result.add(sentence);
+			}
+		}
+		return result;
 	}
 }

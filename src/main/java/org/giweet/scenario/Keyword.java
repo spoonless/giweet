@@ -3,24 +3,24 @@ package org.giweet.scenario;
 
 public class Keyword {
 	
-	private final KeywordType keywordType;
-	private final String keywordAsString;
+	private final KeywordType type;
+	private final String label;
 
-	public Keyword(KeywordType keywordType, String keywordAsString) {
-		this.keywordType = keywordType;
-		this.keywordAsString = keywordAsString;
+	public Keyword(KeywordType type, String label) {
+		this.type = type;
+		this.label = label;
 	}
 
 	public KeywordType getType() {
-		return keywordType;
+		return type;
 	}
 	
 	public String extractText(String line) {
-		return keywordAsString.length() < line.length() ? line.substring(this.keywordAsString.length()) : "";
+		return label.length() < line.length() ? line.substring(this.label.length()) : "";
 	}
 	
 	@Override
 	public String toString() {
-		return keywordAsString;
+		return label;
 	}
 }

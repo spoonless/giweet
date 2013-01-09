@@ -12,4 +12,9 @@ public class Scenario extends TextBlock {
 	public void setStory(Story story) {
 		this.story = story;
 	}
+
+	@Override
+	public Sentence getTitle() {
+		return getFirstSentenceByKeywordType(KeywordType.SCENARIO);
+	}
 }

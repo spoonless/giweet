@@ -6,17 +6,16 @@ import java.io.Reader;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.giweet.scenario.Keyword;
-import org.giweet.scenario.KeywordType;
 import org.giweet.scenario.Scenario;
 import org.giweet.scenario.Sentence;
 import org.giweet.scenario.Story;
+import org.giweet.scenario.TextBlock;
 
 public class TextScenarioParser {
 
 	private final KeywordParser keywordParser;
 	private final BufferedReader reader;
-	private Scenario nextPartiallyParsedScenario;
+	private TextBlock nextTextBlock;
 	private Story currentStory;
 	private final List<Sentence> meta;
 
@@ -24,69 +23,89 @@ public class TextScenarioParser {
 		this.keywordParser = keywordParser;
 		this.reader = new BufferedReader(reader);
 		currentStory = new Story();
-		currentStory.setTitle(createAnonymousSentence(KeywordType.STORY));
 		meta = new ArrayList<Sentence>();
 	}
-
+	
 	public Scenario nextScenario() throws IOException {
-		Scenario scenario = nextPartiallyParsedScenario;
-		nextPartiallyParsedScenario = null;
+		Scenario scenario = null;
+		TextBlock textBlock = null;
+		do {
+			textBlock = nextTextBlock();
+			if (textBlock instanceof Story) {
+				currentStory = (Story) textBlock;
+			}
+			else if (textBlock instanceof Scenario) {
+				scenario = (Scenario) textBlock;
+				scenario.setStory(currentStory);
+			}
+		} while (textBlock != null && scenario == null);
+		return scenario;
+	}
+
+	private TextBlock nextTextBlock() throws IOException {
+		TextBlock textBlock = nextTextBlock;
+		nextTextBlock = null;
 		String line = null;
-		
 		while ((line = reader.readLine()) != null) {
 			line += '\n';
 			Sentence sentence = new Sentence(keywordParser.getStartingKeyword(line), line);
-			
-			if (sentence.isProcessable() && sentence.getKeyword().getType() == KeywordType.META) {
-				meta.add(sentence);
+			TextBlock textBlockWithSentence = addSentenceIntoTextBlock(textBlock, sentence);
+			if (textBlock == null) {
+				textBlock = textBlockWithSentence;
 			}
-			else if (sentence.isProcessable() && sentence.getKeyword().getType() == KeywordType.STORY) {
-				currentStory = new Story();
-				currentStory.setTitle(sentence);
-				currentStory.getMeta().addAll(meta);
-				meta.clear();
-				if (scenario != null) {
-					break;
-				}
-			}
-			else if (sentence.isProcessable() && sentence.getKeyword().getType() == KeywordType.SCENARIO) {
-				if (scenario != null) {
-					nextPartiallyParsedScenario = createScenario(sentence);
-					break;
-				}
-				else {
-					scenario = createScenario(sentence);
-				}
-			}
-			else if (scenario == null) {
-				if (sentence.isProcessable()) {
-					scenario = createScenario(createAnonymousSentence(KeywordType.SCENARIO));
-					scenario.add(sentence);
-				}
-				else {
-					meta.clear();
-					currentStory.add(sentence);
-				}
-			}
-			else {
-				meta.clear();
-				scenario.add(sentence);
+			else if (textBlock != textBlockWithSentence) {
+				nextTextBlock = textBlockWithSentence;
+				break;
 			}
 		}
-		return scenario;
+		return textBlock;
 	}
 
-	private Scenario createScenario(Sentence title) {
-		Scenario scenario = new Scenario();
-		scenario.setTitle(title);
-		scenario.setStory(currentStory);
-		scenario.getMeta().addAll(meta);
-		meta.clear();
-		return scenario;
+	private TextBlock addSentenceIntoTextBlock(TextBlock textBlock, Sentence sentence) {
+		if (sentence.isProcessable()) {
+			switch (sentence.getKeyword().getType()) {
+			case META:
+				meta.add(sentence);
+				break;
+			case STORY:
+				textBlock = new Story();
+				textBlock.addAll(meta);
+				meta.clear();
+				textBlock.add(sentence);
+				break;
+			case SCENARIO:
+				textBlock = new Scenario();
+				textBlock.addAll(meta);
+				meta.clear();
+				textBlock.add(sentence);
+				break;
+			default:
+				if (textBlock == null) {
+					textBlock = new Scenario();
+					textBlock.addAll(meta);
+					meta.clear();
+				} else {
+					// FIXME to refactor
+					for (Sentence invalidMeta : meta) {
+						textBlock.add(new Sentence(invalidMeta.toString()));
+					}
+					meta.clear();
+				}
+				if (textBlock instanceof Story) {
+					textBlock = new Scenario();
+				}
+				textBlock.add(sentence);
+				break;
+			}
+		}
+		else if (textBlock != null) {
+			// FIXME to refactor
+			for (Sentence invalidMeta : meta) {
+				textBlock.add(new Sentence(invalidMeta.toString()));
+			}
+			meta.clear();
+			textBlock.add(sentence);
+		}
+		return textBlock;
 	}
-
-	private static Sentence createAnonymousSentence(KeywordType keywordType) {
-		return new Sentence(new Keyword(keywordType, ""), "");
-	}
-
 }
