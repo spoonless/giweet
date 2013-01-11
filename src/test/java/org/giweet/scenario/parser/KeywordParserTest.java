@@ -14,10 +14,10 @@ public class KeywordParserTest {
 	public void canGetStartingKeywordInEnglish() {
 		KeywordParser keywordParser = new KeywordParser(Locale.ENGLISH);
 		
-		assertNull(keywordParser.getStartingKeyword(""));
-		assertNull(keywordParser.getStartingKeyword("givengiven"));
-		assertNull(keywordParser.getStartingKeyword("no keyword"));
-		assertNull(keywordParser.getStartingKeyword(", given"));
+		assertEquals(Keyword.NO_KEYWORD, keywordParser.getStartingKeyword(""));
+		assertEquals(Keyword.NO_KEYWORD, keywordParser.getStartingKeyword("givengiven"));
+		assertEquals(Keyword.NO_KEYWORD, keywordParser.getStartingKeyword("no keyword"));
+		assertEquals(Keyword.NO_KEYWORD, keywordParser.getStartingKeyword(", given"));
 
 		Keyword keyword = keywordParser.getStartingKeyword("Story: ");
 		assertKeyword(KeywordType.STORY, "Story: ", keyword);
@@ -81,10 +81,10 @@ public class KeywordParserTest {
 	public void canGetStartingKeywordInFrench() {
 		KeywordParser keywordParser = new KeywordParser(Locale.FRENCH);
 		
-		assertNull(keywordParser.getStartingKeyword(""));
-		assertNull(keywordParser.getStartingKeyword("etet"));
-		assertNull(keywordParser.getStartingKeyword("aucun mot-clef"));
-		assertNull(keywordParser.getStartingKeyword("given"));
+		assertEquals(Keyword.NO_KEYWORD, keywordParser.getStartingKeyword(""));
+		assertEquals(Keyword.NO_KEYWORD, keywordParser.getStartingKeyword("etet"));
+		assertEquals(Keyword.NO_KEYWORD, keywordParser.getStartingKeyword("aucun mot-clef"));
+		assertEquals(Keyword.NO_KEYWORD, keywordParser.getStartingKeyword("given"));
 
 		Keyword keyword = keywordParser.getStartingKeyword("Histoire: ");
 		assertKeyword(KeywordType.STORY, "Histoire: ", keyword);

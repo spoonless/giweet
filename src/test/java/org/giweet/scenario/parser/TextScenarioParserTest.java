@@ -8,6 +8,7 @@ import java.io.Reader;
 import java.nio.charset.Charset;
 import java.util.Locale;
 
+import org.giweet.scenario.Keyword;
 import org.giweet.scenario.KeywordType;
 import org.giweet.scenario.Scenario;
 import org.giweet.scenario.Sentence;
@@ -217,13 +218,6 @@ public class TextScenarioParserTest {
 		assertSentenceIsProcessable(KeywordType.GIVEN, "given ", "something\n@another ignored meta\n", scenario.getSentences().get(3));
 		assertSentenceIsProcessable(KeywordType.WHEN, "when ", "an action occurred\n", scenario.getSentences().get(4));
 		assertSentenceIsProcessable(KeywordType.THEN, "then ", "something has changed\n\n", scenario.getSentences().get(5));
-
-//		scenario = underTest.nextScenario();
-//
-//		assertEquals(1, scenario.getMeta().size());
-//		assertSentenceIsProcessable(KeywordType.META, "@", "anotherScenarioMeta\n", scenario.getMeta().get(0));
-//		assertEquals(1, scenario.getStory().getMeta().size());
-//		assertSentenceIsProcessable(KeywordType.META, "@", "storyMeta\n", scenario.getStory().getMeta().get(0));
 	}
 
 	private void assertSentenceIsProcessable (KeywordType expectedKeywordType, String expectedKeyword, String expectedText, Sentence sentence) {
@@ -236,7 +230,7 @@ public class TextScenarioParserTest {
 
 	private void assertSentenceIsNotProcessable (String expectedText, Sentence sentence) {
 		assertFalse("sentence '" + sentence + "' is processable!", sentence.isProcessable());
-		assertNull(sentence.getKeyword());
+		assertEquals(Keyword.NO_KEYWORD, sentence.getKeyword());
 		assertEquals(expectedText, sentence.getText());
 		assertEquals(expectedText, sentence.toString());
 	}

@@ -37,7 +37,7 @@ public abstract class TextBlock {
 	
 	protected Sentence getFirstSentenceByKeywordType(KeywordType keywordType) {
 		for (Sentence sentence : sentences) {
-			if (sentence.isProcessable() && sentence.getKeyword().getType() == keywordType) {
+			if (sentence.getKeyword().getType() == keywordType) {
 				return sentence;
 			}
 		}
@@ -47,7 +47,7 @@ public abstract class TextBlock {
 	protected List<Sentence> getSentencesByKeywordType(KeywordType keywordType) {
 		List<Sentence> result = new ArrayList<Sentence>();
 		for (Sentence sentence : sentences) {
-			if (sentence.isProcessable() && sentence.getKeyword().getType() == keywordType) {
+			if (sentence.getKeyword().getType() == keywordType) {
 				result.add(sentence);
 			}
 		}

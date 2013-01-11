@@ -7,12 +7,12 @@ public class Sentence {
 	private String text;
 	
 	public Sentence(String line) {
-		this(null, line);
+		this(Keyword.NO_KEYWORD, line);
 	}
 
 	public Sentence(Keyword keyword, String line) {
 		this.keyword = keyword;
-		this.text = keyword != null ? keyword.extractText(line) : line;
+		this.text = keyword.extractText(line);
 	}
 	
 	public Keyword getKeyword() {
@@ -24,7 +24,7 @@ public class Sentence {
 	}
 	
 	public boolean isProcessable() {
-		return keyword != null;
+		return keyword != Keyword.NO_KEYWORD;
 	}
 	
 	public boolean concat(Sentence sentence) {
@@ -40,7 +40,7 @@ public class Sentence {
 
 	@Override
 	public String toString() {
-		return isProcessable() ? keyword + text : text;
+		return keyword + text;
 	}
 	
 }

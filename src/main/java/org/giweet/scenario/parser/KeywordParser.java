@@ -26,7 +26,7 @@ public class KeywordParser {
 		this.locale = locale;
 		bundle = ResourceBundle.getBundle("org/giweet/i18n/keywords", locale);
 		this.keywordResources = new ArrayList<KeywordParser.KeywordResource>();
-		for (KeywordType keywordType : KeywordType.values()) {
+		for (KeywordType keywordType : KeywordType.getParseableKeywordTypes()) {
 			this.keywordResources.add(createKeywordResource(keywordType));			
 		}
 	}
@@ -79,7 +79,7 @@ public class KeywordParser {
 				break;
 			}
 		}
-		return keyword;
+		return keyword == null ? Keyword.NO_KEYWORD : keyword;
 	}
 
 }
