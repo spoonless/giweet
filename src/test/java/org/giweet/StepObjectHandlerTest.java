@@ -77,35 +77,27 @@ public class StepObjectHandlerTest {
 		public int givenThenStep;
 		public int givenWhenThenStep;
 
-		@Step
-		@Given
+		@Given @Step
 		public void givenStep() {
 			givenStep++;
 		}
 
-		@Step
-		@When
+		@When @Step
 		public void whenStep() {
 			whenStep++;
 		}
 
-		@Step
-		@Then
+		@Then @Step
 		public void thenStep() {
 			thenStep++;
 		}
 
-		@Step
-		@Given
-		@Then
+		@Given @Then @Step
 		public void givenThenStep() {
 			givenThenStep++;
 		}
 
-		@Step
-		@Given
-		@When
-		@Then
+		@Given @When @Then @Step
 		public void givenWhenThenStep() {
 			givenWhenThenStep++;
 		}
