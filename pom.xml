@@ -38,8 +38,8 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<maven.compiler.source>1.5</maven.compiler.source>
-		<maven.compiler.target>1.5</maven.compiler.target>
+		<maven.compiler.source>1.6</maven.compiler.source>
+		<maven.compiler.target>1.6</maven.compiler.target>
 	</properties>
 
 	<dependencies>
@@ -52,7 +52,7 @@
 		<dependency>
 			<groupId>com.sun</groupId>
 			<artifactId>tools</artifactId>
-			<version>1.5</version>
+			<version>1.6</version>
 			<scope>system</scope>
 			<systemPath>${java.home}/../lib/tools.jar</systemPath>
 		</dependency>
@@ -87,7 +87,7 @@
 								<linkXref>true</linkXref>
 								<sourceEncoding>utf-8</sourceEncoding>
 								<minimumTokens>100</minimumTokens>
-								<targetJdk>1.5</targetJdk>
+								<targetJdk>1.6</targetJdk>
 								<excludeRoots>
 									<excludeRoot>src/main/test</excludeRoot>
 								</excludeRoots>
