@@ -1,7 +1,6 @@
 package org.giweet.step.tokenizer;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import org.giweet.step.StaticStepToken;
 import org.giweet.step.StepToken;

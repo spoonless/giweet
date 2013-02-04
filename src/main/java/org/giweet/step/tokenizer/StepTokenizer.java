@@ -3,6 +3,7 @@ package org.giweet.step.tokenizer;
 import java.io.IOException;
 import java.io.Reader;
 
+import org.giweet.step.StaticStepToken;
 import org.giweet.step.StepToken;
 
 public class StepTokenizer {
@@ -34,7 +35,19 @@ public class StepTokenizer {
 	
 	public StepToken[] tokenize(String value) {
 		DefaultStepTokenizerListener listener = new DefaultStepTokenizerListener(strategy);
-		tokenize(value, listener);
+		CharSequenceIterator charSequenceIterator = new CharSequenceIterator(value, characterAnalyzer);
+		
+		StepTokenParser stepTokenParser = new MeaninglessStepTokenParser(charSequenceIterator, 0);
+		
+		do {
+			StepTokenParser nextStepTokenParser = stepTokenParser.parse();
+			StepToken stepToken = stepTokenParser.getStepToken();
+			if (stepToken.isMeaningful() || stepToken.toString().length() > 0) {
+				listener.newToken(stepToken.toString(), stepToken.isMeaningful());
+			}
+			stepTokenParser = nextStepTokenParser;
+		} while (stepTokenParser != null);
+		
 		return listener.getStepTokens();
 	}
 
@@ -124,6 +137,167 @@ public class StepTokenizer {
 			return quoteTailCount == 0;
 		}
 	}
+	
+	
+	private static interface StepTokenParser {
+		
+		StepTokenParser parse();
+		
+		StepToken getStepToken();
+	}
+	
+	private static class MeaninglessStepTokenParser implements StepTokenParser {
+		
+		private final CharSequenceIterator charSequenceIterator;
+		private int firstCharsToIgnore;
+		
+		public MeaninglessStepTokenParser(CharSequenceIterator charSequenceIterator, int firstCharsToIgnore) {
+			this.charSequenceIterator = charSequenceIterator;
+			this.firstCharsToIgnore = firstCharsToIgnore;
+		}
+
+		public StepTokenParser parse() {
+			charSequenceIterator.popNext(firstCharsToIgnore);
+			while (charSequenceIterator.hasNext()) {
+				int type = charSequenceIterator.getNextType();
+				if ((type & CharacterAnalyzer.QUOTE_HEAD) == CharacterAnalyzer.QUOTE_HEAD) {
+					char quoteHead = charSequenceIterator.getNext();
+					charSequenceIterator.popNext();
+					return new QuotationStepTokenParser(charSequenceIterator, quoteHead);
+				}
+				else if ((type & CharacterAnalyzer.SEPARATOR) > 0 || (type & CharacterAnalyzer.SEPARATOR_IF_LEADING_OR_TRAILING) > 0) {
+					charSequenceIterator.popNext();
+				}
+				else {
+					return new MeaningFulStepTokenParser(charSequenceIterator);
+				}
+			}
+			return null;
+		}
+		
+		public StepToken getStepToken() {
+			return new StaticStepToken(charSequenceIterator.subSequence().toString(), false);
+		}
+	}
+	
+	private static class QuotationStepTokenParser implements StepTokenParser {
+		
+		private final CharSequenceIterator charSequenceIterator;
+		private final char quoteHead;
+		private int quoteHeadCount = 1;
+		
+		public QuotationStepTokenParser(CharSequenceIterator charSequenceIterator, char quoteHead) {
+			this.charSequenceIterator = charSequenceIterator;
+			this.quoteHead = quoteHead;
+		}
+
+		public StepTokenParser parse() {
+			char expectedQuoteTail = charSequenceIterator.getExpectedQuoteTail(quoteHead);
+			while (charSequenceIterator.hasNext()) {
+				char c = charSequenceIterator.getNext();
+				if (c == expectedQuoteTail) {
+					--quoteHeadCount;
+					if (quoteHeadCount == 0) {
+						return new MeaninglessStepTokenParser(charSequenceIterator, 1);
+					}
+				}
+				else if (c == quoteHead) {
+					++quoteHeadCount;
+				}
+				charSequenceIterator.popNext();				
+			}
+			// FIXME something to throw here! No quote tail found
+			return null;
+		}
+		
+		public StepToken getStepToken() {
+			return new StaticStepToken(charSequenceIterator.subSequence().toString(), true);
+		}
+		
+	}
+	
+	private static class MeaningFulStepTokenParser implements StepTokenParser {
+		
+		private final CharSequenceIterator charSequenceIterator;
+		private int trailingSeparators;
+
+		public MeaningFulStepTokenParser(CharSequenceIterator charSequenceIterator) {
+			this.charSequenceIterator = charSequenceIterator;
+		}
+		
+		public StepTokenParser parse() {
+			while (charSequenceIterator.hasNext()) {
+				int type = charSequenceIterator.getNextType();
+				if ((type & CharacterAnalyzer.SEPARATOR) > 0) {
+					charSequenceIterator.pushBack(trailingSeparators);
+					return new MeaninglessStepTokenParser(charSequenceIterator, trailingSeparators);
+				}
+				else if ((type & CharacterAnalyzer.SEPARATOR_IF_TRAILING) > 0) {
+					trailingSeparators++;
+				}
+				else {
+					trailingSeparators = 0;
+				}
+				charSequenceIterator.popNext();
+			}
+			// FIXME error prone for reentrant call. The end of the char sequence does not mean
+			// it is the end of the stream to parse
+			charSequenceIterator.pushBack(trailingSeparators);
+			return new MeaninglessStepTokenParser(charSequenceIterator, trailingSeparators);
+		}
+
+		public StepToken getStepToken() {
+			return new StaticStepToken(charSequenceIterator.subSequence().toString(), true);
+		}
+	}
+
+	private static class CharSequenceIterator {
+		
+		private CharSequence charSequence;
+		private CharacterAnalyzer characterAnalyzer;
+		private int currentPosition;
+		private int startPosition;
+		
+		public CharSequenceIterator(CharSequence charSequence, CharacterAnalyzer characterAnalyzer) {
+			this.charSequence = charSequence;
+			this.characterAnalyzer = characterAnalyzer;
+		}
+		
+		public boolean hasNext() {
+			return currentPosition < charSequence.length();
+		}
+		
+		public char getNext() {
+			return charSequence.charAt(currentPosition);
+		}
+		
+		public void popNext() {
+			++currentPosition;
+		}
+
+		public void popNext(int firstCharsToByPass) {
+			currentPosition += firstCharsToByPass;
+		}
+
+		public int getNextType() {
+			return characterAnalyzer.getCharacterType(charSequence.charAt(currentPosition));
+		}
+		
+		public void pushBack(int i) {
+			currentPosition = Math.max(startPosition, currentPosition - i);
+		}
+		
+		public CharSequence subSequence() {
+			CharSequence subSequence = charSequence.subSequence(startPosition, currentPosition);
+			startPosition = currentPosition;
+			return subSequence;
+		}
+		
+		public char getExpectedQuoteTail(char quoteHead) {
+			return characterAnalyzer.getExpectedQuoteTail(quoteHead);
+		}
+	}
+	
 	
 	private static class TokenizerContext {
 		private final CharacterAnalyzer characterAnalyzer;
