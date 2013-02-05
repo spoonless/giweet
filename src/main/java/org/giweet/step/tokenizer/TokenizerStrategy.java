@@ -1,5 +1,6 @@
 package org.giweet.step.tokenizer;
 
+@Deprecated
 public enum TokenizerStrategy {
 	
 	TOKENIZE_STEP_DECLARATION, TOKENIZE_STEP_INSTANCE;

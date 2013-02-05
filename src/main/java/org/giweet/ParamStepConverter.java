@@ -12,18 +12,19 @@ import org.giweet.converter.CannotConvertException;
 import org.giweet.converter.Converter;
 import org.giweet.step.StepToken;
 import org.giweet.step.StepTokenArraySplitter;
+import org.giweet.step.tokenizer.QuoteTailNotFoundException;
 
 public class ParamStepConverter {
 	
 	private final Converter converter;
 	private final StepTokenArraySplitter stepTokenArraySplitter;
 	
-	public ParamStepConverter(Converter converter, String... listSeparators) {
+	public ParamStepConverter(Converter converter, String... listSeparators) throws QuoteTailNotFoundException {
 		this.converter = converter;
 		this.stepTokenArraySplitter = new StepTokenArraySplitter(listSeparators);
 	}
 	
-	public Object convert(Type type, Annotation[] annotations, StepToken[] stepTokens) throws CannotConvertException {
+	public Object convert(Type type, Annotation[] annotations, StepToken[] stepTokens) throws CannotConvertException, QuoteTailNotFoundException {
 		Object result;
 		if (type instanceof ParameterizedType) {
 			result = convertToList(type, annotations, stepTokens);
@@ -37,7 +38,7 @@ public class ParamStepConverter {
 		return result;
 	}
 
-	private Object convertToClass(Class<?> targetClass, Annotation[] annotations, StepToken[] stepTokens) throws CannotConvertException {
+	private Object convertToClass(Class<?> targetClass, Annotation[] annotations, StepToken[] stepTokens) throws CannotConvertException, QuoteTailNotFoundException {
 		Object result;
 		if (targetClass.isAssignableFrom(List.class)) {
 			// TODO warning here
@@ -53,7 +54,7 @@ public class ParamStepConverter {
 		return result;
 	}
 
-	private Object convertToList(Type type, Annotation[] annotations, StepToken[] stepTokens) throws CannotConvertException {
+	private Object convertToList(Type type, Annotation[] annotations, StepToken[] stepTokens) throws CannotConvertException, QuoteTailNotFoundException {
 		Object result;
 		ParameterizedType parameterizedType = (ParameterizedType) type;
 		Class<?> collectionType = (Class<?>)parameterizedType.getRawType();
@@ -69,7 +70,7 @@ public class ParamStepConverter {
 		return result;
 	}
 
-	private Object convertToArray(Class<?> realType, Annotation[] annotations, StepToken[] stepTokens) throws CannotConvertException {
+	private Object convertToArray(Class<?> realType, Annotation[] annotations, StepToken[] stepTokens) throws CannotConvertException, QuoteTailNotFoundException {
 		StepToken[][] splittedStepTokens = getStepTokenArraySplitter(annotations).split(stepTokens);
 		Object array = Array.newInstance(realType, splittedStepTokens.length);
 		int index = 0;
@@ -80,7 +81,7 @@ public class ParamStepConverter {
 		return array;
 	}
 	
-	private StepTokenArraySplitter getStepTokenArraySplitter(Annotation[] annotations) {
+	private StepTokenArraySplitter getStepTokenArraySplitter(Annotation[] annotations) throws QuoteTailNotFoundException {
 		for (Annotation annotation : annotations) {
 			if (annotation instanceof SeparatedBy) {
 				return new StepTokenArraySplitter(((SeparatedBy)annotation).value());

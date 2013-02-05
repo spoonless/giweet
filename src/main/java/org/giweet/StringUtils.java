@@ -23,7 +23,8 @@ public class StringUtils {
 		return result;
 	}
 	
+	// TODO to test adding Unicode C category
 	public static boolean isWhitespace(String string) {
-		return string.matches("^[\\p{Space}\\p{Z}]*$");
+		return string.matches("^[\\p{Space}\\p{Z}\\p{C}]*$");
 	}
 }

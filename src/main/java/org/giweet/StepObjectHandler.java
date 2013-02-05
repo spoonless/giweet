@@ -15,6 +15,7 @@ import org.giweet.annotation.Teardown;
 import org.giweet.annotation.Then;
 import org.giweet.annotation.When;
 import org.giweet.step.StepUtils;
+import org.giweet.step.tokenizer.QuoteTailNotFoundException;
 
 public class StepObjectHandler {
 	
@@ -90,7 +91,7 @@ public class StepObjectHandler {
 		}
 	}
 	
-	public Collection<MethodStepDeclaration> getMethodStepDeclarations() {
+	public Collection<MethodStepDeclaration> getMethodStepDeclarations() throws QuoteTailNotFoundException {
 		List<MethodStepDeclaration> methodStepDeclarations = new ArrayList<MethodStepDeclaration>();
 		for (Method method : instance.getClass().getMethods()) {
 			addMethodStepDeclaration(methodStepDeclarations, method);
@@ -99,7 +100,7 @@ public class StepObjectHandler {
 		return methodStepDeclarations;
 	}
 
-	private void addMethodStepDeclaration(List<MethodStepDeclaration> methoStepDeclarations, Method method) {
+	private void addMethodStepDeclaration(List<MethodStepDeclaration> methoStepDeclarations, Method method) throws QuoteTailNotFoundException {
 		Step stepAnnotation = method.getAnnotation(Step.class);
 		if (stepAnnotation != null) {
 			if (stepAnnotation.value().length != 0) {

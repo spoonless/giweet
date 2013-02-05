@@ -20,8 +20,10 @@ import org.giweet.step.StepInstance;
 import org.giweet.step.StepType;
 import org.giweet.step.tree.SearchResult;
 import org.giweet.step.tree.StepDeclarationTree;
+import org.junit.Ignore;
 import org.junit.Test;
 
+@Ignore("can be reactivated when StepDeclarationTree will be reimplemented")
 public class AdventureRunner {
 
 	@Test
@@ -74,7 +76,7 @@ public class AdventureRunner {
 		}
 	}
 
-	public MethodStepInvoker createMethodStepInvoker() {
+	public MethodStepInvoker createMethodStepInvoker() throws Exception {
 		Converter converter = new ConverterComposite(new BooleanConverter("true"), new CalendarConverter(Locale.US, "MM/dd/yyyy"), new CharacterConverter(), new DateConverter(Locale.US, "MM/dd/yyyy"), new EnumConverter(), new NumberConverter(Locale.US), new SimpleStringConverter());
 		ParamStepConverter paramStepConverter = new ParamStepConverter(converter, ",");
 		return new MethodStepInvoker(paramStepConverter);

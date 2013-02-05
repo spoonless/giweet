@@ -6,6 +6,9 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
+import junit.framework.Assert;
+
+import org.giweet.step.SeparatorStepToken;
 import org.giweet.step.StaticStepToken;
 import org.giweet.step.StepToken;
 import org.giweet.step.tokenizer.xml.XmlSuiteDescriptor;
@@ -19,7 +22,7 @@ public class StepTokenizerTest {
 		jaxbContext = JAXBContext.newInstance(XmlSuiteDescriptor.class);
 	}
 	
-	public static class WeirdCharacterAnalyzer implements CharacterAnalyzer {
+	public static class WeirdCharacterAnalyzer extends DefaultCharacterAnalyzer {
 
 		@Override
 		public int getCharacterType(char c) {
@@ -37,39 +40,93 @@ public class StepTokenizerTest {
 		}
 	}
 	
-	@Test(expected=IllegalArgumentException.class)
-	public void cannotCreateTokenizerWithBufferSize0() throws Exception {
-		new StepTokenizer(TokenizerStrategy.TOKENIZE_STEP_INSTANCE, 0);
-	}
-
 	@Test
 	public void canProvideAlternateCharacterAnalyzer() throws Exception {
-		StepTokenizer underTest = new StepTokenizer(TokenizerStrategy.TOKENIZE_STEP_INSTANCE, new WeirdCharacterAnalyzer());
+		StepTokenizer underTest = new StepTokenizer(new WeirdCharacterAnalyzer());
 		
 		StepToken[] stepTokens = underTest.tokenize("abaaabab b");
 		
-		testTokenization(stepTokens, "a", "b", "aaa", "b", "a", "b b");
+		StepToken separatorToken = new SeparatorStepToken("a", "a");
+		
+		testTokenization(stepTokens, 
+				separatorToken, new StaticStepToken("b"), 
+				separatorToken, separatorToken, separatorToken, 
+				new StaticStepToken("b"), separatorToken, new StaticStepToken("b b"));
+	}
+
+	@Test
+	public void canIgnoreQuoteHeadWhenNoQuoteTailGivenForSeparatorQuoteHead() throws Exception {
+		StepTokenizer underTest = new StepTokenizer(new DefaultCharacterAnalyzer() {
+			@Override
+			public char getExpectedQuoteTail(char quoteHead) {
+				return 0;
+			}
+		});
+		
+		StepToken[] stepTokens = underTest.tokenize("«hello");
+		
+		testTokenization(stepTokens, "«", "hello");
+	}
+
+	@Test
+	public void canIgnoreQuoteHeadWhenNoQuoteTailGivenForLetterQuoteHead() throws Exception {
+		StepTokenizer underTest = new StepTokenizer(new DefaultCharacterAnalyzer() {
+			@Override
+			public char getExpectedQuoteTail(char quoteHead) {
+				return 0;
+			}
+			
+			@Override
+			public int getCharacterType(char c) {
+				return c == 'x' ? CharacterAnalyzer.QUOTE_HEAD | CharacterAnalyzer.LETTER : CharacterAnalyzer.LETTER;
+			}
+		});
+		
+		StepToken[] stepTokens = underTest.tokenize("xbbbb");
+		testTokenization(stepTokens, "xbbbb");
+	}
+
+	@Test
+	public void canIgnoreSeparatorDynamicHeadWhenEmptyCharReturnedForDynamicTail() throws Exception {
+		StepTokenizer underTest = new StepTokenizer(new StepDeclarationCharAnalyzer(new DefaultCharacterAnalyzer(), '{', (char) 0));
+		
+		StepToken[] stepTokens = underTest.tokenize("{0");
+		
+		testTokenization(stepTokens, "{", "0");
+	}
+
+	@Test
+	public void canIgnoreLetterDynamicHeadWhenEmptyCharReturnedForDynamicTail() throws Exception {
+		StepTokenizer underTest = new StepTokenizer(new StepDeclarationCharAnalyzer(new DefaultCharacterAnalyzer(), 'a', (char) 0));
+		
+		StepToken[] stepTokens = underTest.tokenize("ab");
+		
+		testTokenization(stepTokens, "ab");
+	}
+
+	@Test
+	public void canThrowQuoteTailNotFoundException() throws Exception {
+		StepTokenizer underTest = new StepTokenizer(new DefaultCharacterAnalyzer());
+		
+		try {
+			underTest.tokenize("«hello");
+			Assert.fail("QuoteTailNotFoundException expected!");
+		}
+		catch (QuoteTailNotFoundException e) {
+			Assert.assertEquals('»', e.getExpectedQuoteTail());
+		}
 	}
 
 	@Test
 	public void canTokenizeAsStringFromXmlFile() throws Exception {
-		loadSuite().run();
+		StepTokenizer stepTokenizer = new StepTokenizer(new StepDeclarationCharAnalyzer(new DefaultCharacterAnalyzer()));
+		loadSuite().run(stepTokenizer);
 	}
 
 	private XmlSuiteDescriptor loadSuite() throws JAXBException {
 		Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
 		XmlSuiteDescriptor suite = (XmlSuiteDescriptor) unmarshaller.unmarshal(StepTokenizerTest.class.getResourceAsStream("StepTokenizerTest.xml"));
 		return suite;
-	}
-
-	@Test
-	public void canTokenizeAsStreamWithTinyBufferFromXmlFile() throws Exception {
-		loadSuite().run(1);
-	}
-
-	@Test
-	public void canTokenizeAsStreamFromXmlFile() throws Exception {
-		loadSuite().run(10);
 	}
 
 	private void testTokenization(StepToken[] stepTokens, String... expectedTokens) {

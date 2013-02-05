@@ -3,6 +3,7 @@ package org.giweet.step;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.giweet.step.tokenizer.QuoteTailNotFoundException;
 import org.giweet.step.tokenizer.StepTokenizer;
 import org.giweet.step.tokenizer.TokenizerStrategy;
 
@@ -12,7 +13,7 @@ public class StepTokenArraySplitter {
 	private static final int LAST_SEPARATOR_TOKEN = 0x2;
 	private final StepToken[][] listSeparators;
 	
-	public StepTokenArraySplitter(String... separators) {
+	public StepTokenArraySplitter(String... separators) throws QuoteTailNotFoundException {
 		// FIXME should be passed as argument
 		StepTokenizer stepTokenizer = new StepTokenizer(TokenizerStrategy.TOKENIZE_STEP_INSTANCE);
 		listSeparators = new StepToken[separators.length][];

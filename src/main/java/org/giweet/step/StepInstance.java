@@ -1,5 +1,6 @@
 package org.giweet.step;
 
+import org.giweet.step.tokenizer.QuoteTailNotFoundException;
 import org.giweet.step.tokenizer.StepTokenizer;
 import org.giweet.step.tokenizer.TokenizerStrategy;
 
@@ -9,7 +10,7 @@ public class StepInstance {
 	private final StepToken[] tokens;
 	private final StepType type;
 
-	public StepInstance(StepType stepType, String value) {
+	public StepInstance(StepType stepType, String value) throws QuoteTailNotFoundException {
 		this.type = stepType;
 		this.value = value;
 		// FIXME should be passed as argument

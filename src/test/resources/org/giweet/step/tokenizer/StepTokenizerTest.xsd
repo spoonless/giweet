@@ -14,15 +14,6 @@
     		<element name="actual" type="string"></element>
     		<element name="expected" type="tns:expectedType"></element>
     	</sequence>
-    	<attribute name="strategy" use="required">
-    		<simpleType>
-    			<restriction base="string">
-    				<enumeration value="TOKENIZE_STEP_DECLARATION"></enumeration>
-    				<enumeration value="TOKENIZE_STEP_INSTANCE"></enumeration>
-    			</restriction>
-    		</simpleType>
-    	</attribute>
-    	
     </complexType>
 
     <complexType name="expectedType">

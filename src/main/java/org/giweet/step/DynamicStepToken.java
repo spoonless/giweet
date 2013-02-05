@@ -1,17 +1,13 @@
 package org.giweet.step;
 
-public class DynamicStepToken extends AbstractStepToken {
+public class DynamicStepToken extends StaticStepToken {
 	
-	public DynamicStepToken(String name) {
-		super(name);
+	public DynamicStepToken(String name, String stringRepresentation) {
+		super(name, stringRepresentation);
 	}
 
+	@Override
 	public boolean isDynamic() {
 		return true;
 	}
-	
-	public boolean isMeaningful() {
-		return true;
-	}
-
 }

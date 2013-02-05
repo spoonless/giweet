@@ -2,378 +2,362 @@
 <suite xmlns="http://www.giweet.org/test/StepTokenizerTest"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.giweet.org/test/StepTokenizerTest StepTokenizerTest.xsd ">
-	<!-- 
-		Tokenizing step descriptors (without meaningless tokens and with dynamic tokens) 
-	-->
-	<test strategy="TOKENIZE_STEP_DECLARATION">
-		<actual>           hello         the world      </actual>
-		<expected>
-			<token>hello</token>
-			<token>the</token>
-			<token>world</token>
-		</expected>
-	</test>
-	<test strategy="TOKENIZE_STEP_DECLARATION">
+
+	<test>
 		<actual></actual>
 		<expected>
 		</expected>
 	</test>
-	<test strategy="TOKENIZE_STEP_DECLARATION">
-		<actual>       </actual>
+
+	<test>
+		<actual> </actual>
 		<expected>
+			<token type="separator"></token>
 		</expected>
 	</test>
-	<test strategy="TOKENIZE_STEP_DECLARATION">
-		<actual>""</actual>
+
+	<test>
+		<actual>hello</actual>
 		<expected>
-			<token></token>
+			<token>hello</token>
 		</expected>
 	</test>
-	<test strategy="TOKENIZE_STEP_DECLARATION">
-		<actual>"	"</actual>
-		<expected>
-			<token>	</token>
-		</expected>
-	</test>
-	<test strategy="TOKENIZE_STEP_DECLARATION">
+
+	<test>
 		<actual>hello the world</actual>
 		<expected>
 			<token>hello</token>
+			<token type="separator"></token>
 			<token>the</token>
+			<token type="separator"></token>
 			<token>world</token>
 		</expected>
 	</test>
-	<test strategy="TOKENIZE_STEP_DECLARATION">
+
+	<test>
+		<actual>           hello         the world      </actual>
+		<expected>
+			<token type="separator"></token>
+			<token>hello</token>
+			<token type="separator"></token>
+			<token>the</token>
+			<token type="separator"></token>
+			<token>world</token>
+			<token type="separator"></token>
+		</expected>
+	</test>
+
+	<test>
 		<actual>100 € 100€</actual>
 		<expected>
 			<token>100</token>
+			<token type="separator"></token>
 			<token>€</token>
+			<token type="separator"></token>
 			<token>100€</token>
 		</expected>
 	</test>
-	<test strategy="TOKENIZE_STEP_DECLARATION">
-		<actual>$</actual>
+
+	<test>
+		<actual>1,</actual>
 		<expected>
-			<token>$</token>
+			<token>1</token>
+			<token type="separator">,</token>
 		</expected>
 	</test>
-	<test strategy="TOKENIZE_STEP_DECLARATION">
-		<actual>hello the $world</actual>
+
+	<test>
+		<actual>1, 2</actual>
 		<expected>
-			<token>hello</token>
-			<token>the</token>
-			<token type="dynamic">world</token>
+			<token>1</token>
+			<token type="separator">,</token>
+			<token>2</token>
 		</expected>
 	</test>
-	<test strategy="TOKENIZE_STEP_DECLARATION">
-		<actual>hello $the $world</actual>
+
+	<test>
+		<actual>1,2</actual>
 		<expected>
-			<token>hello</token>
-			<token type="dynamic">the</token>
-			<token type="dynamic">world</token>
+			<token>1,2</token>
 		</expected>
 	</test>
-	<test strategy="TOKENIZE_STEP_DECLARATION">
-		<actual>$hello $the $world</actual>
+
+	<test>
+		<actual>1,,2</actual>
 		<expected>
-			<token type="dynamic">hello</token>
-			<token type="dynamic">the</token>
-			<token type="dynamic">world</token>
+			<token>1,,2</token>
 		</expected>
 	</test>
-	<test strategy="TOKENIZE_STEP_DECLARATION">
-		<actual>hello$ $the$ $worl$d</actual>
+
+	<test>
+		<actual>,,2</actual>
 		<expected>
-			<token>hello$</token>
-			<token type="dynamic">the$</token>
-			<token type="dynamic">worl$d</token>
+			<token type="separator">,</token>
+			<token type="separator">,</token>
+			<token>2</token>
 		</expected>
 	</test>
-	<test strategy="TOKENIZE_STEP_DECLARATION">
-		<actual>a b c d e</actual>
+
+	<test>
+		<actual>1,, 2</actual>
+		<expected>
+			<token>1</token>
+			<token type="separator">,</token>
+			<token type="separator">,</token>
+			<token>2</token>
+		</expected>
+	</test>
+
+	<test>
+		<actual>1 ,, 2</actual>
+		<expected>
+			<token>1</token>
+			<token type="separator">,</token>
+			<token type="separator">,</token>
+			<token>2</token>
+		</expected>
+	</test>
+
+	<test>
+		<actual>1 , , 2</actual>
+		<expected>
+			<token>1</token>
+			<token type="separator">,</token>
+			<token type="separator">,</token>
+			<token>2</token>
+		</expected>
+	</test>
+
+	<test>
+		<actual>a'b</actual>
 		<expected>
 			<token>a</token>
+			<token type="separator">'</token>
 			<token>b</token>
-			<token>c</token>
-			<token>d</token>
-			<token>e</token>
 		</expected>
 	</test>
-	<test strategy="TOKENIZE_STEP_DECLARATION">
+
+	<test>
 		<actual>1, 2: 3; 4! 5. 6? 7' 8	9
     10</actual>
 		<expected>
 			<token>1</token>
+			<token type="separator">,</token>
 			<token>2</token>
+			<token type="separator">:</token>
 			<token>3</token>
+			<token type="separator">;</token>
 			<token>4</token>
+			<token type="separator">!</token>
 			<token>5</token>
+			<token type="separator">.</token>
 			<token>6</token>
+			<token type="separator">?</token>
 			<token>7</token>
+			<token type="separator">'</token>
 			<token>8</token>
+			<token type="separator"></token>
 			<token>9</token>
+			<token type="separator"></token>
 			<token>10</token>
 		</expected>
 	</test>
-	<test strategy="TOKENIZE_STEP_DECLARATION">
-		<actual>"hello the world"</actual>
-		<expected>
-			<token>hello the world</token>
-		</expected>
-	</test>
-	<test strategy="TOKENIZE_STEP_DECLARATION">
-		<actual>«hello the world»</actual>
-		<expected>
-			<token>hello the world</token>
-		</expected>
-	</test>
-	<test strategy="TOKENIZE_STEP_DECLARATION">
-		<actual>hello « the world »</actual>
-		<expected>
-			<token>hello</token>
-			<token> the world </token>
-		</expected>
-	</test>
-	<test strategy="TOKENIZE_STEP_DECLARATION">
-		<actual>«hello the world» "   "</actual>
-		<expected>
-			<token>hello the world</token>
-			<token>   </token>
-		</expected>
-	</test>
-	<test strategy="TOKENIZE_STEP_DECLARATION">
-		<actual>«hello the world</actual>
-		<expected>
-			<token>hello the world</token>
-		</expected>
-	</test>
-	<test strategy="TOKENIZE_STEP_DECLARATION">
-		<actual>«"»</actual>
-		<expected>
-			<token>"</token>
-		</expected>
-	</test>
-	<test strategy="TOKENIZE_STEP_DECLARATION">
+
+	<test>
 		<actual>@hello/the#world*</actual>
 		<expected>
 			<token>@hello/the#world*</token>
 		</expected>
 	</test>
-	<test strategy="TOKENIZE_STEP_DECLARATION">
-		<actual> [hel{lo] </actual>
+
+	<test>
+		<actual> [hello] </actual>
 		<expected>
-			<token>hel{lo</token>
+			<token type="separator">[</token>
+			<token>hello</token>
+			<token type="separator">]</token>
 		</expected>
 	</test>
-	<test strategy="TOKENIZE_STEP_DECLARATION">
+
+	<test>
+		<actual>hello[world]</actual>
+		<expected>
+			<token>hello</token>
+			<token type="separator">[</token>
+			<token>world</token>
+			<token type="separator">]</token>
+		</expected>
+	</test>
+
+	<test>
 		<actual>it's ok</actual>
 		<expected>
 			<token>it</token>
+			<token type="separator">'</token>
 			<token>s</token>
+			<token type="separator"></token>
 			<token>ok</token>
 		</expected>
 	</test>
-	<test strategy="TOKENIZE_STEP_DECLARATION">
+
+	<test>
+		<actual>it＇s ok</actual>
+		<expected>
+			<token>it</token>
+			<token type="separator">＇</token>
+			<token>s</token>
+			<token type="separator"></token>
+			<token>ok</token>
+		</expected>
+	</test>
+
+	<test>
 		<actual>http://localhost:8080/mywebsite/</actual>
 		<expected>
 			<token>http://localhost:8080/mywebsite/</token>
 		</expected>
 	</test>
 
-	<!-- 
-		Tokenizing scenario (with meaningless tokens and without dynamic tokens) 
-	-->
-	<test strategy="TOKENIZE_STEP_INSTANCE">
-		<actual>hello the world</actual>
+	<test>
+		<actual>""</actual>
 		<expected>
-			<token>hello</token>
-			<token type="separator"> </token>
-			<token>the</token>
-			<token type="separator"> </token>
-			<token>world</token>
+			<token></token>
 		</expected>
 	</test>
-	<test strategy="TOKENIZE_STEP_INSTANCE">
-		<actual>	hello, the world</actual>
+
+	<test>
+		<actual>" "</actual>
 		<expected>
-			<token type="separator">	</token>
-			<token>hello</token>
-			<token type="separator">, </token>
-			<token>the</token>
-			<token type="separator"> </token>
-			<token>world</token>
+			<token> </token>
 		</expected>
 	</test>
-	<test strategy="TOKENIZE_STEP_INSTANCE">
-		<actual>hello the (beautiful) world</actual>
+
+	<test>
+		<actual>"hello the world"</actual>
 		<expected>
-			<token>hello</token>
-			<token type="separator"> </token>
-			<token>the</token>
-			<token type="separator"> (</token>
-			<token>beautiful</token>
-			<token type="separator">) </token>
-			<token>world</token>
+			<token>hello the world</token>
 		</expected>
 	</test>
-	<test strategy="TOKENIZE_STEP_INSTANCE">
-		<actual>hello(the)world</actual>
+
+	<test>
+		<actual>«hello the world»</actual>
 		<expected>
-			<token>hello(the)world</token>
+			<token>hello the world</token>
 		</expected>
 	</test>
-	<test strategy="TOKENIZE_STEP_INSTANCE">
-		<actual>hello : world</actual>
+
+	<test>
+		<actual>«««hello the world»»»</actual>
 		<expected>
-			<token>hello</token>
-			<token type="separator"> : </token>
-			<token>world</token>
+			<token>««hello the world»»</token>
 		</expected>
 	</test>
-	<test strategy="TOKENIZE_STEP_INSTANCE">
-		<actual>hello the $world</actual>
-		<expected>
-			<token>hello</token>
-			<token type="separator"> </token>
-			<token>the</token>
-			<token type="separator"> </token>
-			<token>$world</token>
-		</expected>
-	</test>
-	<test strategy="TOKENIZE_STEP_INSTANCE">
-		<actual>hello the world (   </actual>
-		<expected>
-			<token>hello</token>
-			<token type="separator"> </token>
-			<token>the</token>
-			<token type="separator"> </token>
-			<token>world</token>
-			<token type="separator"> (   </token>
-		</expected>
-	</test>
-	<test strategy="TOKENIZE_STEP_INSTANCE">
-		<actual>hello the world!</actual>
-		<expected>
-			<token>hello</token>
-			<token type="separator"> </token>
-			<token>the</token>
-			<token type="separator"> </token>
-			<token>world</token>
-			<token type="separator">!</token>
-		</expected>
-	</test>
-	<test strategy="TOKENIZE_STEP_INSTANCE">
-		<actual>hello the "sunny, shiny and brightly", world</actual>
-		<expected>
-			<token>hello</token>
-			<token type="separator"> </token>
-			<token>the</token>
-			<token type="separator"> "</token>
-			<token>sunny, shiny and brightly</token>
-			<token type="separator">", </token>
-			<token>world</token>
-		</expected>
-	</test>
-	<test strategy="TOKENIZE_STEP_INSTANCE">
-		<actual>hello the sunny"shiny"world</actual>
-		<expected>
-			<token>hello</token>
-			<token type="separator"> </token>
-			<token>the</token>
-			<token type="separator"> </token>
-			<token>sunny"shiny"world</token>
-		</expected>
-	</test>
-	<test strategy="TOKENIZE_STEP_INSTANCE">
+
+	<test>
 		<actual>hello « the world »</actual>
 		<expected>
 			<token>hello</token>
-			<token type="separator"> «</token>
+			<token type="separator"></token>
 			<token> the world </token>
-			<token type="separator">»</token>
 		</expected>
 	</test>
-	<test strategy="TOKENIZE_STEP_INSTANCE">
+
+	<test>
+		<actual>«hello the world» "   "</actual>
+		<expected>
+			<token>hello the world</token>
+			<token type="separator"></token>
+			<token>   </token>
+		</expected>
+	</test>
+
+	<test>
+		<actual>«"»</actual>
+		<expected>
+			<token>"</token>
+		</expected>
+	</test>
+
+	<test>
 		<actual>hello ‘ the world ’</actual>
 		<expected>
 			<token>hello</token>
-			<token type="separator"> ‘</token>
+			<token type="separator"></token>
 			<token> the world </token>
-			<token type="separator">’</token>
 		</expected>
 	</test>
-	<test strategy="TOKENIZE_STEP_INSTANCE">
+
+	<test>
 		<actual>hello “ the world ”</actual>
 		<expected>
 			<token>hello</token>
-			<token type="separator"> “</token>
+			<token type="separator"></token>
 			<token> the world </token>
-			<token type="separator">”</token>
 		</expected>
 	</test>
-	<test strategy="TOKENIZE_STEP_INSTANCE">
+
+	<test>
 		<actual>hello ‹ the world ›</actual>
 		<expected>
 			<token>hello</token>
-			<token type="separator"> ‹</token>
+			<token type="separator"></token>
 			<token> the world </token>
-			<token type="separator">›</token>
 		</expected>
 	</test>
-	<test strategy="TOKENIZE_STEP_INSTANCE">
-		<actual>hello « «the world» »</actual>
+
+	<test>
+		<actual>{}</actual>
 		<expected>
-			<token>hello</token>
-			<token type="separator"> «</token>
-			<token> «the world» </token>
-			<token type="separator">»</token>
+			<token type="separator">{</token>
+			<token type="separator">}</token>
 		</expected>
 	</test>
-	<test strategy="TOKENIZE_STEP_INSTANCE">
-		<actual>hello «««world»»»</actual>
+
+	<test>
+		<actual> {} </actual>
 		<expected>
-			<token>hello</token>
-			<token type="separator"> «</token>
-			<token>««world»»</token>
-			<token type="separator">»</token>
+			<token type="separator">{</token>
+			<token type="separator">}</token>
 		</expected>
 	</test>
-<!-- 	<test strategy="TOKENIZE_STEP_INSTANCE"> -->
-<!-- 		<actual>hello the world «</actual> -->
-<!-- 		<expected> -->
-<!-- 			<token>hello</token> -->
-<!-- 			<token type="separator"> </token> -->
-<!-- 			<token>the</token> -->
-<!-- 			<token type="separator"> </token> -->
-<!-- 			<token>world</token> -->
-<!-- 			<token type="separator"> «</token> -->
-<!-- 		</expected> -->
-<!-- 	</test> -->
-	<test strategy="TOKENIZE_STEP_INSTANCE">
-		<actual>hello the «world </actual>
+
+	<test>
+		<actual>{0}</actual>
 		<expected>
-			<token>hello</token>
-			<token type="separator"> </token>
-			<token>the</token>
-			<token type="separator"> «</token>
-			<token>world </token>
+			<token type="dynamic">0</token>
 		</expected>
 	</test>
-	<test strategy="TOKENIZE_STEP_INSTANCE">
-		<actual>"«</actual>
+
+	<test>
+		<actual> {0}</actual>
 		<expected>
-			<token type="separator">"</token>
-			<token>«</token>
+			<token type="separator"></token>
+			<token type="dynamic">0</token>
 		</expected>
 	</test>
-	<test strategy="TOKENIZE_STEP_INSTANCE">
-		<actual>"", ""</actual>
+
+	<test>
+		<actual>a{0}b</actual>
 		<expected>
-			<token type="separator">"</token>
-			<token></token>
-			<token type="separator">", "</token>
-			<token></token>
-			<token type="separator">"</token>
+			<token>a</token>
+			<token type="dynamic">0</token>
+			<token>b</token>
+		</expected>
+	</test>
+
+	<test>
+		<actual>{0000</actual>
+		<expected>
+			<token type="separator">{</token>
+			<token>0000</token>
+		</expected>
+	</test>
+
+	<test>
+		<actual> {0000</actual>
+		<expected>
+			<token type="separator">{</token>
+			<token>0000</token>
 		</expected>
 	</test>
 </suite>

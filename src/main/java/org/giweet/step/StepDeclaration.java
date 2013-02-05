@@ -1,7 +1,9 @@
 package org.giweet.step;
 
+import org.giweet.step.tokenizer.DefaultCharacterAnalyzer;
+import org.giweet.step.tokenizer.QuoteTailNotFoundException;
+import org.giweet.step.tokenizer.StepDeclarationCharAnalyzer;
 import org.giweet.step.tokenizer.StepTokenizer;
-import org.giweet.step.tokenizer.TokenizerStrategy;
 
 
 public abstract class StepDeclaration implements Comparable<StepDeclaration> {
@@ -9,10 +11,10 @@ public abstract class StepDeclaration implements Comparable<StepDeclaration> {
 	private final String value;
 	private final StepToken[] tokens;
 	
-	public StepDeclaration(String value) {
+	public StepDeclaration(String value) throws QuoteTailNotFoundException {
 		this.value = value;
 		// FIXME should be passed as argument
-		this.tokens = new StepTokenizer(TokenizerStrategy.TOKENIZE_STEP_DECLARATION).tokenize(value);
+		this.tokens = new StepTokenizer(new StepDeclarationCharAnalyzer(new DefaultCharacterAnalyzer())).tokenize(value);
 	}
 	
 	public String getValue() {
@@ -25,6 +27,7 @@ public abstract class StepDeclaration implements Comparable<StepDeclaration> {
 		return tokens;
 	}
 	
+	@Override
 	public int compareTo(StepDeclaration stepDeclaration) {
 		StepToken [] otherStepTokens = stepDeclaration.getTokens();
 		int result = 0;

@@ -3,14 +3,13 @@ package org.giweet.step;
 import java.util.Arrays;
 import java.util.List;
 
-import org.giweet.step.StepDeclaration;
-import org.giweet.step.StepType;
+import org.giweet.step.tokenizer.QuoteTailNotFoundException;
 
 public class StepDeclarationImpl extends StepDeclaration {
 	
 	private final List<StepType> typeList;
 
-	public StepDeclarationImpl(String value, StepType... types) {
+	public StepDeclarationImpl(String value, StepType... types) throws QuoteTailNotFoundException {
 		super(value);
 		typeList = Arrays.asList(types);
 	}

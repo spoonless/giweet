@@ -11,6 +11,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import org.giweet.step.tokenizer.QuoteTailNotFoundException;
+
 import com.sun.javadoc.ClassDoc;
 import com.sun.javadoc.LanguageVersion;
 import com.sun.javadoc.RootDoc;
@@ -111,7 +113,7 @@ public class GiweetDoclet {
 		}
 	}
 
-	public List<StepClassDoc> filterStepClassDocs() {
+	public List<StepClassDoc> filterStepClassDocs() throws QuoteTailNotFoundException {
 		List<StepClassDoc> stepClassDocs = new ArrayList<StepClassDoc>();
 		int classId = 1;
 		for (ClassDoc classDoc : rootDoc.classes()) {

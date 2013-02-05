@@ -2,15 +2,34 @@ package org.giweet.step;
 
 public abstract class AbstractStepToken implements StepToken {
 	
-	private String value;
+	protected String value;
+	protected String stringRepresentation;
 	
-	public AbstractStepToken(String value) {
+	public AbstractStepToken(String value, String stringRepresentation) {
 		this.value = value;
+		this.stringRepresentation = stringRepresentation;
 	}
 
+	@Override
+	@Deprecated
+	public final boolean isMeaningful() {
+		return !isSeparator();
+	}
+	
+	@Override
+	public String getValue() {
+		return value;
+	}
+	
+	@Override
+	public boolean merge(StepToken stepToken) {
+		return false;
+	}
+	
+	@Override
 	public int compareTo(StepToken stepToken) {
 		if (! this.isDynamic() && ! stepToken.isDynamic()) {
-			return this.toString().compareToIgnoreCase(stepToken.toString());
+			return this.value.compareToIgnoreCase(stepToken.getValue());
 		}
 		else if (this.isDynamic() && stepToken.isDynamic()) {
 			return 0;
@@ -33,6 +52,6 @@ public abstract class AbstractStepToken implements StepToken {
 	
 	@Override
 	public String toString() {
-		return value;
+		return stringRepresentation;
 	}
 }

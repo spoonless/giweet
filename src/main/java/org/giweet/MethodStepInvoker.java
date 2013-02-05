@@ -8,6 +8,7 @@ import java.util.regex.Pattern;
 
 import org.giweet.converter.CannotConvertException;
 import org.giweet.step.StepTokenValue;
+import org.giweet.step.tokenizer.QuoteTailNotFoundException;
 
 public class MethodStepInvoker {
 	
@@ -19,7 +20,7 @@ public class MethodStepInvoker {
 		this.paramStepConverter = paramStepConverter;
 	}
 	
-	public Object invoke(MethodStepDeclaration methodStepDeclaration, StepTokenValue[] stepTokenValues) throws CannotConvertException, IllegalArgumentException, IllegalAccessException, InvocationTargetException, NoSuchMethodException, InstantiationException {
+	public Object invoke(MethodStepDeclaration methodStepDeclaration, StepTokenValue[] stepTokenValues) throws CannotConvertException, IllegalArgumentException, IllegalAccessException, InvocationTargetException, NoSuchMethodException, InstantiationException, QuoteTailNotFoundException {
 		Type[] genericParameterTypes = methodStepDeclaration.getGenericParameterTypes();
 		Annotation[][] parameterAnnotations = methodStepDeclaration.getParameterAnnotations();
 		Object[] params = new Object[genericParameterTypes.length];

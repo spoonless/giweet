@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.giweet.step.StepUtils;
+import org.giweet.step.tokenizer.QuoteTailNotFoundException;
 
 import com.sun.javadoc.AnnotationDesc;
 import com.sun.javadoc.AnnotationDesc.ElementValuePair;
@@ -18,7 +19,7 @@ public class StepClassDoc {
 	private final ClassDoc classDoc;
 	private final List<StepMethodDoc> stepMethodDocs;
 	
-	public StepClassDoc(long id, ClassDoc classDoc) {
+	public StepClassDoc(long id, ClassDoc classDoc) throws QuoteTailNotFoundException {
 		this.id = id;
 		this.classDoc = classDoc;
 		this.stepMethodDocs = new ArrayList<StepMethodDoc>();
@@ -26,7 +27,7 @@ public class StepClassDoc {
 		Collections.sort(this.stepMethodDocs);
 	}
 
-	private void addStepMethodDocs() {
+	private void addStepMethodDocs() throws QuoteTailNotFoundException {
 		List<MethodDoc> overriddenMethodDocs = new ArrayList<MethodDoc>();
 		ClassDoc currentClassDoc = this.classDoc;
 		do {
@@ -35,7 +36,7 @@ public class StepClassDoc {
 		} while (! currentClassDoc.qualifiedName().equals("java.lang.Object"));
 	}
 	
-	private void extractStepMethodDoc(MethodDoc[] methodDocs, List<MethodDoc> overriddenMethodDocs) {
+	private void extractStepMethodDoc(MethodDoc[] methodDocs, List<MethodDoc> overriddenMethodDocs) throws QuoteTailNotFoundException {
 		// TODO check that no step method is overridden by none step method
 		// TODO search for step method from parent classes
 		// TODO check there is no collision on declared steps (two equivalent steps)

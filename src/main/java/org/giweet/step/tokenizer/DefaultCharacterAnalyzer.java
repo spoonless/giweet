@@ -3,6 +3,7 @@ package org.giweet.step.tokenizer;
 
 public class DefaultCharacterAnalyzer implements CharacterAnalyzer {
 
+	@Override
 	public char getExpectedQuoteTail(char quoteHead) {
 		// FIXME many QUOTE_HEAD characters have no tail
 		char expectedQuoteTail = 0;
@@ -25,22 +26,31 @@ public class DefaultCharacterAnalyzer implements CharacterAnalyzer {
 		}
 		return expectedQuoteTail;
 	}
+	
+	@Override
+	public char getExpectedDynamicTail(char dynamicHead) {
+		return 0;
+	}
 
+	@Override
 	public int getCharacterType(char c) {
-		int characterType = SEPARATOR;
+		int characterType = WHITESPACE;
 		switch (Character.getType(c)) {
 		// character that can be dropped
-		// case Character.CONNECTOR_PUNCTUATION:
 		// case Character.CONTROL:
-		// case Character.ENCLOSING_MARK:
 		// case Character.FORMAT:
+		// case Character.UNASSIGNED:
+		// case Character.PRIVATE_USE:
+		// case Character.SURROGATE:
 		// case Character.LINE_SEPARATOR:
 		// case Character.PARAGRAPH_SEPARATOR:
-		// case Character.PRIVATE_USE:
 		// case Character.SPACE_SEPARATOR:
-		// case Character.SURROGATE:
-		// case Character.UNASSIGNED:
 		//	break;
+
+		case Character.CONNECTOR_PUNCTUATION:
+		case Character.ENCLOSING_MARK:
+			characterType = SEPARATOR;
+			break;
 		
 		// character to preserve
 		case Character.LOWERCASE_LETTER:
@@ -70,7 +80,7 @@ public class DefaultCharacterAnalyzer implements CharacterAnalyzer {
 			characterType = SEPARATOR_IF_TRAILING;
 			break;
 		case Character.INITIAL_QUOTE_PUNCTUATION:
-			characterType = QUOTE_HEAD;
+			characterType = QUOTE_HEAD | SEPARATOR_IF_LEADING;
 			break;
 		case Character.OTHER_PUNCTUATION:
 			characterType = getCharacterTypeForOtherPunctuation(c);
@@ -84,7 +94,7 @@ public class DefaultCharacterAnalyzer implements CharacterAnalyzer {
 		switch (c) {
 		case '"':
 		case '\uFF02': // FULLWIDTH QUOTATION MARK
-			characterType = QUOTE_HEAD;
+			characterType = QUOTE_HEAD | SEPARATOR_IF_LEADING;
 			break;
 		case '\'':
 		case '\uFF07': // FULLWIDTH APOSTROPHE

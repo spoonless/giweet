@@ -2,6 +2,7 @@ package org.giweet.tools.javadoc;
 
 import org.giweet.step.StepDeclaration;
 import org.giweet.step.StepType;
+import org.giweet.step.tokenizer.QuoteTailNotFoundException;
 
 import com.sun.javadoc.AnnotationDesc;
 import com.sun.javadoc.MethodDoc;
@@ -10,9 +11,9 @@ public class StepMethodDoc extends StepDeclaration {
 	
 	private final long id;
 	private final MethodDoc methodDoc;
-	private int typeMask;
+	private final int typeMask;
 	
-	public StepMethodDoc(long id, MethodDoc methodDoc, String step) {
+	public StepMethodDoc(long id, MethodDoc methodDoc, String step) throws QuoteTailNotFoundException {
 		super(step);
 		this.id = id;
 		this.methodDoc = methodDoc;

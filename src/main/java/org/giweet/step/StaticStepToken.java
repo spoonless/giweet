@@ -2,22 +2,26 @@ package org.giweet.step;
 
 public class StaticStepToken extends AbstractStepToken {
 	
-	private final boolean isMeaningful;
-
 	public StaticStepToken(String value) {
-		this(value, true);
+		this(value, value);
 	}
 
-	public StaticStepToken(String value, boolean isMeaningful) {
-		super(value);
-		this.isMeaningful = isMeaningful;
+	public StaticStepToken(String value, String stringRepresentation) {
+		super(value, stringRepresentation);
 	}
 
+	@Override
 	public boolean isDynamic() {
 		return false;
 	}
 	
-	public boolean isMeaningful() {
-		return isMeaningful;
+	@Override
+	public boolean isSeparator() {
+		return false;
+	}
+
+	@Override
+	public boolean isWhitespace() {
+		return false;
 	}
 }

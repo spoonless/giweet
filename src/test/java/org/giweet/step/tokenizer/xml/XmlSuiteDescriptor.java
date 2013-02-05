@@ -5,6 +5,8 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.giweet.step.tokenizer.StepTokenizer;
+
 @XmlRootElement(name="suite")
 public class XmlSuiteDescriptor {
 	
@@ -19,13 +21,9 @@ public class XmlSuiteDescriptor {
 		this.tests = testDescriptors;
 	}
 	
-	public void run() {
-		run(0);
-	}
-	
-	public void run(int intialBufferSize) {
+	public void run(StepTokenizer stepTokenizer) throws Exception {
 		for (XmlTestDescriptor test : tests) {
-			test.run(intialBufferSize);
+			test.run(stepTokenizer);
 		}
 	}
 }
