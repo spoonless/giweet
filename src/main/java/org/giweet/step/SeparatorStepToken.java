@@ -23,12 +23,10 @@ public class SeparatorStepToken extends AbstractStepToken {
 	
 	@Override
 	public boolean merge(StepToken stepToken) {
-		if (stepToken.isSeparator()) {
-			if (this.isWhitespace() || stepToken.isWhitespace()) {
-				value += stepToken.getValue();
-				stringRepresentation += stepToken.toString();
-				return true;
-			}
+		if (stepToken.isSeparator() && (this.isWhitespace() || stepToken.isWhitespace())) {
+			value += stepToken.getValue();
+			stringRepresentation += stepToken.toString();
+			return true;
 		}
 		return false;
 	}

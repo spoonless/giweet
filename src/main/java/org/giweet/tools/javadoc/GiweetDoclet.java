@@ -37,12 +37,10 @@ public class GiweetDoclet {
 	private File getOutputDir() throws IOException {
 		String outputDirPath = getOptionValue(OUTPUT_DIR_OPTION, ".");
 		File file = new File(outputDirPath);
-		if (! file.exists()) {
-			if (! file.mkdirs()) {
-				throw new IOException("Cannot create output directory: \"" + outputDirPath + "\"");
-			}
+		if (!file.exists() && !file.mkdirs()) {
+			throw new IOException("Cannot create output directory: \"" + outputDirPath + "\"");
 		}
-		if (! file.isDirectory()) {
+		if (!file.isDirectory()) {
 			throw new IOException("Invalid output directory path: \"" + outputDirPath + "\" already exists and is not a directory");
 		}
 		return file;
