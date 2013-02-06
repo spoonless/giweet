@@ -1,5 +1,7 @@
 package org.giweet.step;
 
+import java.util.Arrays;
+
 import org.giweet.step.tokenizer.DefaultCharacterAnalyzer;
 import org.giweet.step.tokenizer.QuoteTailNotFoundException;
 import org.giweet.step.tokenizer.StepDeclarationCharAnalyzer;
@@ -27,17 +29,34 @@ public abstract class StepDeclaration implements Comparable<StepDeclaration> {
 		return tokens;
 	}
 	
+	public StepToken[] trimTokens() {
+		int startIndex = 0;
+		int endIndex = tokens.length;
+		if (endIndex > 0 && tokens[0].isWhitespace()) {
+			startIndex++;
+		}
+		if (tokens.length > startIndex && tokens[endIndex - 1].isWhitespace()) {
+			endIndex--;
+		}
+		StepToken[] trimTokens = tokens;
+		if (endIndex - startIndex != tokens.length) {
+			trimTokens = Arrays.copyOfRange(tokens, startIndex, endIndex);
+		}
+		return trimTokens;
+	}
+	
 	@Override
 	public int compareTo(StepDeclaration stepDeclaration) {
-		StepToken [] otherStepTokens = stepDeclaration.getTokens();
+		StepToken [] otherTrimTokens = stepDeclaration.trimTokens();
+		StepToken [] trimTokens = trimTokens();
 		int result = 0;
-		int nbTokens = Math.min(tokens.length, otherStepTokens.length);
+		int nbTokens = Math.min(trimTokens.length, otherTrimTokens.length);
 		for (int i = 0 ; i < nbTokens && result == 0 ; i++) {
-			result = tokens[i].compareTo(otherStepTokens[i]);
+			result = trimTokens[i].compareTo(otherTrimTokens[i]);
 		}
 		if (result == 0) {
-			result = this.tokens.length - otherStepTokens.length;
-			if (nbTokens > 0 && tokens[nbTokens - 1].isDynamic()) {
+			result = trimTokens.length - otherTrimTokens.length;
+			if (nbTokens > 0 && trimTokens[nbTokens - 1].isDynamic()) {
 				result = -result;				
 			}
 		}
