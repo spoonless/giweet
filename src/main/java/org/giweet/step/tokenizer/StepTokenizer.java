@@ -97,12 +97,10 @@ public class StepTokenizer {
 				break;
 			}
 			if (! isWhitespace(type)) {
-				if (nonWhitepaceCharacter == 0) {
-					nonWhitepaceCharacter = c;
-				}
-				else {
+				if (nonWhitepaceCharacter != 0) {
 					break;
 				}
+				nonWhitepaceCharacter = c;
 			}
 			currentIndex++;
 		}
