@@ -14,5 +14,5 @@ public enum Weapon {
 			return "bow";
 		}
 		return this.name();
-	};
+	}
 }

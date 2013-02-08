@@ -27,8 +27,8 @@ public class StepDeclarationTree<T extends StepDeclaration> {
 				// TODO maybe we should filter such descriptor before
 				continue;
 			}
-			if (currentNode == null || ! currentNode.add((T)stepDeclaration)) {
-				currentNode = new StepTokenNode<T>((T)stepDeclaration);
+			if (currentNode == null || ! currentNode.add(stepDeclaration)) {
+				currentNode = new StepTokenNode<T>(stepDeclaration);
 				stepTokenNodes.add(currentNode);
 			}
 		}

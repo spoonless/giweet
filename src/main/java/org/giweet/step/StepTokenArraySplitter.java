@@ -52,12 +52,11 @@ public class StepTokenArraySplitter {
 	}
 	
 	private StepToken[] isSeparatorNext(StepToken[] stepTokens, int stepTokenIndex) {
-		for (int i = 0; i < listSeparators.length; i++) {
-			StepToken[] separator = listSeparators[i];
-			if (separator.length > 0 && isSeparatorNext(separator, stepTokens, stepTokenIndex)) {
-				return separator;
-			}
-		}
+        for (StepToken[] separator : listSeparators) {
+            if (separator.length > 0 && isSeparatorNext(separator, stepTokens, stepTokenIndex)) {
+                return separator;
+            }
+        }
 		return null;
 	}
 

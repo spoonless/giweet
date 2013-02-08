@@ -29,7 +29,7 @@ public class StepTokenizer {
 		List<StepToken> stepTokens = new ArrayList<StepToken>();
 		
 		for (int i = 0; i < value.length();) {
-			StepToken stepToken = null;
+			StepToken stepToken;
 			char c = value.charAt(i);
 			int type = characterAnalyzer.getCharacterType(c);
 			if (isDynamicHead(type)) {

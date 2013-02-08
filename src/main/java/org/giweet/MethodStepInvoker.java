@@ -34,7 +34,7 @@ public class MethodStepInvoker {
 				params[paramPosition] = paramValue;
 			} catch (NumberFormatException e) {
 				String[] path = SPLIT_PATTERN.split(stepTokenValue.getDynamicToken().toString());
-				InvocableMethod setterMethod = null;
+				InvocableMethod setterMethod;
 				try {
 					int paramPosition = Integer.parseInt(path[0]);
 					// FIXME checks i < params.length && i > 0

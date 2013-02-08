@@ -125,8 +125,7 @@ public class StepTokenizerTest {
 
 	private XmlSuiteDescriptor loadSuite() throws JAXBException {
 		Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
-		XmlSuiteDescriptor suite = (XmlSuiteDescriptor) unmarshaller.unmarshal(StepTokenizerTest.class.getResourceAsStream("StepTokenizerTest.xml"));
-		return suite;
+		return (XmlSuiteDescriptor) unmarshaller.unmarshal(StepTokenizerTest.class.getResourceAsStream("StepTokenizerTest.xml"));
 	}
 
 	private void testTokenization(StepToken[] stepTokens, String... expectedTokens) {

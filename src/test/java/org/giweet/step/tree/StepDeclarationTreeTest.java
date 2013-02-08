@@ -225,7 +225,7 @@ public class StepDeclarationTreeTest {
 		
 		SearchResult<StepDeclaration> searchResult = underTest.search(new StepInstance(StepType.GIVEN, "hello the world"));
 
-		StepTokenValue[] stepTokenValues = searchResult.getStepTokenValues();
+		StepTokenValue[] stepTokenValues;
 		assertEquals(0, searchResult.getStepTokenValues().length);
 
 		searchResult = underTest.search(new StepInstance(StepType.GIVEN, "hello the world from giweet"));

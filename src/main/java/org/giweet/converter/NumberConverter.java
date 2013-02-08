@@ -55,15 +55,14 @@ public class NumberConverter implements Converter {
 		if (decimalFormatSymbols.getGroupingSeparator() == NON_BREAKABLE_SPACE) {
 			value = fixNonBreakableSpaceForGroupSeparator(value);
 		}
-		boolean bigDecimalExpected = BigInteger.class.isAssignableFrom(targetClass) || BigDecimal.class.isAssignableFrom(targetClass); 
-		for (int i = 0; i < decimalFormats.length; i++) {
-			DecimalFormat decimalFormat = decimalFormats[i];
-			decimalFormat.setParseBigDecimal(bigDecimalExpected);
-			try {
-				result = decimalFormat.parse(value);
-			} catch (ParseException e) {
-			}
-		}
+		boolean bigDecimalExpected = BigInteger.class.isAssignableFrom(targetClass) || BigDecimal.class.isAssignableFrom(targetClass);
+        for (DecimalFormat decimalFormat : decimalFormats) {
+            decimalFormat.setParseBigDecimal(bigDecimalExpected);
+            try {
+                result = decimalFormat.parse(value);
+            } catch (ParseException e) {
+            }
+        }
 		if (result == null) {
 			throw new CannotConvertException(targetClass, value);
 		}
@@ -112,22 +111,22 @@ public class NumberConverter implements Converter {
 			return result;
 		}
 		else if (targetClass.equals(Integer.class)) {
-			return Integer.valueOf(result.intValue());
+			return result.intValue();
 		}
 		else if (targetClass.equals(Long.class)) {
-			return Long.valueOf(result.longValue());
+			return result.longValue();
 		}
 		else if (targetClass.equals(Double.class)) {
-			return Double.valueOf(result.doubleValue());
+			return result.doubleValue();
 		}
 		else if (targetClass.equals(Float.class)) {
-			return Float.valueOf(result.floatValue());
+			return result.floatValue();
 		}
 		else if (targetClass.equals(Short.class)) {
-			return Short.valueOf(result.shortValue());
+			return result.shortValue();
 		}
 		else if (targetClass.equals(Byte.class)) {
-			return Byte.valueOf(result.byteValue());
+			return result.byteValue();
 		}
 		else if (targetClass.equals(AtomicInteger.class)) {
 			return new AtomicInteger (result.intValue());

@@ -28,7 +28,7 @@ public class TextScenarioParser {
 	
 	public Scenario nextScenario() throws IOException {
 		Scenario scenario = null;
-		TextBlock textBlock = null;
+		TextBlock textBlock;
 		do {
 			textBlock = nextTextBlock();
 			if (textBlock instanceof Story) {
@@ -45,7 +45,7 @@ public class TextScenarioParser {
 	private TextBlock nextTextBlock() throws IOException {
 		TextBlock textBlock = nextTextBlock;
 		nextTextBlock = null;
-		String line = null;
+		String line;
 		while ((line = reader.readLine()) != null) {
 			line += '\n';
 			Sentence sentence = new Sentence(keywordParser.getStartingKeyword(line), line);
