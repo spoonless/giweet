@@ -25,15 +25,6 @@ public class Scenario {
 		return getSentencesByKeywordType(KeywordType.META);
 	}
 	
-	protected Sentence getFirstSentenceByKeywordType(KeywordType keywordType) {
-		for (Sentence sentence : sentences) {
-			if (sentence.getKeyword().getType() == keywordType) {
-				return sentence;
-			}
-		}
-		return null;
-	}
-
 	protected List<Sentence> getSentencesByKeywordType(KeywordType keywordType) {
 		List<Sentence> result = new ArrayList<Sentence>();
 		for (Sentence sentence : sentences) {

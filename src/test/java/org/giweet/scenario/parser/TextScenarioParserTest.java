@@ -66,10 +66,23 @@ public class TextScenarioParserTest {
 		assertSentenceIs(KeywordType.WHEN, "	When ", "a when statement", scenario.getSentences().get(1));
 		assertSentenceIs(KeywordType.THEN, "	Then ", "a then statement", scenario.getSentences().get(2));
 	}
+	
+	@Test
+	public void canParseScenarioWithAndStatement() throws Exception {
+		Scenario scenario = readScenario("scenario.test.txt", 4);
+		
+		assertNotNull(scenario);
+		assertEquals("a scenario with \"and\" statements", scenario.getTitle().getText());
+		assertEquals(3, scenario.getSentences().size());
+		assertSentenceIs(KeywordType.GIVEN, "Given ", "a given statement", scenario.getSentences().get(0));
+		assertSentenceIs(KeywordType.AND, "And ", "an and statement", scenario.getSentences().get(1));
+		assertSentenceIs(KeywordType.AND, "And ", "another and statement", scenario.getSentences().get(2));
+	}
+	
 
 	@Test
 	public void canParseScenarioWithExamples() throws Exception {
-		Scenario scenario = readScenario("scenario.test.txt", 4);
+		Scenario scenario = readScenario("scenario.test.txt", 5);
 		
 		assertNotNull(scenario);
 		assertEquals("a scenario with examples", scenario.getTitle().getText());

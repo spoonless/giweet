@@ -44,8 +44,10 @@ public class TextScenarioParser {
 				break;
 			}
 			if (keyword.getType() != KeywordType.NONE) {
-				sentence = new Sentence(keyword, line);
-				scenario.add(sentence);
+				if (keyword.getType() != KeywordType.AND || scenario.getSentences().size() > 0){
+					sentence = new Sentence(keyword, line);
+					scenario.add(sentence);
+				}
 			}
 			else if (sentence != null) {
 				if (StringUtils.isWhitespace(line)) {

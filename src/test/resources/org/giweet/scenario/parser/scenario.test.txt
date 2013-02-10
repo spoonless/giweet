@@ -25,6 +25,15 @@ by the text parser
 
 	Then a then statement
 
++------------------------------------------------+
+ Scenario: a scenario with "and" statements
++------------------------------------------------+
+
+And this statement is ignored because it does not refer to any previous statement
+Given a given statement
+And an and statement
+And another and statement
+
 +----------------------------------+
  Scenario: a scenario with examples
 +----------------------------------+
