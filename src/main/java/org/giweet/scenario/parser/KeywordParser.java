@@ -65,12 +65,12 @@ public class KeywordParser {
 		for (Pattern pattern : givenPatterns) {
 			Matcher matcher = pattern.matcher(line);
 			if (matcher.lookingAt() && matcher.start() == 0) {
-					return line.substring(0, matcher.end());
+				return line.substring(0, matcher.end());
 			}
 		}
 		return null;
 	}
-
+	
 	public Keyword getStartingKeyword(String line) {
 		Keyword keyword = null;
 		for (KeywordResource keywordResource : keywordResources) {

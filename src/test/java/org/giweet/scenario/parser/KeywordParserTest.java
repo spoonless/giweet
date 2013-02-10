@@ -19,13 +19,7 @@ public class KeywordParserTest {
 		assertEquals(Keyword.NO_KEYWORD, keywordParser.getStartingKeyword("no keyword"));
 		assertEquals(Keyword.NO_KEYWORD, keywordParser.getStartingKeyword(", given"));
 
-		Keyword keyword = keywordParser.getStartingKeyword("Story: ");
-		assertKeyword(KeywordType.STORY, "Story: ", keyword);
-
-		keyword = keywordParser.getStartingKeyword("\tStory: ");
-		assertKeyword(KeywordType.STORY, "\tStory: ", keyword);
-
-		keyword = keywordParser.getStartingKeyword("Scenario: ");
+		Keyword keyword = keywordParser.getStartingKeyword("Scenario: ");
 		assertKeyword(KeywordType.SCENARIO, "Scenario: ", keyword);
 
 		keyword = keywordParser.getStartingKeyword("   scenario   : ");
@@ -86,13 +80,7 @@ public class KeywordParserTest {
 		assertEquals(Keyword.NO_KEYWORD, keywordParser.getStartingKeyword("aucun mot-clef"));
 		assertEquals(Keyword.NO_KEYWORD, keywordParser.getStartingKeyword("given"));
 
-		Keyword keyword = keywordParser.getStartingKeyword("Histoire: ");
-		assertKeyword(KeywordType.STORY, "Histoire: ", keyword);
-
-		keyword = keywordParser.getStartingKeyword("\tHistoire  : ");
-		assertKeyword(KeywordType.STORY, "\tHistoire  : ", keyword);
-
-		keyword = keywordParser.getStartingKeyword("Scenario: ");
+		Keyword keyword = keywordParser.getStartingKeyword("Scenario: ");
 		assertKeyword(KeywordType.SCENARIO, "Scenario: ", keyword);
 
 		keyword = keywordParser.getStartingKeyword("Scénario: ");
