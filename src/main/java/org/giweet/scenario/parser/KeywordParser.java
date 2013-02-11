@@ -47,9 +47,13 @@ public class KeywordParser {
 	private Pattern[] createKeywordPatterns(String...patternsAsString) {
 		Pattern[] patterns = new Pattern[patternsAsString.length];
 		for (int i = 0; i < patternsAsString.length; i++) {
-			patterns[i] = Pattern.compile("^[\\p{Z}\t]*" + patternsAsString[i], Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
+			patterns[i] = Pattern.compile(completePattern(patternsAsString[i]), Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
 		}
 		return patterns;
+	}
+
+	private String completePattern(String pattern) {
+		return "^[\\p{Z}\t]*" + pattern.replace(" ", "[\\p{Space}\\p{Z}]");
 	}
 
 	private Keyword extractKeyword(KeywordResource keywordResource, String line) {
@@ -65,12 +69,12 @@ public class KeywordParser {
 		for (Pattern pattern : givenPatterns) {
 			Matcher matcher = pattern.matcher(line);
 			if (matcher.lookingAt() && matcher.start() == 0) {
-					return line.substring(0, matcher.end());
+				return line.substring(0, matcher.end());
 			}
 		}
 		return null;
 	}
-
+	
 	public Keyword getStartingKeyword(String line) {
 		Keyword keyword = null;
 		for (KeywordResource keywordResource : keywordResources) {

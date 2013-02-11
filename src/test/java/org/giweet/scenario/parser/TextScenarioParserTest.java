@@ -2,17 +2,16 @@ package org.giweet.scenario.parser;
 
 import static org.junit.Assert.*;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.charset.Charset;
 import java.util.Locale;
 
-import org.giweet.scenario.Keyword;
 import org.giweet.scenario.KeywordType;
 import org.giweet.scenario.Scenario;
 import org.giweet.scenario.Sentence;
-import org.giweet.scenario.Story;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -25,202 +24,92 @@ public class TextScenarioParserTest {
 		keywordParser = new KeywordParser(Locale.ENGLISH);
 	}
 
+	@Test
+	public void cannotParseScenarioWithoutScenarioKeyword() throws Exception {
+		Scenario scenario = readScenario("scenario.without.title.txt", 1);
+		assertNull(scenario);
+
+		scenario = readScenario("scenario.without.title.txt", 2);
+		assertNull(scenario);
+	}
+	
+	@Test
+	public void canParseSimpleScenarioButCompleteScenario() throws Exception {
+		Scenario scenario = readScenario("scenario.test.txt", 1);
+		
+		assertNotNull(scenario);
+		assertEquals("a simple but complete scenario", scenario.getTitle().getText());
+		assertEquals(1, scenario.getSentences().size());
+		assertSentenceIs(KeywordType.GIVEN, "Given ", "a given statement", scenario.getSentences().get(0));
+	}
+	
+	@Test
+	public void canParseMultilineScenario() throws Exception {
+		Scenario scenario = readScenario("scenario.test.txt", 2);
+		
+		assertNotNull(scenario);
+		assertEquals("a complete multi line scenario", scenario.getTitle().getText());
+		assertEquals(3, scenario.getSentences().size());
+		assertSentenceIs(KeywordType.GIVEN, "Given ", "a given statement", scenario.getSentences().get(0));
+		assertSentenceIs(KeywordType.WHEN, "When ", "a when statement\nover two lines", scenario.getSentences().get(1));
+		assertSentenceIs(KeywordType.THEN, "Then ", "a then statement", scenario.getSentences().get(2));
+	}
+
+	@Test
+	public void canParseScenarioWithTextBlock() throws Exception {
+		Scenario scenario = readScenario("scenario.test.txt", 3);
+		
+		assertNotNull(scenario);
+		assertEquals("a scenario with text blocks", scenario.getTitle().getText());
+		assertEquals(3, scenario.getSentences().size());
+		assertSentenceIs(KeywordType.GIVEN, "	Given ", "a given statement", scenario.getSentences().get(0));
+		assertSentenceIs(KeywordType.WHEN, "	When ", "a when statement", scenario.getSentences().get(1));
+		assertSentenceIs(KeywordType.THEN, "	Then ", "a then statement", scenario.getSentences().get(2));
+	}
+	
+	@Test
+	public void canParseScenarioWithAndStatement() throws Exception {
+		Scenario scenario = readScenario("scenario.test.txt", 4);
+		
+		assertNotNull(scenario);
+		assertEquals("a scenario with \"and\" statements", scenario.getTitle().getText());
+		assertEquals(3, scenario.getSentences().size());
+		assertSentenceIs(KeywordType.GIVEN, "Given ", "a given statement", scenario.getSentences().get(0));
+		assertSentenceIs(KeywordType.AND, "And ", "an and statement", scenario.getSentences().get(1));
+		assertSentenceIs(KeywordType.AND, "And ", "another and statement", scenario.getSentences().get(2));
+	}
+	
+
+	@Test
+	public void canParseScenarioWithExamples() throws Exception {
+		Scenario scenario = readScenario("scenario.test.txt", 5);
+		
+		assertNotNull(scenario);
+		assertEquals("a scenario with examples", scenario.getTitle().getText());
+		assertEquals(4, scenario.getSentences().size());
+		assertSentenceIs(KeywordType.GIVEN, "	given ", "the number <number>", scenario.getSentences().get(0));
+		assertSentenceIs(KeywordType.WHEN, "	when ", "1 is added to this number", scenario.getSentences().get(1));
+		assertSentenceIs(KeywordType.THEN, "	then ", "the result is <result>", scenario.getSentences().get(2));
+		assertSentenceIs(KeywordType.EXAMPLES, "Examples:", "\n|number|result|\n|1     |2     |", scenario.getSentences().get(3));
+	}
+
+	private Scenario readScenario(String filename, int scenarioNumber) throws IOException {
+		Reader reader = createScenarioReader(filename);
+		TextScenarioParser textScenarioParser = new TextScenarioParser(keywordParser, reader);
+		Scenario scenario = null;
+		for (int i = 0; i < scenarioNumber; i++) {
+			scenario = textScenarioParser.nextScenario();
+		}
+		reader.close();
+		return scenario;
+	}
+
 	private Reader createScenarioReader(String scenarioResource) {
 		InputStream resource = this.getClass().getResourceAsStream(scenarioResource);
 		return new InputStreamReader(resource, Charset.forName("utf-8"));
 	}
 	
-	@Test
-	public void canParseScenarioWithoutScenarioKeyword() throws Exception {
-		Reader reader = createScenarioReader("simple.scenario.txt");
-		TextScenarioParser underTest = new TextScenarioParser(keywordParser, reader);
-		
-		Scenario scenario = underTest.nextScenario() ;
-
-		assertNull(scenario.getTitle());
-		assertEquals(1, scenario.getSentences().size());
-		assertSentenceIsProcessable(KeywordType.GIVEN, "given ", "just a given step\n", scenario.getSentences().get(0));
-	}
-
-	@Test
-	public void canParseAllScenarios() throws Exception {
-		Reader reader = createScenarioReader("scenarios.txt");
-		TextScenarioParser underTest = new TextScenarioParser(keywordParser, reader);
-		
-		Scenario scenario = underTest.nextScenario() ;
-		assertSentenceIsProcessable(KeywordType.SCENARIO, "Scenario: ", "a simple scenario\n", scenario.getTitle());
-
-		scenario = underTest.nextScenario() ;
-		assertSentenceIsProcessable(KeywordType.SCENARIO, "ScEnArIo: ", "a scenario mixing cases\n", scenario.getTitle());
-
-		scenario = underTest.nextScenario() ;
-		assertSentenceIsProcessable(KeywordType.SCENARIO, "     scenario : ", "a scenario mixing indentation and formatting\n", scenario.getTitle());
-
-		scenario = underTest.nextScenario() ;
-		assertSentenceIsProcessable(KeywordType.SCENARIO, "   Scenario: ", "a simple pretty scenario\n", scenario.getTitle());
-		
-		assertNull(underTest.nextScenario());
-	}
-
-	@Test
-	public void canParseFirstScenario() throws Exception {
-		Reader reader = createScenarioReader("scenarios.txt");
-		TextScenarioParser underTest = new TextScenarioParser(keywordParser, reader);
-		
-		Scenario scenario = underTest.nextScenario() ;
-
-		assertEquals(5, scenario.getSentences().size());
-		assertSentenceIsProcessable(KeywordType.SCENARIO, "Scenario: ", "a simple scenario\n", scenario.getSentences().get(0));
-		assertSentenceIsNotProcessable("\n", scenario.getSentences().get(1));
-		assertSentenceIsProcessable(KeywordType.GIVEN, "given ", "a given statement\n", scenario.getSentences().get(2));
-		assertSentenceIsProcessable(KeywordType.WHEN, "when ", "a when statement\n", scenario.getSentences().get(3));
-		assertSentenceIsProcessable(KeywordType.THEN, "then ", "a then statement\n\n", scenario.getSentences().get(4));
-	}
-
-	@Test
-	public void canParseSecondScenario() throws Exception {
-		Reader reader = createScenarioReader("scenarios.txt");
-		TextScenarioParser underTest = new TextScenarioParser(keywordParser, reader);
-		
-		underTest.nextScenario();
-		Scenario scenario = underTest.nextScenario();
-
-		assertEquals(8, scenario.getSentences().size());
-
-		assertSentenceIsProcessable(KeywordType.SCENARIO, "ScEnArIo: ", "a scenario mixing cases\n", scenario.getSentences().get(0));
-		assertSentenceIsNotProcessable("\n", scenario.getSentences().get(1));
-		assertSentenceIsProcessable(KeywordType.GIVEN, "GIVEN ", "a given statement\n", scenario.getSentences().get(2));
-		assertSentenceIsProcessable(KeywordType.AND, "aNd ", "a second given statement\n", scenario.getSentences().get(3));
-		assertSentenceIsProcessable(KeywordType.AND, "And ", "a third given statement\n", scenario.getSentences().get(4));
-
-		assertSentenceIsProcessable(KeywordType.WHEN, "wheN ", "a when statement\n", scenario.getSentences().get(5));
-		assertSentenceIsProcessable(KeywordType.AND, "aNd ", "a second when statement\n", scenario.getSentences().get(6));
-
-		assertSentenceIsProcessable(KeywordType.THEN, "Then ", "a then statement\n\n", scenario.getSentences().get(7));
-	}
-	
-	@Test
-	public void canParseThirdScenario() throws Exception {
-		Reader reader = createScenarioReader("scenarios.txt");
-		TextScenarioParser underTest = new TextScenarioParser(keywordParser, reader);
-		
-		underTest.nextScenario();
-		underTest.nextScenario();
-		Scenario scenario = underTest.nextScenario();
-
-		assertEquals(8, scenario.getSentences().size());
-
-		assertSentenceIsProcessable(KeywordType.SCENARIO, "     scenario : ", "a scenario mixing indentation and formatting\n", scenario.getSentences().get(0));
-		assertSentenceIsProcessable(KeywordType.GIVEN, "Given ", "a given statement\n", scenario.getSentences().get(1));
-		assertSentenceIsProcessable(KeywordType.AND, "     And ", "an incremented given statement\n", scenario.getSentences().get(2));
-		assertSentenceIsProcessable(KeywordType.AND, "and ", "an non incremented given statement\n", scenario.getSentences().get(3));
-		assertSentenceIsProcessable(KeywordType.WHEN, "when\n", "a when statement\n", scenario.getSentences().get(4));
-		assertSentenceIsProcessable(KeywordType.THEN, "then\t\t\t", "a then statement\n", scenario.getSentences().get(5));
-		assertSentenceIsProcessable(KeywordType.AND, "and ", "a multiline\nstatement\nwithout any\nempty line\n\n", scenario.getSentences().get(6));
-		assertSentenceIsProcessable(KeywordType.THEN, "Then ", "the final then statement\n\n", scenario.getSentences().get(7));
-	}
-
-	@Test
-	public void canGetStoryAssociatedWithAScenario() throws Exception {
-		Reader reader = createScenarioReader("scenarios.txt");
-		TextScenarioParser underTest = new TextScenarioParser(keywordParser, reader);
-		
-		Scenario scenario = underTest.nextScenario() ;
-		Story story = scenario.getStory();
-
-		assertNotNull(story);
-		assertSentenceIsProcessable(KeywordType.STORY, "Story: ", "a simple test story\n", story.getTitle());
-		assertEquals(2, story.getSentences().size());
-		assertSentenceIsProcessable(KeywordType.STORY, "Story: ", "a simple test story\n", story.getSentences().get(0));
-		assertSentenceIsNotProcessable("\nAs a tester\nI test the text parser\nIn order to check that sentences are correctly parsed\n\n", story.getSentences().get(1));
-	}
-	
-	@Test
-	public void canGetEmptyStoryWhenNoStoryDeclaredInFile() throws Exception {
-		Reader reader = createScenarioReader("simple.scenario.txt");
-		TextScenarioParser underTest = new TextScenarioParser(keywordParser, reader);
-		
-		Scenario scenario = underTest.nextScenario() ;
-		Story story = scenario.getStory();
-
-		assertNotNull(story);
-		assertNull(story.getTitle());
-	}
-
-	@Test
-	public void canParseScenarioFileContainingSeveralStories() throws Exception {
-		Reader reader = createScenarioReader("multi.stories.txt");
-		TextScenarioParser underTest = new TextScenarioParser(keywordParser, reader);
-		
-		Scenario scenario = underTest.nextScenario() ;
-
-		assertSentenceIsProcessable(KeywordType.SCENARIO, "scenario: ", "first scenario of first story\n", scenario.getTitle());
-		assertSentenceIsProcessable(KeywordType.STORY, "story: ", "first story\n", scenario.getStory().getTitle());
-
-		scenario = underTest.nextScenario() ;
-
-		assertSentenceIsProcessable(KeywordType.SCENARIO, "scenario: ", "second scenario of first story\n", scenario.getTitle());
-		assertSentenceIsProcessable(KeywordType.STORY, "story: ", "first story\n", scenario.getStory().getTitle());
-
-		scenario = underTest.nextScenario() ;
-
-		assertSentenceIsProcessable(KeywordType.SCENARIO, "scenario: ", "first scenario of second story\n", scenario.getTitle());
-		assertSentenceIsProcessable(KeywordType.STORY, "story: ", "second story\n", scenario.getStory().getTitle());
-
-		scenario = underTest.nextScenario() ;
-
-		assertSentenceIsProcessable(KeywordType.SCENARIO, "scenario: ", "first scenario of third story\n", scenario.getTitle());
-		assertSentenceIsProcessable(KeywordType.STORY, "story: ", "third story\n", scenario.getStory().getTitle());
-
-		scenario = underTest.nextScenario() ;
-
-		assertSentenceIsProcessable(KeywordType.SCENARIO, "scenario: ", "second scenario of third story\n", scenario.getTitle());
-		assertSentenceIsProcessable(KeywordType.STORY, "story: ", "third story\n", scenario.getStory().getTitle());
-
-		scenario = underTest.nextScenario() ;
-
-		assertNull(scenario.getTitle());
-		assertSentenceIsProcessable(KeywordType.GIVEN, "given ", "an anonymous scenario\n", scenario.getSentences().get(0));
-		assertSentenceIsProcessable(KeywordType.STORY, "story: ", "fourth story\n", scenario.getStory().getTitle());
-		
-		scenario = underTest.nextScenario() ;
-		assertNull(scenario);
-	}
-	
-	@Test
-	public void canParseScenarioWithExamples() throws Exception {
-		Reader reader = createScenarioReader("scenario.with.examples.txt");
-		TextScenarioParser underTest = new TextScenarioParser(keywordParser, reader);
-		
-		Scenario scenario = underTest.nextScenario();
-		
-		assertSentenceIsProcessable(KeywordType.GIVEN, "given ", "the number <number>\n", scenario.getSentences().get(0));
-		assertSentenceIsProcessable(KeywordType.WHEN, "when ", "1 is added to this number\n", scenario.getSentences().get(1));
-		assertSentenceIsProcessable(KeywordType.THEN, "then ", "the result is <result>\n\n", scenario.getSentences().get(2));
-		assertSentenceIsProcessable(KeywordType.EXAMPLES, "examples:\n", "|number|result|\n|1     |2     |\n", scenario.getSentences().get(3));
-	}
-	
-	@Test
-	public void canParseStoryAndScenarioWithMeta() throws Exception {
-		Reader reader = createScenarioReader("scenario.with.meta.txt");
-		TextScenarioParser underTest = new TextScenarioParser(keywordParser, reader);
-		
-		Scenario scenario = underTest.nextScenario();
-		
-		assertEquals(1, scenario.getMeta().size());
-		assertSentenceIsProcessable(KeywordType.META, "@", "scenarioMeta\n", scenario.getMeta().get(0));
-		assertEquals(1, scenario.getStory().getMeta().size());
-		assertSentenceIsProcessable(KeywordType.META, "@", "storyMeta\n", scenario.getStory().getMeta().get(0));
-
-		assertSentenceIsProcessable(KeywordType.META, "@", "scenarioMeta\n", scenario.getSentences().get(0));
-		assertSentenceIsProcessable(KeywordType.SCENARIO, "SCENARIO: ", "a simple scenario\n", scenario.getSentences().get(1));
-		assertSentenceIsNotProcessable("@ignored meta\n", scenario.getSentences().get(2));
-		assertSentenceIsProcessable(KeywordType.GIVEN, "given ", "something\n@another ignored meta\n", scenario.getSentences().get(3));
-		assertSentenceIsProcessable(KeywordType.WHEN, "when ", "an action occurred\n", scenario.getSentences().get(4));
-		assertSentenceIsProcessable(KeywordType.THEN, "then ", "something has changed\n\n", scenario.getSentences().get(5));
-	}
-
-	private void assertSentenceIsProcessable (KeywordType expectedKeywordType, String expectedKeyword, String expectedText, Sentence sentence) {
+	private void assertSentenceIs (KeywordType expectedKeywordType, String expectedKeyword, String expectedText, Sentence sentence) {
 		assertTrue("sentence '" + sentence + "' is not processable!", sentence.isProcessable());
 		assertEquals(expectedKeywordType, sentence.getKeyword().getType());
 		assertEquals(expectedKeyword, sentence.getKeyword().toString());
@@ -228,10 +117,4 @@ public class TextScenarioParserTest {
 		assertEquals(expectedKeyword + expectedText, sentence.toString());
 	}
 
-	private void assertSentenceIsNotProcessable (String expectedText, Sentence sentence) {
-		assertFalse("sentence '" + sentence + "' is processable!", sentence.isProcessable());
-		assertEquals(Keyword.NO_KEYWORD, sentence.getKeyword());
-		assertEquals(expectedText, sentence.getText());
-		assertEquals(expectedText, sentence.toString());
-	}
 }

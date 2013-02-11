@@ -1,0 +1,47 @@
+
+Scenario: a simple but complete scenario
+Given a given statement
+
++----------------------------------------+
+ Scenario: a complete multi line scenario
++----------------------------------------+
+Given a given statement
+When a when statement
+over two lines
+Then a then statement
+
++-------------------------------------+
+ Scenario: a scenario with text blocks
++-------------------------------------+
+The current scenario shows how steps can be interleaved
+with simple text
+
+	Given a given statement
+	
+Here we have a new text block which is ignored
+by the text parser
+
+	When a when statement
+
+	Then a then statement
+
++------------------------------------------------+
+ Scenario: a scenario with "and" statements
++------------------------------------------------+
+
+And this statement is ignored because it does not refer to any previous statement
+Given a given statement
+And an and statement
+And another and statement
+
++----------------------------------+
+ Scenario: a scenario with examples
++----------------------------------+
+
+	given the number <number>
+	when 1 is added to this number
+	then the result is <result>
+
+Examples:
+|number|result|
+|1     |2     |
