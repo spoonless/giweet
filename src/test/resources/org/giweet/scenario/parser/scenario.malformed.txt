@@ -1,0 +1,16 @@
+
+Scenario: a scenario following by an invalid scenario declaration (no empty line separator before the keyword scenario:)
+
+Given a given statement
+Scenario: an invalid scenario declaration
+When a when statement
+Then a then statement
+
+Scenario: a scenario with invalid examples declaration (no empty line separator before the keyword examples:)
+
+Given a given statement
+When a when statement
+Then a then statement
+Examples:
+|test |
+|value|

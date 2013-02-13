@@ -37,13 +37,14 @@ public class TextScenarioParser {
 	private void parseScenario(Scenario scenario) throws IOException {
 		String line;
 		Sentence sentence = null;
+		
 		while ((line = readLine()) != null) {
 			Keyword keyword = keywordParser.getStartingKeyword(line);
-			if (keyword.getType() == KeywordType.SCENARIO) {
+			if (sentence == null && keyword.getType() == KeywordType.SCENARIO) {
 				bufferedLine = line;
 				break;
 			}
-			if (keyword.getType() != KeywordType.NONE) {
+			if (keyword.getType() != KeywordType.NONE && keyword.getType() != KeywordType.SCENARIO) {
 				if (keyword.getType() != KeywordType.AND || scenario.getSentences().size() > 0){
 					sentence = new Sentence(keyword, line);
 					scenario.add(sentence);

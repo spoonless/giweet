@@ -2,15 +2,14 @@
 Scenario: a simple but complete scenario
 Given a given statement
 
-+----------------------------------------+
  Scenario: a complete multi line scenario
 +----------------------------------------+
+
 Given a given statement
 When a when statement
 over two lines
 Then a then statement
 
-+-------------------------------------+
  Scenario: a scenario with text blocks
 +-------------------------------------+
 The current scenario shows how steps can be interleaved
@@ -25,16 +24,15 @@ by the text parser
 
 	Then a then statement
 
-+------------------------------------------------+
  Scenario: a scenario with "and" statements
-+------------------------------------------------+
++------------------------------------------+
 
 And this statement is ignored because it does not refer to any previous statement
+
 Given a given statement
 And an and statement
 And another and statement
 
-+----------------------------------+
  Scenario: a scenario with examples
 +----------------------------------+
 
