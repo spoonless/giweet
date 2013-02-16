@@ -19,10 +19,6 @@ public class Sentence {
 		return text;
 	}
 	
-	public boolean isProcessable() {
-		return keyword != Keyword.NO_KEYWORD;
-	}
-	
 	public void concat(String value) {
 		text += value;
 	}

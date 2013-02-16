@@ -3,8 +3,6 @@ package org.giweet.scenario;
 
 public class Keyword {
 	
-	public static final Keyword NO_KEYWORD = new Keyword(KeywordType.NONE, "");
-	
 	private final KeywordType type;
 	private final String label;
 

@@ -1,7 +1,5 @@
 package org.giweet.scenario.parser;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.regex.Matcher;
@@ -19,15 +17,16 @@ public class KeywordParser {
 	}
 	
 	private final ResourceBundle bundle;
-	private final List<KeywordResource> keywordResources;
+	private final KeywordResource[] keywordResources;
 	private final Locale locale;
 	
 	public KeywordParser(Locale locale) {
 		this.locale = locale;
 		bundle = ResourceBundle.getBundle("org/giweet/i18n/keywords", locale);
-		this.keywordResources = new ArrayList<KeywordParser.KeywordResource>();
-		for (KeywordType keywordType : KeywordType.getParseableKeywordTypes()) {
-			this.keywordResources.add(createKeywordResource(keywordType));			
+		KeywordType[] keywordTypeValues = KeywordType.values();
+		this.keywordResources = new KeywordResource[keywordTypeValues.length];
+		for (KeywordType keywordType : keywordTypeValues) {
+			this.keywordResources[keywordType.ordinal()] = createKeywordResource(keywordType);	
 		}
 	}
 	
@@ -75,15 +74,15 @@ public class KeywordParser {
 		return null;
 	}
 	
-	public Keyword getStartingKeyword(String line) {
+	public Keyword getKeyword(String line, KeywordType... keywordTypes) {
 		Keyword keyword = null;
-		for (KeywordResource keywordResource : keywordResources) {
-			keyword = extractKeyword(keywordResource, line);
+		for (KeywordType keywordType : keywordTypes) {
+			keyword = extractKeyword(keywordResources[keywordType.ordinal()], line);
 			if (keyword != null) {
 				break;
 			}
 		}
-		return keyword == null ? Keyword.NO_KEYWORD : keyword;
+		return keyword;
 	}
 
 }

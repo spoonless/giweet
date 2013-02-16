@@ -26,8 +26,8 @@ public class TextScenarioParser {
 		String line;
 		while ((line = readLine()) != null) {
 			if (isNewTextBlock) {
-				Keyword keyword = keywordParser.getStartingKeyword(line);
-				if (keyword.getType() == KeywordType.SCENARIO) {
+				Keyword keyword = keywordParser.getKeyword(line, KeywordType.SCENARIO);
+				if (keyword != null) {
 					Scenario scenario = new Scenario(new Sentence(keyword, line));
 					parseScenario(scenario);
 					return scenario;
@@ -38,39 +38,53 @@ public class TextScenarioParser {
 		return null;
 	}
 
+	// TODO to refactor
 	private void parseScenario(Scenario scenario) throws IOException {
 		String line;
 		Sentence sentence = null;
 		isNewTextBlock = true;
 		while ((line = readLine()) != null) {
-			Keyword keyword = keywordParser.getStartingKeyword(line);
-			KeywordType keywordType = keyword.getType();
+			Keyword keyword;
+			if (isNewTextBlock) {
+				keyword = keywordParser.getKeyword(line, KeywordType.SCENARIO);
+				if (keyword != null) {
+					bufferedLine = line;
+					break;
+				}
+				
+				keyword = keywordParser.getKeyword(line, KeywordType.EXAMPLES);
+				if (keyword != null) {
+					sentence = new Sentence(keyword, line);
+					scenario.add(sentence);
+					isNewTextBlock = false;
+					continue;
+				}
+			}
+
+			keyword = keywordParser.getKeyword(line, KeywordType.GIVEN, KeywordType.WHEN, KeywordType.THEN);
+			if (keyword != null) {
+				sentence = new Sentence(keyword, line);
+				scenario.add(sentence);
+				isNewTextBlock = false;
+				continue;
+			}
 			
-			if (isNewTextBlock && keywordType == KeywordType.SCENARIO) {
-				bufferedLine = line;
-				break;
-			}
-			else if (keywordType == KeywordType.GIVEN || 
-					 keywordType == KeywordType.WHEN || 
-					 keywordType == KeywordType.THEN ||
-					 (keywordType == KeywordType.AND && !scenario.getSentences().isEmpty())) {
-				sentence = new Sentence(keyword, line);
-				scenario.add(sentence);
-				isNewTextBlock = false;
-			}
-			else if (keywordType == KeywordType.EXAMPLES && isNewTextBlock) {
-				sentence = new Sentence(keyword, line);
-				scenario.add(sentence);
-				isNewTextBlock = false;
-			}
-			else {
-				isNewTextBlock = StringUtils.isWhitespace(line);
-				if (isNewTextBlock) {
-					sentence = null;
+			if (!scenario.getSentences().isEmpty()) {
+				keyword = keywordParser.getKeyword(line, KeywordType.AND);
+				if (keyword != null) {
+					sentence = new Sentence(keyword, line);
+					scenario.add(sentence);
+					isNewTextBlock = false;
+					continue;
 				}
-				else if (sentence != null){
-					sentence.concat("\n" + line);
-				}
+			}
+			
+			isNewTextBlock = StringUtils.isWhitespace(line);
+			if (isNewTextBlock) {
+				sentence = null;
+			}
+			else if (sentence != null){
+				sentence.concat("\n" + line);
 			}
 		}
 	}

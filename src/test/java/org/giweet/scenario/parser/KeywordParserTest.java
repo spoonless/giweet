@@ -9,172 +9,95 @@ import org.giweet.scenario.KeywordType;
 import org.junit.Test;
 
 public class KeywordParserTest {
+	
+	private KeywordParser keywordParser;
 
 	@Test
-	public void canGetStartingKeywordInEnglish() {
-		KeywordParser keywordParser = new KeywordParser(Locale.ENGLISH);
-		
-		assertEquals(Keyword.NO_KEYWORD, keywordParser.getStartingKeyword(""));
-		assertEquals(Keyword.NO_KEYWORD, keywordParser.getStartingKeyword("givengiven"));
-		assertEquals(Keyword.NO_KEYWORD, keywordParser.getStartingKeyword("no keyword"));
-		assertEquals(Keyword.NO_KEYWORD, keywordParser.getStartingKeyword(", given"));
+	public void canGetKeywordInEnglish() {
+		keywordParser = new KeywordParser(Locale.ENGLISH);
 
-		Keyword keyword = keywordParser.getStartingKeyword("Scenario: ");
-		assertKeyword(KeywordType.SCENARIO, "Scenario: ", keyword);
-
-		keyword = keywordParser.getStartingKeyword("   scenario   : ");
-		assertKeyword(KeywordType.SCENARIO, "   scenario   : ", keyword);
-
-		keyword = keywordParser.getStartingKeyword("given given");
-		assertKeyword(KeywordType.GIVEN, "given ", keyword);
-
-		keyword = keywordParser.getStartingKeyword("given");
-		assertKeyword(KeywordType.GIVEN, "given", keyword);
-
-		keyword = keywordParser.getStartingKeyword("\t\t\t\tgiven test");
-		assertKeyword(KeywordType.GIVEN, "\t\t\t\tgiven ", keyword);
-
-		keyword = keywordParser.getStartingKeyword("\u00a0given test");
-		assertKeyword(KeywordType.GIVEN, "\u00a0given ", keyword);
-
-		keyword = keywordParser.getStartingKeyword("when when");
-		assertKeyword(KeywordType.WHEN, "when ", keyword);
-
-		keyword = keywordParser.getStartingKeyword("when");
-		assertKeyword(KeywordType.WHEN, "when", keyword);
-
-		keyword = keywordParser.getStartingKeyword("\t\t\t\twhen test");
-		assertKeyword(KeywordType.WHEN, "\t\t\t\twhen ", keyword);
-
-		keyword = keywordParser.getStartingKeyword("\u00a0when test");
-		assertKeyword(KeywordType.WHEN, "\u00a0when ", keyword);
-
-		keyword = keywordParser.getStartingKeyword("then then");
-		assertKeyword(KeywordType.THEN, "then ", keyword);
-
-		keyword = keywordParser.getStartingKeyword("then");
-		assertKeyword(KeywordType.THEN, "then", keyword);
-
-		keyword = keywordParser.getStartingKeyword("\t\t\t\tthen test");
-		assertKeyword(KeywordType.THEN, "\t\t\t\tthen ", keyword);
-
-		keyword = keywordParser.getStartingKeyword("\u00a0then test");
-		assertKeyword(KeywordType.THEN, "\u00a0then ", keyword);
-
-		keyword = keywordParser.getStartingKeyword("and then");
-		assertKeyword(KeywordType.AND, "and ", keyword);
-
-		keyword = keywordParser.getStartingKeyword("and");
-		assertKeyword(KeywordType.AND, "and", keyword);
-
-		keyword = keywordParser.getStartingKeyword("\t\t\t\tand test");
-		assertKeyword(KeywordType.AND, "\t\t\t\tand ", keyword);
-
-		keyword = keywordParser.getStartingKeyword("\u00a0and test");
-		assertKeyword(KeywordType.AND, "\u00a0and ", keyword);
-
-		keyword = keywordParser.getStartingKeyword("examples:\nexample here");
-		assertKeyword(KeywordType.EXAMPLES, "examples:\n", keyword);
-
-		keyword = keywordParser.getStartingKeyword("examples:");
-		assertKeyword(KeywordType.EXAMPLES, "examples:", keyword);
-
-		keyword = keywordParser.getStartingKeyword("@test");
-		assertKeyword(KeywordType.META, "@", keyword);
-
-		keyword = keywordParser.getStartingKeyword("meta: test");
-		assertKeyword(KeywordType.META, "meta: ", keyword);
+		assertNoKeyword("");
+		assertNoKeyword("givengiven");
+		assertNoKeyword("no given");
+		assertNoKeyword(", given");
+		assertKeyword(KeywordType.SCENARIO, "Scenario: ", "Scenario: ");
+		assertKeyword(KeywordType.SCENARIO, "   scenario   : ", "   scenario   : ");
+		assertKeyword(KeywordType.GIVEN, "given ", "given given");
+		assertKeyword(KeywordType.GIVEN, "given", "given");
+		assertKeyword(KeywordType.GIVEN, "\t\t\t\tgiven ", "\t\t\t\tgiven test");
+		assertKeyword(KeywordType.GIVEN, "\u00a0given ", "\u00a0given test");
+		assertKeyword(KeywordType.WHEN, "when ", "when when");
+		assertKeyword(KeywordType.WHEN, "when", "when");
+		assertKeyword(KeywordType.WHEN, "\t\t\t\twhen ", "\t\t\t\twhen test");
+		assertKeyword(KeywordType.WHEN, "\u00a0when ", "\u00a0when test");
+		assertKeyword(KeywordType.THEN, "then ", "then then");
+		assertKeyword(KeywordType.THEN, "then", "then");
+		assertKeyword(KeywordType.THEN, "\t\t\t\tthen ", "\t\t\t\tthen test");
+		assertKeyword(KeywordType.THEN, "\u00a0then ", "\u00a0then test");
+		assertKeyword(KeywordType.AND, "and ", "and then");
+		assertKeyword(KeywordType.AND, "and", "and");
+		assertKeyword(KeywordType.AND, "\t\t\t\tand ", "\t\t\t\tand test");
+		assertKeyword(KeywordType.AND, "\u00a0and ", "\u00a0and test");
+		assertKeyword(KeywordType.EXAMPLES, "examples:\n", "examples:\nexample here");
+		assertKeyword(KeywordType.EXAMPLES, "examples:", "examples:");
+		assertKeyword(KeywordType.META, "@", "@test");
+		assertKeyword(KeywordType.META, "meta: ", "meta: test");
 	}
 	
 	@Test
-	public void canGetStartingKeywordInFrench() {
-		KeywordParser keywordParser = new KeywordParser(Locale.FRENCH);
+	public void canGetKeywordInFrench() {
+		keywordParser = new KeywordParser(Locale.FRENCH);
 		
-		assertEquals(Keyword.NO_KEYWORD, keywordParser.getStartingKeyword(""));
-		assertEquals(Keyword.NO_KEYWORD, keywordParser.getStartingKeyword("etet"));
-		assertEquals(Keyword.NO_KEYWORD, keywordParser.getStartingKeyword("aucun mot-clef"));
-		assertEquals(Keyword.NO_KEYWORD, keywordParser.getStartingKeyword("given"));
-
-		Keyword keyword = keywordParser.getStartingKeyword("Scenario: ");
-		assertKeyword(KeywordType.SCENARIO, "Scenario: ", keyword);
-
-		keyword = keywordParser.getStartingKeyword("Scénario: ");
-		assertKeyword(KeywordType.SCENARIO, "Scénario: ", keyword);
-
-		keyword = keywordParser.getStartingKeyword("   scenario   : ");
-		assertKeyword(KeywordType.SCENARIO, "   scenario   : ", keyword);
-
-		keyword = keywordParser.getStartingKeyword("étant donné que ");
-		assertKeyword(KeywordType.GIVEN, "étant donné que ", keyword);
-
-		keyword = keywordParser.getStartingKeyword("étant donné que");
-		assertKeyword(KeywordType.GIVEN, "étant donné que", keyword);
-
-		keyword = keywordParser.getStartingKeyword("étant donné qu'il");
-		assertKeyword(KeywordType.GIVEN, "étant donné qu'", keyword);
-
-		keyword = keywordParser.getStartingKeyword("Etant donnés que");
-		assertKeyword(KeywordType.GIVEN, "Etant donnés que", keyword);
-
-		keyword = keywordParser.getStartingKeyword("\t\t\t\tétant  donné  que\t");
-		assertKeyword(KeywordType.GIVEN, "\t\t\t\tétant  donné  que\t", keyword);
-
-		keyword = keywordParser.getStartingKeyword("quand quand");
-		assertKeyword(KeywordType.WHEN, "quand ", keyword);
-
-		keyword = keywordParser.getStartingKeyword("quand");
-		assertKeyword(KeywordType.WHEN, "quand", keyword);
-
-		keyword = keywordParser.getStartingKeyword("\t\t\t\tquand test");
-		assertKeyword(KeywordType.WHEN, "\t\t\t\tquand ", keyword);
-
-		keyword = keywordParser.getStartingKeyword("\u00a0quand test");
-		assertKeyword(KeywordType.WHEN, "\u00a0quand ", keyword);
-
-		keyword = keywordParser.getStartingKeyword("alors alors");
-		assertKeyword(KeywordType.THEN, "alors ", keyword);
-
-		keyword = keywordParser.getStartingKeyword("alors");
-		assertKeyword(KeywordType.THEN, "alors", keyword);
-
-		keyword = keywordParser.getStartingKeyword("\t\t\t\talors test");
-		assertKeyword(KeywordType.THEN, "\t\t\t\talors ", keyword);
-
-		keyword = keywordParser.getStartingKeyword("\u00a0alors test");
-		assertKeyword(KeywordType.THEN, "\u00a0alors ", keyword);
-
-		keyword = keywordParser.getStartingKeyword("et il");
-		assertKeyword(KeywordType.AND, "et ", keyword);
-
-		keyword = keywordParser.getStartingKeyword("et");
-		assertKeyword(KeywordType.AND, "et", keyword);
-		
-		keyword = keywordParser.getStartingKeyword("\t\t\t\tet test");
-		assertKeyword(KeywordType.AND, "\t\t\t\tet ", keyword);
-
-		keyword = keywordParser.getStartingKeyword("Et que ceci");
-		assertKeyword(KeywordType.AND, "Et que ", keyword);
-
-		keyword = keywordParser.getStartingKeyword("Et que");
-		assertKeyword(KeywordType.AND, "Et que", keyword);
-
-		keyword = keywordParser.getStartingKeyword("et qu'il");
-		assertKeyword(KeywordType.AND, "et qu'", keyword);
-
-		keyword = keywordParser.getStartingKeyword("exemples:\nmettre les exemples ici");
-		assertKeyword(KeywordType.EXAMPLES, "exemples:\n", keyword);
-
-		keyword = keywordParser.getStartingKeyword("@test");
-		assertKeyword(KeywordType.META, "@", keyword);
-
-		keyword = keywordParser.getStartingKeyword("meta: test");
-		assertKeyword(KeywordType.META, "meta: ", keyword);
+		assertNoKeyword("");
+		assertNoKeyword("etet");
+		assertNoKeyword("aucun alors");
+		assertNoKeyword(", quand");
+		assertKeyword(KeywordType.SCENARIO, "Scenario: ", "Scenario: ");
+		assertKeyword(KeywordType.SCENARIO, "Scénario: ", "Scénario: ");
+		assertKeyword(KeywordType.SCENARIO, "   scenario   : ", "   scenario   : ");
+		assertKeyword(KeywordType.GIVEN, "étant donné que ", "étant donné que ");
+		assertKeyword(KeywordType.GIVEN, "étant donné que", "étant donné que");
+		assertKeyword(KeywordType.GIVEN, "étant donné qu'", "étant donné qu'il");
+		assertKeyword(KeywordType.GIVEN, "Etant donnés que", "Etant donnés que");
+		assertKeyword(KeywordType.GIVEN, "\t\t\t\tétant  donné  que\t", "\t\t\t\tétant  donné  que\t");
+		assertKeyword(KeywordType.WHEN, "quand ", "quand quand");
+		assertKeyword(KeywordType.WHEN, "quand", "quand");
+		assertKeyword(KeywordType.WHEN, "\t\t\t\tquand ", "\t\t\t\tquand test");
+		assertKeyword(KeywordType.WHEN, "\u00a0quand ", "\u00a0quand test");
+		assertKeyword(KeywordType.THEN, "alors ", "alors alors");
+		assertKeyword(KeywordType.THEN, "alors", "alors");
+		assertKeyword(KeywordType.THEN, "\t\t\t\talors ", "\t\t\t\talors test");
+		assertKeyword(KeywordType.THEN, "\u00a0alors ", "\u00a0alors test");
+		assertKeyword(KeywordType.AND, "et ", "et il");
+		assertKeyword(KeywordType.AND, "et", "et");
+		assertKeyword(KeywordType.AND, "\t\t\t\tet ", "\t\t\t\tet test");
+		assertKeyword(KeywordType.AND, "Et que ", "Et que ceci");
+		assertKeyword(KeywordType.AND, "Et que", "Et que");
+		assertKeyword(KeywordType.AND, "et qu'", "et qu'il");
+		assertKeyword(KeywordType.EXAMPLES, "exemples:\n", "exemples:\nmettre les exemples ici");
+		assertKeyword(KeywordType.META, "@", "@test");
+		assertKeyword(KeywordType.META, "meta: ", "meta: test");
 	}
 
-	private void assertKeyword(KeywordType expectedType, String expectedStringValue, Keyword keyword) {
-		assertNotNull("keyword must not be null", keyword);
-		assertEquals(expectedType, keyword.getType());
-		assertEquals(expectedStringValue, keyword.toString());
+	
+	private void assertKeyword(KeywordType expectedKeywordType, String expectedStringValue, String string) {
+		for (KeywordType keywordType : KeywordType.values()) {
+			Keyword keyword = keywordParser.getKeyword(string, keywordType);
+			if (keywordType != expectedKeywordType) {
+				assertNull(keyword);
+			}
+			else {
+				assertNotNull("keyword must not be null", keyword);
+				assertEquals(expectedKeywordType, keyword.getType());
+				assertEquals(expectedStringValue, keyword.toString());
+				
+			}
+		}
 	}
 
+	private void assertNoKeyword(String string) {
+		for (KeywordType keywordType : KeywordType.values()) {
+			assertNull(keywordParser.getKeyword(string, keywordType));
+		}
+	}
 }

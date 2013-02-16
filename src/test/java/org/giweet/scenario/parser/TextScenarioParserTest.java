@@ -121,7 +121,6 @@ public class TextScenarioParserTest {
 	}
 	
 	private void assertSentenceIs (KeywordType expectedKeywordType, String expectedKeyword, String expectedText, Sentence sentence) {
-		assertTrue("sentence '" + sentence + "' is not processable!", sentence.isProcessable());
 		assertEquals(expectedKeywordType, sentence.getKeyword().getType());
 		assertEquals(expectedKeyword, sentence.getKeyword().toString());
 		assertEquals(expectedText, sentence.getText());
