@@ -1,7 +1,11 @@
 package org.giweet;
 
+import java.util.regex.Pattern;
+
 public class StringUtils {
-	
+
+	private static final Pattern whitespacePattern = Pattern.compile("^[\\p{Space}\\p{Z}\\p{C}]*$");
+
 	private StringUtils() {
 	}
 
@@ -25,6 +29,6 @@ public class StringUtils {
 	
 	// TODO to test adding Unicode C category
 	public static boolean isWhitespace(String string) {
-		return string.matches("^[\\p{Space}\\p{Z}\\p{C}]*$");
+		return whitespacePattern.matcher(string).matches();
 	}
 }

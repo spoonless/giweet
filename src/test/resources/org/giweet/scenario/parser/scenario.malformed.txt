@@ -1,4 +1,7 @@
 
+The following scenario is invalid because it is not the beginning of a text block
+Scenario: an invalid scenario declaration (no empty line before)
+
 Scenario: a scenario following by an invalid scenario declaration (no empty line separator before the keyword scenario:)
 
 Given a given statement

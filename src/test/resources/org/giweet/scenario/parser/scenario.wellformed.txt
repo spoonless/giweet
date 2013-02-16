@@ -1,4 +1,3 @@
-
 Scenario: a simple but complete scenario
 Given a given statement
 
