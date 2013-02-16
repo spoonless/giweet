@@ -1,6 +1,5 @@
 package org.giweet.scenario.parser;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.ArrayList;
@@ -15,20 +14,19 @@ import org.giweet.scenario.Sentence;
 public class TextScenarioParser {
 
 	private final KeywordParser keywordParser;
-	private final BufferedReader reader;
-	private String bufferedLine;
+	private final ResetableBufferedReader reader;
 	private boolean isNewTextBlock = true;
 	private final List<Sentence> meta;
-
+	
 	public TextScenarioParser(KeywordParser keywordParser, Reader reader) {
 		this.keywordParser = keywordParser;
-		this.reader = new BufferedReader(reader);
+		this.reader = new ResetableBufferedReader(reader);
 		this.meta = new ArrayList<Sentence>();
 	}
 	
 	public Scenario nextScenario() throws IOException {
 		String line;
-		while ((line = readLine()) != null) {
+		while ((line = reader.readLine()) != null) {
 			if (isNewTextBlock) {
 				Keyword keyword = keywordParser.getKeyword(line, KeywordType.SCENARIO);
 				if (keyword != null) {
@@ -42,13 +40,13 @@ public class TextScenarioParser {
 		}
 		return null;
 	}
-
+	
 	// TODO to refactor
 	private void parseScenario(Scenario scenario) throws IOException {
 		String line;
 		Sentence sentence = null;
 		isNewTextBlock = true;
-		while ((line = readLine()) != null) {
+		while ((line = reader.readLine()) != null) {
 			Keyword keyword;
 			if (isNewTextBlock) {
 				keyword = keywordParser.getKeyword(line, KeywordType.META);
@@ -58,7 +56,7 @@ public class TextScenarioParser {
 				}
 				keyword = keywordParser.getKeyword(line, KeywordType.SCENARIO);
 				if (keyword != null) {
-					bufferedLine = line;
+					reader.resetLastLine();
 					break;
 				}
 			}
@@ -100,17 +98,4 @@ public class TextScenarioParser {
 			}
 		}
 	}
-
-	private String readLine() throws IOException {
-		String nextLine;
-		if (bufferedLine != null) {
-			nextLine = bufferedLine;
-			bufferedLine = null;
-		}
-		else {
-			nextLine = reader.readLine();
-		}
-		return nextLine;
-	}
-
 }
