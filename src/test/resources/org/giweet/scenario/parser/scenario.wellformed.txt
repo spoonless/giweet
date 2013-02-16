@@ -3,7 +3,6 @@ Given a given statement
 
  Scenario: a complete multi line scenario
 +----------------------------------------+
-
 Given a given statement
 When a when statement
 over two lines
@@ -27,7 +26,6 @@ by the text parser
 +------------------------------------------+
 
 And this statement is ignored because it does not refer to any previous statement
-
 Given a given statement
 And an and statement
 And another and statement
@@ -42,3 +40,19 @@ And another and statement
 Examples:
 |number|result|
 |1     |2     |
+
+@my meta
+Scenario: a scenario with meta
++-----------------------------+
+Given a given statement
+When a when statement
+Then a then statement
+
+@my first meta
+@my second meta
+@my third meta
+Scenario: a scenario with several meta
++-------------------------------------+
+Given a given statement
+When a when statement
+Then a then statement

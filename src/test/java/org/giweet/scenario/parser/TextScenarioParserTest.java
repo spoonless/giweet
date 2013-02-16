@@ -94,6 +94,36 @@ public class TextScenarioParserTest {
 	}
 
 	@Test
+	public void canParseScenarioWithMeta() throws Exception {
+		Scenario scenario = readScenario("scenario.wellformed.txt", 6);
+		
+		assertNotNull(scenario);
+		assertEquals("a scenario with meta", scenario.getTitle().getText());
+		assertEquals(3, scenario.getSentences().size());
+		assertSentenceIs(KeywordType.GIVEN, "Given ", "a given statement", scenario.getSentences().get(0));
+		assertSentenceIs(KeywordType.WHEN, "When ", "a when statement", scenario.getSentences().get(1));
+		assertSentenceIs(KeywordType.THEN, "Then ", "a then statement", scenario.getSentences().get(2));
+		assertEquals(1, scenario.getMeta().size());
+		assertSentenceIs(KeywordType.META, "@", "my meta", scenario.getMeta().get(0));
+	}
+
+	@Test
+	public void canParseScenarioWithSeveralMeta() throws Exception {
+		Scenario scenario = readScenario("scenario.wellformed.txt", 7);
+		
+		assertNotNull(scenario);
+		assertEquals("a scenario with several meta", scenario.getTitle().getText());
+		assertEquals(3, scenario.getSentences().size());
+		assertSentenceIs(KeywordType.GIVEN, "Given ", "a given statement", scenario.getSentences().get(0));
+		assertSentenceIs(KeywordType.WHEN, "When ", "a when statement", scenario.getSentences().get(1));
+		assertSentenceIs(KeywordType.THEN, "Then ", "a then statement", scenario.getSentences().get(2));
+		assertEquals(3, scenario.getMeta().size());
+		assertSentenceIs(KeywordType.META, "@", "my first meta", scenario.getMeta().get(0));
+		assertSentenceIs(KeywordType.META, "@", "my second meta", scenario.getMeta().get(1));
+		assertSentenceIs(KeywordType.META, "@", "my third meta", scenario.getMeta().get(2));
+	}
+
+	@Test
 	public void cannotParseScenarioWithoutEmptyLineBefore() throws Exception {
 		Scenario scenario = readScenario("scenario.malformed.txt", 1);
 		
@@ -102,6 +132,17 @@ public class TextScenarioParserTest {
 		assertSentenceIs(KeywordType.GIVEN, "Given ", "a given statement\nScenario: an invalid scenario declaration", scenario.getSentences().get(0));
 		assertSentenceIs(KeywordType.WHEN, "When ", "a when statement", scenario.getSentences().get(1));
 		assertSentenceIs(KeywordType.THEN, "Then ", "a then statement", scenario.getSentences().get(2));
+	}
+
+	@Test
+	public void cannotParseExamplesWithoutEmptyLineBefore() throws Exception {
+		Scenario scenario = readScenario("scenario.malformed.txt", 2);
+		
+		assertNotNull(scenario);
+		assertEquals(3, scenario.getSentences().size());
+		assertSentenceIs(KeywordType.GIVEN, "Given ", "a given statement", scenario.getSentences().get(0));
+		assertSentenceIs(KeywordType.WHEN, "When ", "a when statement", scenario.getSentences().get(1));
+		assertSentenceIs(KeywordType.THEN, "Then ", "a then statement\nExamples:\n|test |\n|value|", scenario.getSentences().get(2));
 	}
 
 	private Scenario readScenario(String filename, int scenarioNumber) throws IOException {

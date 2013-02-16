@@ -3,6 +3,8 @@ package org.giweet.scenario.parser;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Reader;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.giweet.StringUtils;
 import org.giweet.scenario.Keyword;
@@ -16,10 +18,12 @@ public class TextScenarioParser {
 	private final BufferedReader reader;
 	private String bufferedLine;
 	private boolean isNewTextBlock = true;
+	private final List<Sentence> meta;
 
 	public TextScenarioParser(KeywordParser keywordParser, Reader reader) {
 		this.keywordParser = keywordParser;
 		this.reader = new BufferedReader(reader);
+		this.meta = new ArrayList<Sentence>();
 	}
 	
 	public Scenario nextScenario() throws IOException {
@@ -29,6 +33,7 @@ public class TextScenarioParser {
 				Keyword keyword = keywordParser.getKeyword(line, KeywordType.SCENARIO);
 				if (keyword != null) {
 					Scenario scenario = new Scenario(new Sentence(keyword, line));
+					scenario.getMeta().addAll(meta);
 					parseScenario(scenario);
 					return scenario;
 				}
@@ -46,12 +51,19 @@ public class TextScenarioParser {
 		while ((line = readLine()) != null) {
 			Keyword keyword;
 			if (isNewTextBlock) {
+				keyword = keywordParser.getKeyword(line, KeywordType.META);
+				if (keyword != null) {
+					meta.add(new Sentence(keyword, line));
+					continue;
+				}
 				keyword = keywordParser.getKeyword(line, KeywordType.SCENARIO);
 				if (keyword != null) {
 					bufferedLine = line;
 					break;
 				}
-				
+			}
+			meta.clear();
+			if (isNewTextBlock) {
 				keyword = keywordParser.getKeyword(line, KeywordType.EXAMPLES);
 				if (keyword != null) {
 					sentence = new Sentence(keyword, line);
@@ -60,7 +72,7 @@ public class TextScenarioParser {
 					continue;
 				}
 			}
-
+			
 			keyword = keywordParser.getKeyword(line, KeywordType.GIVEN, KeywordType.WHEN, KeywordType.THEN);
 			if (keyword != null) {
 				sentence = new Sentence(keyword, line);

@@ -7,7 +7,8 @@ import java.util.List;
 public class Scenario {
 	
 	private final Sentence title;
-	private List<Sentence> sentences = new ArrayList<Sentence>();
+	private final List<Sentence> sentences = new ArrayList<Sentence>();
+	private final List<Sentence> meta = new ArrayList<Sentence>();
 
 	public List<Sentence> getSentences() {
 		return sentences;
@@ -20,19 +21,9 @@ public class Scenario {
 	public void add(Sentence sentence) {
 		sentences.add(sentence);
 	}
-
-	public List<Sentence> getMeta() {
-		return getSentencesByKeywordType(KeywordType.META);
-	}
 	
-	protected List<Sentence> getSentencesByKeywordType(KeywordType keywordType) {
-		List<Sentence> result = new ArrayList<Sentence>();
-		for (Sentence sentence : sentences) {
-			if (sentence.getKeyword().getType() == keywordType) {
-				result.add(sentence);
-			}
-		}
-		return result;
+	public List<Sentence> getMeta() {
+		return meta;
 	}
 	
 	public Sentence getTitle() {

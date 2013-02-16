@@ -41,7 +41,7 @@ public class KeywordParserTest {
 		assertKeyword(KeywordType.EXAMPLES, "examples:\n", "examples:\nexample here");
 		assertKeyword(KeywordType.EXAMPLES, "examples:", "examples:");
 		assertKeyword(KeywordType.META, "@", "@test");
-		assertKeyword(KeywordType.META, "meta: ", "meta: test");
+		assertKeyword(KeywordType.META, "@", "@ test");
 	}
 	
 	@Test
@@ -76,7 +76,7 @@ public class KeywordParserTest {
 		assertKeyword(KeywordType.AND, "et qu'", "et qu'il");
 		assertKeyword(KeywordType.EXAMPLES, "exemples:\n", "exemples:\nmettre les exemples ici");
 		assertKeyword(KeywordType.META, "@", "@test");
-		assertKeyword(KeywordType.META, "meta: ", "meta: test");
+		assertKeyword(KeywordType.META, "@", "@ test");
 	}
 
 	
